@@ -1,4 +1,4 @@
-.PHONY: all pg/up pg/down api/run api/install
+.PHONY: all pg/up pg/down api/run api/install web/run web/build web/install
 
 all:
 	@echo "no target specified"
@@ -14,3 +14,12 @@ api/run:
 
 api/install:
 	$(MAKE) -C backend install
+
+web/build:
+	npm --prefix frontend run build
+
+web/run:
+	npm --prefix frontend run dev
+
+web/install:
+	npm --prefix frontend install
