@@ -7,3 +7,24 @@ dependencies = [
     "fastapi[standard]>=0.128.5",
     "uvloop>=0.22.1 ; sys_platform != 'win32'",
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.0",
+]
+
+[tool.ruff]
+target-version="py314"
+
+[tool.ruff.lint]
+extend-select = [
+    "B",
+    "I",
+    "UP",
+    "FAST",
+    "ASYNC",
+]
+
+ignore = [
+    "E501",
+]
