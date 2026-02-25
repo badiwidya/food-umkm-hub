@@ -4,7 +4,7 @@ RUN := $(UV) run
 HOST := 127.0.0.1
 PORT := 8000
 
-.PHONY: all run install
+.PHONY: all run install check lint format
 
 all:
 	@echo "no target specified"
@@ -14,3 +14,11 @@ run:
 
 install:
 	$(UV) sync
+
+check: lint format
+
+lint:
+	$(RUN) ruff check . --fix
+
+format:
+	$(RUN) ruff format .

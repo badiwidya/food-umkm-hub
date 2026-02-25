@@ -4,6 +4,34 @@ version = "0.1.0"
 description = "Backend for IPB Food & UMKM Hub"
 requires-python = ">=3.14"
 dependencies = [
+    "alembic[tz]>=1.18.4",
+    "asyncpg>=0.31.0",
     "fastapi[standard]>=0.128.5",
+    "sqlalchemy>=2.0.46",
     "uvloop>=0.22.1 ; sys_platform != 'win32'",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.0",
+]
+
+[tool.ruff]
+target-version="py314"
+
+extend-exclude = [
+    "alembic",
+]
+
+[tool.ruff.lint]
+extend-select = [
+    "B",
+    "I",
+    "UP",
+    "FAST",
+    "ASYNC",
+]
+
+ignore = [
+    "E501",
 ]
