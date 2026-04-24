@@ -4,7 +4,7 @@ RUN := $(UV) run
 HOST := 127.0.0.1
 PORT := 8000
 
-.PHONY: all run install check lint format
+.PHONY: all run install check lint format migrate/create migrate/up
 
 all:
 	@echo "no target specified"
@@ -22,3 +22,9 @@ lint:
 
 format:
 	$(RUN) ruff format .
+
+migrate/create:
+	$(RUN) alembic revision --autogenerate -m "$(MSG)"
+
+migrate/up:
+	$(RUN) alembic upgrade head
