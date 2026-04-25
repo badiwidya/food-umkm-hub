@@ -4,7 +4,7 @@ RUN := $(UV) run
 HOST := 127.0.0.1
 PORT := 8000
 
-.PHONY: all run install check lint format migrate/create migrate/up
+.PHONY: all run install check lint format migrate/create migrate/up test/integration
 
 all:
 	@echo "no target specified"
@@ -28,3 +28,9 @@ migrate/create:
 
 migrate/up:
 	$(RUN) alembic upgrade head
+
+test/integration:
+	docker compose up -d --wait postgres_test
+	@trap 'docker compose stop postgres_test' EXIT; \
+	export ENV_FILE=.env.test; \
+	$(RUN) pytest tests/integration

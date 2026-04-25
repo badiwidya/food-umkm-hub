@@ -9,6 +9,22 @@ services:
     env_file:
       - ./backend/.env
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
     ports:
       - "127.0.0.1:5432:5432"
+
+  postgres_test:
+    image: postgres:18-alpine
+    container_name: food-umkm-hub-db-test
+    restart: always
+    env_file:
+      - ./backend/.env.test
+    tmpfs:
+      - /var/lib/postgresql
+    ports:
+      - "127.0.0.1:5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 5s
+      retries: 10

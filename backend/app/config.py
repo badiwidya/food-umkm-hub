@@ -1,7 +1,8 @@
+import os
 from enum import StrEnum
-from pathlib import Path
+from typing import Annotated
 
-from pydantic import computed_field
+from pydantic import AfterValidator, HttpUrl, computed_field
 from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -11,16 +12,9 @@ class Environment(StrEnum):
     PRODUCTION = "production"
 
 
-def _get_env_path() -> str:
-    env_path = Path(__file__).resolve().parent.parent / ".env"
-    if not env_path.exists():
-        raise FileNotFoundError(".env not found")
-    return str(env_path)
-
-
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=_get_env_path(),
+        env_file=os.getenv("ENV_FILE", ".env"),
         env_file_encoding="utf-8",
         extra="ignore",
     )
@@ -32,6 +26,8 @@ class Settings(BaseSettings):
     POSTGRES_HOST: str
     POSTGRES_PORT: int
     POSTGRES_DB: str
+
+    FRONTEND_URL: Annotated[HttpUrl, AfterValidator(lambda v: str(v).rstrip("/"))]
 
     @computed_field
     @property
