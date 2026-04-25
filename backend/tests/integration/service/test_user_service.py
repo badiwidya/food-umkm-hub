@@ -265,3 +265,42 @@ class TestStatusChange:
 
         deleted = await user_service.get_by_id(user.id)
         assert deleted is None
+
+        _, count = await user_service.list()
+        assert count == 0
+
+
+class TestList:
+    @pytest.mark.asyncio
+    async def test_list_success(
+        self, user_factory: UserFactory, user_service: UserService
+    ):
+        for i in range(10):
+            if i % 2 == 1:
+                await user_factory(
+                    email=f"user{i}@gmail.com",
+                    phone_number=f"+62111111111{i}",
+                    role=UserRole.UMKM,
+                )
+                continue
+
+            await user_factory(
+                email=f"user{i}@gmail.com",
+                phone_number=f"+62111111111{i}",
+                role=UserRole.ADMIN,
+            )
+
+        await user_factory(
+            email="sus@gmail.com",
+            phone_number="+629292929299",
+            status=UserStatus.SUSPENDED,
+        )
+
+        _, count_umkm = await user_service.list(role_filter=UserRole.UMKM)
+        assert count_umkm == 5
+
+        _, count_admin = await user_service.list(role_filter=UserRole.ADMIN)
+        assert count_admin == 5
+
+        _, count_suspended = await user_service.list(status_filter=UserStatus.SUSPENDED)
+        assert count_suspended == 1
