@@ -125,6 +125,10 @@ class User:
         self._touch()
 
     def change_phone_number(self, new_number: str) -> None:
+        if new_number.strip() == self.phone_number:
+            raise DomainException(
+                "Nomor telepon baru tidak boleh sama dengan nomor telepon saat ini."
+            )
         self.phone_number = new_number.strip()
         self.phone_verified_at = None
         self._touch()

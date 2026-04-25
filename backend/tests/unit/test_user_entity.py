@@ -120,6 +120,11 @@ def test_apply_pending_email(verified_user: User):
     assert verified_user.is_email_verified is True
 
 
+def test_request_email_change_same_as_current_raises(verified_user: User):
+    with pytest.raises(DomainException):
+        verified_user.request_email_change(verified_user.email)
+
+
 # Phone & password
 
 
@@ -130,6 +135,13 @@ def test_change_phone_resets_verification(user: User):
 
     assert user.phone_number == "089999999999"
     assert user.is_phone_verified is False
+
+
+def test_change_phone_number_same_as_current_raises(user: User):
+    user.mark_email_as_verified()
+
+    with pytest.raises(DomainException):
+        user.change_phone_number(user.phone_number)
 
 
 def test_change_password(user: User):

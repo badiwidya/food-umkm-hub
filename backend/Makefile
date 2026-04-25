@@ -4,7 +4,7 @@ RUN := $(UV) run
 HOST := 127.0.0.1
 PORT := 8000
 
-.PHONY: all run install check lint format migrate/create migrate/up test/integration
+.PHONY: all run install check lint format migrate/create migrate/up test/integration test/unit
 
 all:
 	@echo "no target specified"
@@ -34,3 +34,6 @@ test/integration:
 	@trap 'docker compose stop postgres_test' EXIT; \
 	export ENV_FILE=.env.test; \
 	$(RUN) pytest tests/integration
+
+test/unit:
+	$(RUN) pytest tests/unit
