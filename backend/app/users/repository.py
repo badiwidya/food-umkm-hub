@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import delete, func, select
+from sqlalchemy import delete, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.users.entity import User, VerificationToken
@@ -38,6 +38,18 @@ class UserRepository:
         model = await self._session.scalar(
             select(UserModel).where(
                 UserModel.phone_number == phone_number, UserModel.deleted_at.is_(None)
+            )
+        )
+
+        if model is None:
+            return None
+
+        return self._to_entity(model)
+
+    async def get_by_email_or_phone(self, email: str, phone_number: str) -> User | None:
+        model = await self._session.scalar(
+            select(UserModel).where(
+                or_(UserModel.email == email, UserModel.phone_number == phone_number)
             )
         )
 
