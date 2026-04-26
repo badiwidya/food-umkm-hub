@@ -7,3 +7,12 @@ class AppException(Exception):
 
 class DomainException(AppException):
     pass
+
+
+class AuthenticationException(AppException):
+    pass
+
+
+class NotAllowedException(AppException):
+    pass
+

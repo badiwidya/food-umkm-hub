@@ -29,6 +29,10 @@ class Settings(BaseSettings):
 
     FRONTEND_URL: Annotated[HttpUrl, AfterValidator(lambda v: str(v).rstrip("/"))]
 
+    JWT_SECRET: str
+    JWT_TTL_MINUTES: int
+    JWT_ALGORITHM: str = "HS256"
+
     @computed_field
     @property
     def DB_ECHO(self) -> bool:
