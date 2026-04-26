@@ -19,7 +19,7 @@ from app.users.schema import (
 )
 from app.users.service import UserService
 
-user_router = APIRouter(prefix="/users", tags=["users"])
+user_router = APIRouter(prefix="/users", tags=["Users"])
 
 UserServiceDep = Annotated[UserService, Depends(get_user_service)]
 CurrentUserDep = Annotated[User, Depends(get_current_user)]
@@ -89,7 +89,7 @@ async def delete_current_user(
 @user_router.post(
     "/me/email",
     summary="Meminta perubahan email pengguna yang sedang login.",
-    status_code=status.HTTP_202_ACCEPTED,
+    status_code=status.HTTP_204_NO_CONTENT,
 )
 async def request_email_change(
     user: CurrentUserDep,
@@ -107,9 +107,9 @@ async def request_email_change(
 
 
 @user_router.post(
-    "/me/email/resend-verification",
+    "/me/email/resend",
     summary="Mengirim ulang email verifikasi perubahan email.",
-    status_code=status.HTTP_202_ACCEPTED,
+    status_code=status.HTTP_204_NO_CONTENT,
 )
 async def resend_email_change_verification(
     user: CurrentUserDep,
@@ -145,7 +145,7 @@ async def change_phone_number(
 
 
 @user_router.post(
-    "/me/phone/resend-verification",
+    "/me/phone/resend",
     summary="Mengirim ulang kode OTP verifikasi nomor telepon.",
     status_code=status.HTTP_204_NO_CONTENT,
 )
