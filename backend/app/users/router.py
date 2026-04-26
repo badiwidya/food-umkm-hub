@@ -16,6 +16,7 @@ from app.users.schema import (
     UpdateProfileRequest,
     UserListResponse,
     UserResponse,
+    VerifyPhoneRequest,
 )
 from app.users.service import UserService
 
@@ -142,6 +143,19 @@ async def change_phone_number(
         str(payload.phone_number),
         otp,
     )
+
+
+@user_router.post(
+    "/me/phone/verify",
+    summary="Verifikasi nomor telepon.",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def verify_phone(
+    user: CurrentUserDep,
+    user_service: UserServiceDep,
+    payload: VerifyPhoneRequest,
+):
+    await user_service.verify_phone(user, payload.otp)
 
 
 @user_router.post(

@@ -57,3 +57,7 @@ class NumberChangeRequest(BaseModel):
 class ChangePasswordRequest(BaseModel):
     old_password: Annotated[str, Field(min_length=8)]
     new_password: Annotated[str, Field(min_length=8)]
+
+
+class VerifyPhoneRequest(BaseModel):
+    otp: str

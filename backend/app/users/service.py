@@ -65,6 +65,20 @@ class UserService:
 
         return verification_link
 
+    async def verify_phone(self, user: User, raw_otp: str) -> None:
+        token = await self._token_repo.get_by_user_and_type(
+            user.id, TokenType.PHONE_OTP
+        )
+        if token is None:
+            raise DomainException("Tidak ada kode OTP yang aktif.", "otp_not_found")
+
+        token.verify(raw_otp, TokenType.PHONE_OTP)
+
+        user.mark_phone_as_verified()
+
+        await self._user_repo.update(user)
+        await self._token_repo.delete_by_id(token.id)
+
     async def change_phone_number(self, user: User, new_number: str) -> str:
         existing = await self._user_repo.get_by_phone_number(new_number.strip())
         if existing is not None and existing.id != user.id:
