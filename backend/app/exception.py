@@ -16,3 +16,6 @@ class AuthenticationException(AppException):
 class NotAllowedException(AppException):
     pass
 
+
+class NotFoundException(AppException):
+    pass
