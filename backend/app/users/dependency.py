@@ -27,10 +27,7 @@ def get_user_service(
     user_repo: Annotated[UserRepository, Depends(get_user_repo)],
     token_repo: Annotated[VerificationTokenRepository, Depends(get_token_repo)],
 ) -> UserService:
-    return UserService(
-        user_repo=user_repo,
-        token_repo=token_repo,
-    )
+    return UserService(user_repo=user_repo, token_repo=token_repo)
 
 
 async def user_target_from_path(

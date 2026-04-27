@@ -61,12 +61,7 @@ async def register_umkm(
     )
 
     link = await auth_service.register_merchant(dto)
-    background_tasks.add_task(
-        send_email,
-        payload.email,
-        "Aktivasi Akun",
-        link,
-    )
+    background_tasks.add_task(send_email, payload.email, "Aktivasi Akun", link)
 
 
 @auth_router.post(
@@ -74,10 +69,7 @@ async def register_umkm(
     summary="Login dan mendapatkan access token.",
     status_code=status.HTTP_200_OK,
 )
-async def login(
-    payload: LoginRequest,
-    auth_service: AuthServiceDep,
-):
+async def login(payload: LoginRequest, auth_service: AuthServiceDep):
     token = await auth_service.login(payload.email, payload.password)
 
     return LoginResponse(access_token=token)
@@ -88,10 +80,7 @@ async def login(
     summary="Verifikasi email setelah pendaftaran.",
     status_code=status.HTTP_204_NO_CONTENT,
 )
-async def verify_email(
-    payload: VerifyTokenRequest,
-    auth_service: AuthServiceDep,
-):
+async def verify_email(payload: VerifyTokenRequest, auth_service: AuthServiceDep):
     await auth_service.verify_email(payload.token_id, payload.token)
 
 
@@ -117,8 +106,7 @@ async def resend_email_verification(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def verify_email_change(
-    payload: VerifyTokenRequest,
-    auth_service: AuthServiceDep,
+    payload: VerifyTokenRequest, auth_service: AuthServiceDep
 ):
     """Melakukan permintaan perubahan email ada di endpoint `POST /users/me/email`."""
     await auth_service.verify_email_change(payload.token_id, payload.token)
@@ -148,8 +136,7 @@ async def request_reset_password(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def confirm_reset_password(
-    payload: ConfirmResetPasswordRequest,
-    auth_service: AuthServiceDep,
+    payload: ConfirmResetPasswordRequest, auth_service: AuthServiceDep
 ):
     await auth_service.confirm_reset_password(
         payload.token_id, payload.token, payload.new_password

@@ -34,9 +34,7 @@ def register_exception_handlers(app: FastAPI) -> None:
         )
         return JSONResponse(
             status_code=500,
-            content={
-                "message": "Terjadi kesalahan pada server.",
-            },
+            content={"message": "Terjadi kesalahan pada server."},
         )
 
     @app.exception_handler(RequestValidationError)

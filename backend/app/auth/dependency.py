@@ -49,7 +49,4 @@ async def get_auth_service(
     user_repo: Annotated[UserRepository, Depends(get_user_repo)],
     token_repo: Annotated[VerificationTokenRepository, Depends(get_token_repo)],
 ) -> AuthService:
-    return AuthService(
-        user_repo=user_repo,
-        token_repo=token_repo,
-    )
+    return AuthService(user_repo=user_repo, token_repo=token_repo)

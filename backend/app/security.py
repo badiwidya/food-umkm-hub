@@ -38,10 +38,7 @@ def verify_access_token(token: str) -> JWTPayload:
         if "sub" not in payload or "role" not in payload:
             raise jwt.InvalidTokenError
 
-        return JWTPayload(
-            sub=UUID(payload["sub"]),
-            role=payload["role"],
-        )
+        return JWTPayload(sub=UUID(payload["sub"]), role=payload["role"])
     except jwt.ExpiredSignatureError as e:
         raise AuthenticationException("Sesi telah berakhir.", "expired_token") from e
     except jwt.InvalidTokenError as e:
