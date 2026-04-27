@@ -160,7 +160,10 @@ async def change_password(
 
 
 @user_router.delete(
-    "/{id}", summary="Menghapus akun pengguna tertentu.", dependencies=[EnsureAdminDep]
+    "/{id}",
+    summary="Menghapus akun pengguna tertentu.",
+    dependencies=[EnsureAdminDep],
+    status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_target_user(target: UserTargetDep, user_service: UserServiceDep):
     """Menonaktifkan akun pengguna berdasarkan ID secara permanen.
@@ -173,6 +176,7 @@ async def delete_target_user(target: UserTargetDep, user_service: UserServiceDep
     "/{id}/suspend",
     summary="Menangguhkan akun pengguna tertentu.",
     dependencies=[EnsureAdminDep],
+    status_code=status.HTTP_204_NO_CONTENT,
 )
 async def suspend_target_user(target: UserTargetDep, user_service: UserServiceDep):
     """Menangguhkan akun pengguna berdasarkan ID sehingga tidak dapat login.
@@ -185,6 +189,7 @@ async def suspend_target_user(target: UserTargetDep, user_service: UserServiceDe
     "/{id}/unsuspend",
     summary="Memulihkan akun pengguna yang ditangguhkan.",
     dependencies=[EnsureAdminDep],
+    status_code=status.HTTP_204_NO_CONTENT,
 )
 async def unsuspend_target_user(target: UserTargetDep, user_service: UserServiceDep):
     """Memulihkan akses akun pengguna berdasarkan ID yang sebelumnya ditangguhkan.
