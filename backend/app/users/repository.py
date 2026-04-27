@@ -49,7 +49,8 @@ class UserRepository:
     async def get_by_email_or_phone(self, email: str, phone_number: str) -> User | None:
         model = await self._session.scalar(
             select(UserModel).where(
-                or_(UserModel.email == email, UserModel.phone_number == phone_number)
+                or_(UserModel.email == email, UserModel.phone_number == phone_number),
+                UserModel.deleted_at.is_(None),
             )
         )
 
@@ -170,7 +171,7 @@ class VerificationTokenRepository:
 
     async def delete_by_user_and_type(
         self, user_id: UUID, token_type: TokenType
-    ) -> VerificationToken | None:
+    ) -> None:
         await self._session.execute(
             delete(VerificationTokenModel)
             .where(VerificationTokenModel.user_id == user_id)

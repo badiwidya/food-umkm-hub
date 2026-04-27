@@ -48,4 +48,4 @@ class ResetPasswordRequest(BaseModel):
 class ConfirmResetPasswordRequest(BaseModel):
     token_id: UUID
     token: str
-    new_password: str
+    new_password: Annotated[str, Field(min_length=8)]
