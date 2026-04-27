@@ -39,7 +39,7 @@ async def register_mahasiswa(
         password=payload.password,
     )
 
-    link = await auth_service.register_student(dto)
+    link = await auth_service.register_mahasiswa(dto)
     background_tasks.add_task(send_email, payload.email, "Aktivasi Akun", link)
 
 
@@ -60,7 +60,7 @@ async def register_umkm(
         password=payload.password,
     )
 
-    link = await auth_service.register_merchant(dto)
+    link = await auth_service.register_umkm(dto)
     background_tasks.add_task(send_email, payload.email, "Aktivasi Akun", link)
 
 

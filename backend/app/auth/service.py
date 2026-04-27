@@ -21,7 +21,7 @@ class AuthService:
         self._user_repo = user_repo
         self._token_repo = token_repo
 
-    async def register_student(self, dto: RegisterMahasiswaDTO) -> str:
+    async def register_mahasiswa(self, dto: RegisterMahasiswaDTO) -> str:
         await self._ensure_email_and_phone_not_taken(dto.email, dto.phone_number)
 
         user = User.register(
@@ -37,7 +37,7 @@ class AuthService:
 
         return await self._build_email_verification_link(user)
 
-    async def register_merchant(self, dto: RegisterUMKMDTO) -> str:
+    async def register_umkm(self, dto: RegisterUMKMDTO) -> str:
         await self._ensure_email_and_phone_not_taken(dto.email, dto.phone_number)
 
         user = User.register(
