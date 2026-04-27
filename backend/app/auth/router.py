@@ -31,7 +31,7 @@ async def register_mahasiswa(
     payload: RegisterMahasiswaRequest,
     auth_service: AuthServiceDep,
     background_tasks: BackgroundTasks,
-):
+) -> None:
     dto = RegisterMahasiswaDTO(
         full_name=payload.full_name,
         email=payload.email,
@@ -52,7 +52,7 @@ async def register_umkm(
     payload: RegisterUMKMRequest,
     auth_service: AuthServiceDep,
     background_tasks: BackgroundTasks,
-):
+) -> None:
     dto = RegisterUMKMDTO(
         full_name=payload.full_name,
         email=payload.email,
@@ -69,7 +69,7 @@ async def register_umkm(
     summary="Login dan mendapatkan access token.",
     status_code=status.HTTP_200_OK,
 )
-async def login(payload: LoginRequest, auth_service: AuthServiceDep):
+async def login(payload: LoginRequest, auth_service: AuthServiceDep) -> LoginResponse:
     token = await auth_service.login(payload.email, payload.password)
 
     return LoginResponse(access_token=token)
@@ -80,7 +80,9 @@ async def login(payload: LoginRequest, auth_service: AuthServiceDep):
     summary="Verifikasi email setelah pendaftaran.",
     status_code=status.HTTP_204_NO_CONTENT,
 )
-async def verify_email(payload: VerifyTokenRequest, auth_service: AuthServiceDep):
+async def verify_email(
+    payload: VerifyTokenRequest, auth_service: AuthServiceDep
+) -> None:
     await auth_service.verify_email(payload.token_id, payload.token)
 
 
@@ -93,7 +95,7 @@ async def resend_email_verification(
     payload: ResendEmailVerificationRequest,
     auth_service: AuthServiceDep,
     background_tasks: BackgroundTasks,
-):
+) -> None:
     """Selalu mengembalikan 204 meski email tidak terdaftar atau sudah terverifikasi"""
     link = await auth_service.issue_email_verification_token(payload.email)
     if link:
@@ -107,7 +109,7 @@ async def resend_email_verification(
 )
 async def verify_email_change(
     payload: VerifyTokenRequest, auth_service: AuthServiceDep
-):
+) -> None:
     """Melakukan permintaan perubahan email ada di endpoint `POST /users/me/email`."""
     await auth_service.verify_email_change(payload.token_id, payload.token)
 
@@ -121,7 +123,7 @@ async def request_reset_password(
     payload: ResetPasswordRequest,
     auth_service: AuthServiceDep,
     background_tasks: BackgroundTasks,
-):
+) -> None:
     """Selalu mengembalikan 204 meski email tidak terdaftar."""
     link = await auth_service.request_reset_password(payload.email)
     if link:
@@ -137,7 +139,7 @@ async def request_reset_password(
 )
 async def confirm_reset_password(
     payload: ConfirmResetPasswordRequest, auth_service: AuthServiceDep
-):
+) -> None:
     await auth_service.confirm_reset_password(
         payload.token_id, payload.token, payload.new_password
     )

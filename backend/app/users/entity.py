@@ -91,7 +91,7 @@ class User:
         if has_changed:
             self._touch()
 
-    def mark_email_as_verified(self):
+    def mark_email_as_verified(self) -> None:
         self.email_verified_at = datetime.now(UTC)
         if self.status == UserStatus.INACTIVE:
             self.status = UserStatus.ACTIVE
@@ -153,7 +153,7 @@ class User:
         # Apapun yang terjadi, akun admin tidak boleh disuspend (baik oleh diri sendiri
         # ataupun admin lain).
         if self.role == UserRole.ADMIN:
-            raise DomainException("Akun Administrator tidak dapat dihapus.")
+            raise DomainException("Akun Administrator tidak dapat disuspend.")
 
         if self.is_suspended:
             return

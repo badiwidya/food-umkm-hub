@@ -17,7 +17,7 @@ class AuthService:
         # TODO: mahasiswa, dan umkm repo
         # mahasiswa_repo: MahasiswaRepository
         # umkm_repo: UMKMRepository
-    ):
+    ) -> None:
         self._user_repo = user_repo
         self._token_repo = token_repo
 

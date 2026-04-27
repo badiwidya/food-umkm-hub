@@ -71,7 +71,9 @@ async def update_profile(
     summary="Menghapus akun pengguna yang sedang login.",
     status_code=status.HTTP_204_NO_CONTENT,
 )
-async def delete_current_user(user: CurrentUserDep, user_service: UserServiceDep):
+async def delete_current_user(
+    user: CurrentUserDep, user_service: UserServiceDep
+) -> None:
     await user_service.delete(user)
 
 
@@ -85,7 +87,7 @@ async def request_email_change(
     user_service: UserServiceDep,
     background_tasks: BackgroundTasks,
     payload: EmailChangeRequest,
-):
+) -> None:
     url = await user_service.request_email_change(user, payload.email)
     background_tasks.add_task(
         send_email, payload.email, "Verifikasi Perubahan Email", url
@@ -101,7 +103,7 @@ async def resend_email_change_verification(
     user: CurrentUserDep,
     user_service: UserServiceDep,
     background_tasks: BackgroundTasks,
-):
+) -> None:
     url = await user_service.issue_email_change_verification_token(user)
     background_tasks.add_task(
         send_email, str(user.pending_email), "Verifikasi Perubahan Email", url
@@ -118,7 +120,7 @@ async def change_phone_number(
     user_service: UserServiceDep,
     background_tasks: BackgroundTasks,
     payload: NumberChangeRequest,
-):
+) -> None:
     otp = await user_service.change_phone_number(user, str(payload.phone_number))
     background_tasks.add_task(send_otp, str(payload.phone_number), otp)
 
@@ -130,7 +132,7 @@ async def change_phone_number(
 )
 async def verify_phone(
     user: CurrentUserDep, user_service: UserServiceDep, payload: VerifyPhoneRequest
-):
+) -> None:
     await user_service.verify_phone(user, payload.otp)
 
 
@@ -143,7 +145,7 @@ async def resend_phone_otp(
     user: CurrentUserDep,
     user_service: UserServiceDep,
     background_tasks: BackgroundTasks,
-):
+) -> None:
     otp = await user_service.issue_phone_verification_otp(user)
     background_tasks.add_task(send_otp, user.phone_number, otp)
 
@@ -155,7 +157,7 @@ async def resend_phone_otp(
 )
 async def change_password(
     user: CurrentUserDep, user_service: UserServiceDep, payload: ChangePasswordRequest
-):
+) -> None:
     await user_service.change_password(user, payload.old_password, payload.new_password)
 
 
@@ -165,7 +167,9 @@ async def change_password(
     dependencies=[EnsureAdminDep],
     status_code=status.HTTP_204_NO_CONTENT,
 )
-async def delete_target_user(target: UserTargetDep, user_service: UserServiceDep):
+async def delete_target_user(
+    target: UserTargetDep, user_service: UserServiceDep
+) -> None:
     """Menonaktifkan akun pengguna berdasarkan ID secara permanen.
 
     Hanya dapat diakses oleh **admin**."""
@@ -178,7 +182,9 @@ async def delete_target_user(target: UserTargetDep, user_service: UserServiceDep
     dependencies=[EnsureAdminDep],
     status_code=status.HTTP_204_NO_CONTENT,
 )
-async def suspend_target_user(target: UserTargetDep, user_service: UserServiceDep):
+async def suspend_target_user(
+    target: UserTargetDep, user_service: UserServiceDep
+) -> None:
     """Menangguhkan akun pengguna berdasarkan ID sehingga tidak dapat login.
 
     Hanya dapat diakses oleh **admin**."""
@@ -191,7 +197,9 @@ async def suspend_target_user(target: UserTargetDep, user_service: UserServiceDe
     dependencies=[EnsureAdminDep],
     status_code=status.HTTP_204_NO_CONTENT,
 )
-async def unsuspend_target_user(target: UserTargetDep, user_service: UserServiceDep):
+async def unsuspend_target_user(
+    target: UserTargetDep, user_service: UserServiceDep
+) -> None:
     """Memulihkan akses akun pengguna berdasarkan ID yang sebelumnya ditangguhkan.
 
     Hanya dapat diakses oleh **admin**."""
