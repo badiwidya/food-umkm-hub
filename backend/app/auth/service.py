@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from app.auth.dto import RegisterMahasiswaDTO, RegisterUMKMDTO
+from app.auth.dto import RegisterStudentDTO, RegisterUMKMDTO
 from app.config import settings
 from app.exception import AuthenticationException, DomainException, NotAllowedException
 from app.security import create_access_token, hash_password, verify_password
@@ -21,7 +21,7 @@ class AuthService:
         self._user_repo = user_repo
         self._token_repo = token_repo
 
-    async def register_mahasiswa(self, dto: RegisterMahasiswaDTO) -> str:
+    async def register_student(self, dto: RegisterStudentDTO) -> str:
         await self._ensure_email_and_phone_not_taken(dto.email, dto.phone_number)
 
         user = User.register(
@@ -29,7 +29,7 @@ class AuthService:
             email=dto.email,
             phone_number=dto.phone_number,
             password_hash=hash_password(dto.password),
-            role=UserRole.MAHASISWA,
+            role=UserRole.STUDENT,
         )
 
         # TODO: Create mahasiswa profile
@@ -45,7 +45,7 @@ class AuthService:
             email=dto.email,
             phone_number=dto.phone_number,
             password_hash=hash_password(dto.password),
-            role=UserRole.UMKM,
+            role=UserRole.SELLER,
         )
 
         # TODO: Create UMKM

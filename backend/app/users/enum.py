@@ -3,8 +3,8 @@ from enum import StrEnum
 
 class UserRole(StrEnum):
     ADMIN = "admin"
-    MAHASISWA = "mahasiswa"
-    UMKM = "umkm"
+    STUDENT = "student"
+    SELLER = "seller"
 
 
 class UserStatus(StrEnum):

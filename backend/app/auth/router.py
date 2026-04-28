@@ -3,12 +3,12 @@ from typing import Annotated
 from fastapi import APIRouter, BackgroundTasks, Depends, status
 
 from app.auth.dependency import get_auth_service
-from app.auth.dto import RegisterMahasiswaDTO, RegisterUMKMDTO
+from app.auth.dto import RegisterStudentDTO, RegisterUMKMDTO
 from app.auth.schema import (
     ConfirmResetPasswordRequest,
     LoginRequest,
     LoginResponse,
-    RegisterMahasiswaRequest,
+    RegisterStudentRequest,
     RegisterUMKMRequest,
     ResendEmailVerificationRequest,
     ResetPasswordRequest,
@@ -23,23 +23,23 @@ AuthServiceDep = Annotated[AuthService, Depends(get_auth_service)]
 
 
 @auth_router.post(
-    "/mahasiswa/register",
+    "/student/register",
     summary="Pendaftaran akun mahasiswa.",
     status_code=status.HTTP_201_CREATED,
 )
-async def register_mahasiswa(
-    payload: RegisterMahasiswaRequest,
+async def register_student(
+    payload: RegisterStudentRequest,
     auth_service: AuthServiceDep,
     background_tasks: BackgroundTasks,
 ) -> None:
-    dto = RegisterMahasiswaDTO(
+    dto = RegisterStudentDTO(
         full_name=payload.full_name,
         email=payload.email,
         phone_number=str(payload.phone_number),
         password=payload.password,
     )
 
-    link = await auth_service.register_mahasiswa(dto)
+    link = await auth_service.register_student(dto)
     background_tasks.add_task(send_email, payload.email, "Aktivasi Akun", link)
 
 
