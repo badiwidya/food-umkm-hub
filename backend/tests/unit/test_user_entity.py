@@ -14,7 +14,7 @@ def user() -> User:
         email="  BUDI@EXAMPLE.COM  ",
         phone_number="  081234567890  ",
         password_hash="hashed_password",
-        role=UserRole.MAHASISWA,
+        role=UserRole.STUDENT,
     )
 
 

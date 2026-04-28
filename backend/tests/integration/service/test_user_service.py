@@ -37,7 +37,7 @@ def user_factory(db_session: AsyncSession) -> UserFactory:
         email: str = "makise@amadeus.com",
         phone_number: str = "+6288887776666",
         password: str = "supersecret",
-        role: UserRole = UserRole.MAHASISWA,
+        role: UserRole = UserRole.STUDENT,
         **kwargs,
     ) -> User:
         user = User.register(
@@ -280,7 +280,7 @@ class TestList:
                 await user_factory(
                     email=f"user{i}@gmail.com",
                     phone_number=f"+62111111111{i}",
-                    role=UserRole.UMKM,
+                    role=UserRole.SELLER,
                 )
                 continue
 
@@ -296,7 +296,7 @@ class TestList:
             status=UserStatus.SUSPENDED,
         )
 
-        _, count_umkm = await user_service.list(role_filter=UserRole.UMKM)
+        _, count_umkm = await user_service.list(role_filter=UserRole.SELLER)
         assert count_umkm == 5
 
         _, count_admin = await user_service.list(role_filter=UserRole.ADMIN)

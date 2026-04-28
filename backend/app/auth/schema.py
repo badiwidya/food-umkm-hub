@@ -14,7 +14,7 @@ class RegisterBaseRequest(BaseModel):
 
 
 # TODO
-class RegisterMahasiswaRequest(RegisterBaseRequest):
+class RegisterStudentRequest(RegisterBaseRequest):
     pass
 
 
