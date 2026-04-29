@@ -37,6 +37,9 @@ async def register_student(
         email=payload.email,
         phone_number=str(payload.phone_number),
         password=payload.password,
+        nim=payload.nim,
+        faculty=payload.faculty,
+        department=payload.department,
     )
 
     link = await auth_service.register_student(dto)

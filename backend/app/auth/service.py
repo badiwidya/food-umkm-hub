@@ -4,6 +4,8 @@ from app.auth.dto import RegisterStudentDTO, RegisterUMKMDTO
 from app.config import settings
 from app.exception import AuthenticationException, DomainException, NotAllowedException
 from app.security import create_access_token, hash_password, verify_password
+from app.students.entity import Student
+from app.students.repository import StudentRepository
 from app.users.entity import User, VerificationToken
 from app.users.enum import TokenType, UserRole
 from app.users.repository import UserRepository, VerificationTokenRepository
@@ -14,12 +16,14 @@ class AuthService:
         self,
         user_repo: UserRepository,
         token_repo: VerificationTokenRepository,
+        student_repo: StudentRepository,
         # TODO: mahasiswa, dan umkm repo
         # mahasiswa_repo: MahasiswaRepository
         # umkm_repo: UMKMRepository
     ) -> None:
         self._user_repo = user_repo
         self._token_repo = token_repo
+        self._student_repo = student_repo
 
     async def register_student(self, dto: RegisterStudentDTO) -> str:
         await self._ensure_email_and_phone_not_taken(dto.email, dto.phone_number)
@@ -32,8 +36,12 @@ class AuthService:
             role=UserRole.STUDENT,
         )
 
-        # TODO: Create mahasiswa profile
+        student = Student.create(
+            user=user, nim=dto.nim, faculty=dto.faculty, department=dto.department
+        )
+
         await self._user_repo.save(user)
+        await self._student_repo.save(student)
 
         return await self._build_email_verification_link(user)
 
