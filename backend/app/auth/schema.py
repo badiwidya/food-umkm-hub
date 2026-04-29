@@ -13,9 +13,10 @@ class RegisterBaseRequest(BaseModel):
     password: Annotated[str, Field(min_length=8)]
 
 
-# TODO
 class RegisterStudentRequest(RegisterBaseRequest):
-    pass
+    nim: str
+    faculty: str
+    department: str
 
 
 # TODO
