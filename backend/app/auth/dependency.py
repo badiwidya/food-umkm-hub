@@ -6,6 +6,8 @@ from fastapi.security import OAuth2PasswordBearer
 from app.auth.service import AuthService
 from app.exception import AuthenticationException, NotAllowedException
 from app.security import JWTPayload, verify_access_token
+from app.stores.dependency import StoreServiceDep
+from app.stores.entity import Store
 from app.students.dependency import StudentRepoDep, StudentServiceDep
 from app.students.entity import Student
 from app.users.dependency import TokenRepoDep, UserRepoDep, UserServiceDep
@@ -77,6 +79,21 @@ async def get_current_student(
 
 
 CurrentStudentDep = Annotated[Student, Depends(get_current_student)]
+
+
+async def get_current_store(
+    payload: JWTPayloadDep, store_service: StoreServiceDep
+) -> Store:
+    if UserRole(payload.role) != UserRole.SELLER:
+        raise NotAllowedException("Aksi dilarang.")
+    store_with_owner = await store_service.get_by_owner_id(payload.sub)
+    if store_with_owner is None:
+        raise AuthenticationException("Autentikasi gagal.")
+    _ensure_user_active(store_with_owner.owner)
+    return store_with_owner.store
+
+
+CurrentStoreDep = Annotated[Store, Depends(get_current_store)]
 
 
 def _ensure_user_active(user: User):
