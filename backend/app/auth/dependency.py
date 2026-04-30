@@ -6,23 +6,19 @@ from fastapi.security import OAuth2PasswordBearer
 from app.auth.service import AuthService
 from app.exception import AuthenticationException, NotAllowedException
 from app.security import JWTPayload, verify_access_token
-from app.students.dependency import get_student_repo, get_student_service
+from app.students.dependency import StudentRepoDep, StudentServiceDep
 from app.students.entity import Student
-from app.students.repository import StudentRepository
-from app.students.service import StudentService
-from app.users.dependency import get_token_repo, get_user_repo, get_user_service
+from app.users.dependency import TokenRepoDep, UserRepoDep, UserServiceDep
 from app.users.entity import User
 from app.users.enum import UserRole
-from app.users.repository import UserRepository, VerificationTokenRepository
-from app.users.service import UserService
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login", auto_error=False)
 
 
 async def get_auth_service(
-    user_repo: Annotated[UserRepository, Depends(get_user_repo)],
-    token_repo: Annotated[VerificationTokenRepository, Depends(get_token_repo)],
-    student_repo: Annotated[StudentRepository, Depends(get_student_repo)],
+    user_repo: UserRepoDep,
+    token_repo: TokenRepoDep,
+    student_repo: StudentRepoDep,
 ) -> AuthService:
     return AuthService(
         user_repo=user_repo, token_repo=token_repo, student_repo=student_repo
@@ -55,7 +51,7 @@ EnsureAdminDep = Depends(ensure_admin)
 
 async def get_current_user(
     payload: JWTPayloadDep,
-    user_service: Annotated[UserService, Depends(get_user_service)],
+    user_service: UserServiceDep,
 ) -> User:
     user = await user_service.get_by_id(payload.sub)
     if user is None:
@@ -69,7 +65,7 @@ CurrentUserDep = Annotated[User, Depends(get_current_user)]
 
 async def get_current_student(
     payload: JWTPayloadDep,
-    student_service: Annotated[StudentService, Depends(get_student_service)],
+    student_service: StudentServiceDep,
 ) -> Student:
     if UserRole(payload.role) != UserRole.STUDENT:
         raise NotAllowedException("Aksi dilarang.")
