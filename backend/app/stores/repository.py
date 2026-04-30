@@ -3,7 +3,7 @@ from uuid import UUID
 
 from sqlalchemy import Select, case, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import contains_eager, joinedload
+from sqlalchemy.orm import contains_eager
 from sqlalchemy.sql import func
 from sqlalchemy.sql.operators import or_
 
@@ -34,7 +34,8 @@ class StoreRepository:
     async def get_by_id_with_owner(self, store_id: UUID) -> StoreWithOwner | None:
         model = await self._session.scalar(
             select(StoreModel)
-            .options(joinedload(StoreModel.owner))
+            .join(StoreModel.owner)
+            .options(contains_eager(StoreModel.owner))
             .where(StoreModel.id == store_id, UserModel.deleted_at.is_(None))
         )
 
@@ -48,7 +49,8 @@ class StoreRepository:
     async def get_by_owner_id(self, owner_id: UUID) -> StoreWithOwner | None:
         model = await self._session.scalar(
             select(StoreModel)
-            .options(joinedload(StoreModel.owner))
+            .join(StoreModel.owner)
+            .options(contains_eager(StoreModel.owner))
             .where(StoreModel.owner_id == owner_id, UserModel.deleted_at.is_(None))
         )
 
