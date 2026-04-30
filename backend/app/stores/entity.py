@@ -37,8 +37,8 @@ class Store:
         return cls(
             name=name.strip(),
             owner_id=owner_id,
-            description=description,
-            address=address,
+            description=description.strip(),
+            address=address.strip(),
             photo_url=photo_url,
             qris_image_url=qris_image_url,
             maps_link=maps_link,
@@ -56,23 +56,23 @@ class Store:
         has_changed = True
 
         if not isinstance(name, TUnset):
-            if not name:
+            if not name.strip():
                 raise DomainException("Nama tidak boleh kosong.")
             if name.strip() != self.name:
                 self.name = name.strip()
                 has_changed = True
 
         if not isinstance(description, TUnset):
-            if not description:
+            if not description.strip():
                 raise DomainException("Deskripsi tidak boleh kosong.")
-            if description != self.description:
+            if description.strip() != self.description:
                 self.description = description
                 has_changed = True
 
         if not isinstance(address, TUnset):
-            if not address:
+            if not address.strip():
                 raise DomainException("Alamat tidak boleh kosong.")
-            if address != self.address:
+            if address.strip() != self.address:
                 self.address = address
                 has_changed = True
 
