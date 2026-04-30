@@ -1,8 +1,6 @@
-from typing import Annotated
+from fastapi import APIRouter, BackgroundTasks, status
 
-from fastapi import APIRouter, BackgroundTasks, Depends, status
-
-from app.auth.dependency import get_auth_service
+from app.auth.dependency import AuthServiceDep
 from app.auth.dto import RegisterStudentDTO, RegisterUMKMDTO
 from app.auth.schema import (
     ConfirmResetPasswordRequest,
@@ -14,12 +12,9 @@ from app.auth.schema import (
     ResetPasswordRequest,
     VerifyTokenRequest,
 )
-from app.auth.service import AuthService
 from app.notifications.email import send_email
 
 auth_router = APIRouter(prefix="/auth", tags=["Authentication"])
-
-AuthServiceDep = Annotated[AuthService, Depends(get_auth_service)]
 
 
 @auth_router.post(

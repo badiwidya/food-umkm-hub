@@ -16,6 +16,8 @@ from app.users.enum import UserRole
 from app.users.repository import UserRepository, VerificationTokenRepository
 from app.users.service import UserService
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login", auto_error=False)
+
 
 async def get_auth_service(
     user_repo: Annotated[UserRepository, Depends(get_user_repo)],
@@ -27,7 +29,7 @@ async def get_auth_service(
     )
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login", auto_error=False)
+AuthServiceDep = Annotated[AuthService, Depends(get_auth_service)]
 
 
 def get_token_payload(
@@ -48,6 +50,9 @@ def ensure_admin(payload: JWTPayloadDep) -> None:
         raise NotAllowedException("Aksi dilarang.")
 
 
+EnsureAdminDep = Depends(ensure_admin)
+
+
 async def get_current_user(
     payload: JWTPayloadDep,
     user_service: Annotated[UserService, Depends(get_user_service)],
@@ -57,6 +62,9 @@ async def get_current_user(
         raise AuthenticationException("Autentikasi gagal.")
     _ensure_user_active(user)
     return user
+
+
+CurrentUserDep = Annotated[User, Depends(get_current_user)]
 
 
 async def get_current_student(
@@ -70,6 +78,9 @@ async def get_current_student(
         raise AuthenticationException("Autentikasi gagal.")
     _ensure_user_active(student.user)
     return student
+
+
+CurrentStudentDep = Annotated[Student, Depends(get_current_student)]
 
 
 def _ensure_user_active(user: User):
