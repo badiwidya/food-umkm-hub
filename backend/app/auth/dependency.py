@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordBearer
 from app.auth.service import AuthService
 from app.exception import AuthenticationException, NotAllowedException
 from app.security import JWTPayload, verify_access_token
-from app.stores.dependency import StoreServiceDep
+from app.stores.dependency import StoreRepoDep, StoreServiceDep
 from app.stores.entity import Store
 from app.students.dependency import StudentRepoDep, StudentServiceDep
 from app.students.entity import Student
@@ -21,9 +21,13 @@ async def get_auth_service(
     user_repo: UserRepoDep,
     token_repo: TokenRepoDep,
     student_repo: StudentRepoDep,
+    store_repo: StoreRepoDep,
 ) -> AuthService:
     return AuthService(
-        user_repo=user_repo, token_repo=token_repo, student_repo=student_repo
+        user_repo=user_repo,
+        token_repo=token_repo,
+        student_repo=student_repo,
+        store_repo=store_repo,
     )
 
 

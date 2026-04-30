@@ -1,13 +1,13 @@
 from fastapi import APIRouter, BackgroundTasks, status
 
 from app.auth.dependency import AuthServiceDep
-from app.auth.dto import RegisterStudentDTO, RegisterUMKMDTO
+from app.auth.dto import RegisterSellerDTO, RegisterStoreDTO, RegisterStudentDTO
 from app.auth.schema import (
     ConfirmResetPasswordRequest,
     LoginRequest,
     LoginResponse,
+    RegisterSellerRequest,
     RegisterStudentRequest,
-    RegisterUMKMRequest,
     ResendEmailVerificationRequest,
     ResetPasswordRequest,
     VerifyTokenRequest,
@@ -42,23 +42,24 @@ async def register_student(
 
 
 @auth_router.post(
-    "/umkm/register",
-    summary="Pendaftaran akun UMKM.",
+    "/seller/register",
+    summary="Pendaftaran akun penjual beserta pembuatan toko.",
     status_code=status.HTTP_201_CREATED,
 )
 async def register_umkm(
-    payload: RegisterUMKMRequest,
+    payload: RegisterSellerRequest,
     auth_service: AuthServiceDep,
     background_tasks: BackgroundTasks,
 ) -> None:
-    dto = RegisterUMKMDTO(
+    dto = RegisterSellerDTO(
         full_name=payload.full_name,
         email=payload.email,
         phone_number=str(payload.phone_number),
         password=payload.password,
+        store=RegisterStoreDTO(**payload.store.model_dump()),
     )
 
-    link = await auth_service.register_umkm(dto)
+    link = await auth_service.register_seller(dto)
     background_tasks.add_task(send_email, payload.email, "Aktivasi Akun", link)
 
 

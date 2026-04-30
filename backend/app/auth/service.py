@@ -1,9 +1,11 @@
 from uuid import UUID
 
-from app.auth.dto import RegisterStudentDTO, RegisterUMKMDTO
+from app.auth.dto import RegisterSellerDTO, RegisterStudentDTO
 from app.config import settings
 from app.exception import AuthenticationException, DomainException, NotAllowedException
 from app.security import create_access_token, hash_password, verify_password
+from app.stores.entity import Store
+from app.stores.repository import StoreRepository
 from app.students.entity import Student
 from app.students.repository import StudentRepository
 from app.users.entity import User, VerificationToken
@@ -17,13 +19,12 @@ class AuthService:
         user_repo: UserRepository,
         token_repo: VerificationTokenRepository,
         student_repo: StudentRepository,
-        # TODO: mahasiswa, dan umkm repo
-        # mahasiswa_repo: MahasiswaRepository
-        # umkm_repo: UMKMRepository
+        store_repo: StoreRepository,
     ) -> None:
         self._user_repo = user_repo
         self._token_repo = token_repo
         self._student_repo = student_repo
+        self._store_repo = store_repo
 
     async def register_student(self, dto: RegisterStudentDTO) -> str:
         await self._ensure_email_and_phone_not_taken(dto.email, dto.phone_number)
@@ -45,7 +46,7 @@ class AuthService:
 
         return await self._build_email_verification_link(user)
 
-    async def register_umkm(self, dto: RegisterUMKMDTO) -> str:
+    async def register_seller(self, dto: RegisterSellerDTO) -> str:
         await self._ensure_email_and_phone_not_taken(dto.email, dto.phone_number)
 
         user = User.register(
@@ -56,8 +57,18 @@ class AuthService:
             role=UserRole.SELLER,
         )
 
-        # TODO: Create UMKM
+        store = Store.create(
+            name=dto.store.name,
+            owner_id=user.id,
+            description=dto.store.description,
+            address=dto.store.address,
+            photo_url=dto.store.photo_url,
+            maps_link=dto.store.maps_link,
+            qris_image_url=dto.store.qris_image_url,
+        )
+
         await self._user_repo.save(user)
+        await self._store_repo.save(store)
 
         return await self._build_email_verification_link(user)
 

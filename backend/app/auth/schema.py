@@ -19,9 +19,17 @@ class RegisterStudentRequest(RegisterBaseRequest):
     department: str
 
 
-# TODO
-class RegisterUMKMRequest(RegisterBaseRequest):
-    pass
+class RegisterStoreRequest(BaseModel):
+    name: str
+    description: str
+    address: str
+    maps_link: str | None = None
+    photo_url: str | None = None
+    qris_image_url: str | None = None
+
+
+class RegisterSellerRequest(RegisterBaseRequest):
+    store: RegisterStoreRequest
 
 
 class LoginRequest(BaseModel):
