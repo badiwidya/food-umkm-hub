@@ -29,6 +29,6 @@ async def update(
     student: CurrentStudentDep,
     student_service: StudentServiceDep,
 ) -> None:
-    await student_service.change_academic_informations(
+    await student_service.update_information(
         student, payload.model_dump(exclude_unset=True)
     )

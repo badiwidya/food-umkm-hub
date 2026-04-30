@@ -35,7 +35,7 @@ class UserService:
 
         return users, total_count
 
-    async def change_profile_details(self, user: User, updates: dict[str, Any]) -> None:
+    async def update_profile(self, user: User, updates: dict[str, Any]) -> None:
         user.change_profile_details(
             full_name=updates.get("full_name", UNSET),
             avatar_url=updates.get("avatar_url", UNSET),

@@ -22,11 +22,11 @@ user_router = APIRouter(prefix="/users", tags=["Users"])
     summary="Memperbarui profil pengguna yang sedang login.",
     status_code=status.HTTP_204_NO_CONTENT,
 )
-async def update_profile(
+async def update_current_profile(
     user: CurrentUserDep, user_service: UserServiceDep, payload: UpdateProfileRequest
 ) -> None:
     data = payload.model_dump(exclude_unset=True)
-    await user_service.change_profile_details(user, data)
+    await user_service.update_profile(user, data)
 
 
 @user_router.delete(

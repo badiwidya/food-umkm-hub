@@ -202,7 +202,7 @@ class TestChangeProfile:
         self, user_factory: UserFactory, user_service: UserService
     ):
         user = await user_factory()
-        await user_service.change_profile_details(
+        await user_service.update_profile(
             user, {"full_name": "Okabe Rintaro", "avatar_url": "/picture.jpg"}
         )
 
@@ -217,7 +217,7 @@ class TestChangeProfile:
         self, user_factory: UserFactory, user_service: UserService
     ):
         user = await user_factory()
-        await user_service.change_profile_details(user, {"full_name": "Okabe Rintaro"})
+        await user_service.update_profile(user, {"full_name": "Okabe Rintaro"})
 
         saved = await user_service.get_by_id(user.id)
 
@@ -230,7 +230,7 @@ class TestChangeProfile:
         self, user_factory: UserFactory, user_service: UserService
     ):
         user = await user_factory(avatar_url="/picture.jpg")
-        await user_service.change_profile_details(user, {"avatar_url": None})
+        await user_service.update_profile(user, {"avatar_url": None})
 
         saved = await user_service.get_by_id(user.id)
 

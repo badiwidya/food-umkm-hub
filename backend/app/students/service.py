@@ -13,7 +13,7 @@ class StudentService:
     async def get_by_user_id(self, user_id: UUID) -> Student | None:
         return await self._student_repo.get_by_user_id(user_id)
 
-    async def change_academic_informations(
+    async def update_information(
         self, student: Student, updates: dict[str, Any]
     ) -> None:
         student.change_academic_informations(
