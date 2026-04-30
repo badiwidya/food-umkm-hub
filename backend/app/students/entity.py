@@ -31,18 +31,18 @@ class Student:
     ) -> None:
         has_changed = False
 
-        if nim is not UNSET:
-            if isinstance(nim, str) and nim != self.nim:
+        if not isinstance(nim, TUnset):
+            if nim.strip().upper() != self.nim:
                 self.nim = nim.strip().upper()
                 has_changed = True
 
-        if faculty is not UNSET:
-            if isinstance(faculty, str) and faculty != self.faculty:
+        if not isinstance(faculty, TUnset):
+            if faculty.strip() != self.faculty:
                 self.faculty = faculty.strip()
                 has_changed = True
 
-        if department is not UNSET:
-            if isinstance(department, str) and department != self.department:
+        if not isinstance(department, TUnset):
+            if department.strip() != self.department:
                 self.department = department.strip()
                 has_changed = True
 

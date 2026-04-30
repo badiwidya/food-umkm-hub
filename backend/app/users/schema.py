@@ -3,7 +3,7 @@ from typing import Annotated
 from uuid import UUID
 
 import phonenumbers
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 from pydantic_extra_types.phone_numbers import PhoneNumberValidator
 
 from app.users.enum import UserRole, UserStatus
@@ -44,6 +44,13 @@ class UserListResponse(BaseModel):
 class UpdateProfileRequest(BaseModel):
     full_name: Annotated[str | None, Field(min_length=3)] = None
     avatar_url: str | None = None
+
+    @field_validator("full_name", mode="after")
+    @classmethod
+    def is_null(cls, v: str | None) -> str | None:
+        if not v:
+            raise ValueError("Nama tidak boleh kosong.")
+        return v
 
 
 class EmailChangeRequest(BaseModel):

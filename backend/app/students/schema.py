@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 from app.users.schema import UserResponse
 
@@ -13,3 +13,10 @@ class UpdateStudentRequest(BaseModel):
     nim: str | None = None
     faculty: str | None = None
     department: str | None = None
+
+    @field_validator("nim", "faculty", "department", mode="after")
+    @classmethod
+    def is_null(cls, v: str | None, info) -> str | None:
+        if not v:
+            raise ValueError(f"{info.field_name} tidak boleh kosong.")
+        return v

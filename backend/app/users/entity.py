@@ -66,25 +66,17 @@ class User:
 
     def change_profile_details(
         self,
-        full_name: str | None | TUnset = UNSET,
+        full_name: str | TUnset = UNSET,
         avatar_url: str | None | TUnset = UNSET,
     ) -> None:
         has_changed = False
-
-        if full_name is not UNSET:
-            if not isinstance(full_name, str):
-                raise DomainException("Nama tidak boleh kosong.")
-
-            new_name = full_name.strip()
-            if not new_name:
-                raise DomainException("Nama tidak boleh kosong.")
-
-            if new_name != self.full_name:
-                self.full_name = new_name
+        if not isinstance(full_name, TUnset):
+            if full_name.strip() != self.full_name:
+                self.full_name = full_name.strip()
                 has_changed = True
 
-        if avatar_url is not UNSET:
-            if not isinstance(avatar_url, TUnset) and avatar_url != self.avatar_url:
+        if not isinstance(avatar_url, TUnset):
+            if avatar_url != self.avatar_url:
                 self.avatar_url = avatar_url
                 has_changed = True
 
