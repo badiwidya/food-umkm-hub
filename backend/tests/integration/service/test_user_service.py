@@ -1,6 +1,4 @@
-from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime
-from typing import Any
 from urllib.parse import parse_qs, urlparse
 from uuid import UUID
 
@@ -8,13 +6,11 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.exception import DomainException
-from app.security import hash_password, verify_password
-from app.users.entity import User
+from app.security import verify_password
 from app.users.enum import TokenType, UserRole, UserStatus
 from app.users.repository import UserRepository, VerificationTokenRepository
 from app.users.service import UserService
-
-UserFactory = Callable[..., Awaitable[Any]]
+from tests.integration.conftest import UserFactory
 
 
 @pytest.fixture
@@ -28,34 +24,6 @@ def user_service(db_session: AsyncSession) -> UserService:
         UserRepository(db_session),
         VerificationTokenRepository(db_session),
     )
-
-
-@pytest.fixture
-def user_factory(db_session: AsyncSession) -> UserFactory:
-    async def _make_user(
-        full_name: str = "Makise Kurisu",
-        email: str = "makise@amadeus.com",
-        phone_number: str = "+6288887776666",
-        password: str = "supersecret",
-        role: UserRole = UserRole.STUDENT,
-        **kwargs,
-    ) -> User:
-        user = User.register(
-            full_name=full_name,
-            email=email,
-            phone_number=phone_number,
-            password_hash=hash_password(password),
-            role=role,
-        )
-
-        for k, v in kwargs.items():
-            setattr(user, k, v)
-
-        await UserRepository(db_session).save(user)
-        await db_session.flush()
-        return user
-
-    return _make_user
 
 
 class TestChangePassword:
