@@ -2,7 +2,6 @@ import os
 from collections.abc import AsyncGenerator
 
 import pytest
-import pytest_asyncio
 from alembic.config import Config
 from sqlalchemy import NullPool
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -23,7 +22,7 @@ def setup_db():
     yield
 
 
-@pytest_asyncio.fixture
+@pytest.fixture
 async def db_session() -> AsyncGenerator[AsyncSession]:
     test_engine = create_async_engine(
         url=settings.DB_URI, poolclass=NullPool, echo=False
