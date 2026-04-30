@@ -35,9 +35,9 @@ class StoreService:
 
     async def list_all(
         self,
+        page: int,
+        page_size: int,
         keyword: str | None = None,
-        page: int = 1,
-        page_size: int = 12,
         status: ApprovalStatus | None = None,
     ) -> tuple[list[StoreWithOwner], int]:
         limit = page_size
