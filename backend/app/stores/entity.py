@@ -53,7 +53,7 @@ class Store:
         qris_image_url: str | None | TUnset = UNSET,
         maps_link: str | None | TUnset = UNSET,
     ) -> None:
-        has_changed = True
+        has_changed = False
 
         if not isinstance(name, TUnset):
             if not name.strip():
@@ -66,14 +66,14 @@ class Store:
             if not description.strip():
                 raise DomainException("Deskripsi tidak boleh kosong.")
             if description.strip() != self.description:
-                self.description = description
+                self.description = description.strip()
                 has_changed = True
 
         if not isinstance(address, TUnset):
             if not address.strip():
                 raise DomainException("Alamat tidak boleh kosong.")
             if address.strip() != self.address:
-                self.address = address
+                self.address = address.strip()
                 has_changed = True
 
         if not isinstance(photo_url, TUnset):
