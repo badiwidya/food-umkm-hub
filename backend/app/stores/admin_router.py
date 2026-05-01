@@ -6,13 +6,17 @@ from dataclasses import asdict
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Query, status
+from fastapi import APIRouter, Body, Query, status
 from pydantic import BeforeValidator
 
 from app.exception import NotFoundException
 from app.stores.dependency import StoreServiceDep, StoreTargetDep
 from app.stores.enum import ApprovalStatus
-from app.stores.schema import StoreWithOwnerListResponse, StoreWithOwnerResponse
+from app.stores.schema import (
+    RejectionNotesRequest,
+    StoreWithOwnerListResponse,
+    StoreWithOwnerResponse,
+)
 
 store_admin_router = APIRouter()
 
@@ -87,6 +91,9 @@ async def approve_application(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def reject_application(
-    store: StoreTargetDep, store_service: StoreServiceDep
+    store: StoreTargetDep,
+    store_service: StoreServiceDep,
+    payload: Annotated[RejectionNotesRequest | None, Body] = None,
 ) -> None:
-    await store_service.reject(store)
+    notes = payload.notes if payload else None
+    await store_service.reject(store, notes)

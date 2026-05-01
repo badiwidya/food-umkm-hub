@@ -58,3 +58,7 @@ class StoreWithOwnerResponse(StoreResponse):
 class StoreWithOwnerListResponse(BaseModel):
     metadata: Pagination
     data: list[StoreWithOwnerResponse]
+
+
+class RejectionNotesRequest(BaseModel):
+    notes: str | None = None
