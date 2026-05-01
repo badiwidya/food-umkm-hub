@@ -17,7 +17,6 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pytest>=9.0.3",
-    "pytest-asyncio>=1.3.0",
     "ruff>=0.15.0",
 ]
 
@@ -45,3 +44,4 @@ ignore = [
 [tool.pytest]
 pythonpath = ["."]
 addopts = ["-ra", "-q", "--import-mode=importlib"]
+anyio_mode = "auto"

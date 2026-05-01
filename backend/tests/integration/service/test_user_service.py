@@ -1,6 +1,4 @@
-from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime
-from typing import Any
 from urllib.parse import parse_qs, urlparse
 from uuid import UUID
 
@@ -8,13 +6,11 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.exception import DomainException
-from app.security import hash_password, verify_password
-from app.users.entity import User
+from app.security import verify_password
 from app.users.enum import TokenType, UserRole, UserStatus
 from app.users.repository import UserRepository, VerificationTokenRepository
 from app.users.service import UserService
-
-UserFactory = Callable[..., Awaitable[Any]]
+from tests.integration.conftest import UserFactory
 
 
 @pytest.fixture
@@ -30,36 +26,7 @@ def user_service(db_session: AsyncSession) -> UserService:
     )
 
 
-@pytest.fixture
-def user_factory(db_session: AsyncSession) -> UserFactory:
-    async def _make_user(
-        full_name: str = "Makise Kurisu",
-        email: str = "makise@amadeus.com",
-        phone_number: str = "+6288887776666",
-        password: str = "supersecret",
-        role: UserRole = UserRole.STUDENT,
-        **kwargs,
-    ) -> User:
-        user = User.register(
-            full_name=full_name,
-            email=email,
-            phone_number=phone_number,
-            password_hash=hash_password(password),
-            role=role,
-        )
-
-        for k, v in kwargs.items():
-            setattr(user, k, v)
-
-        await UserRepository(db_session).save(user)
-        await db_session.flush()
-        return user
-
-    return _make_user
-
-
 class TestChangePassword:
-    @pytest.mark.asyncio
     async def test_correct_old_password_changes_password(
         self, user_factory: UserFactory, user_service: UserService
     ):
@@ -70,7 +37,6 @@ class TestChangePassword:
         assert saved is not None
         assert verify_password("supersecret123", saved.password_hash)
 
-    @pytest.mark.asyncio
     async def test_unchanged_if_old_password_not_correct(
         self, user_factory: UserFactory, user_service: UserService
     ):
@@ -84,7 +50,6 @@ class TestChangePassword:
 
 
 class TestRequestEmailChange:
-    @pytest.mark.asyncio
     async def test_sets_pending_email(
         self, user_factory: UserFactory, user_service: UserService
     ):
@@ -95,7 +60,6 @@ class TestRequestEmailChange:
         assert saved is not None
         assert saved.pending_email == "kurisu@amadeus.com"
 
-    @pytest.mark.asyncio
     async def test_issues_valid_token(
         self,
         user_factory: UserFactory,
@@ -114,7 +78,6 @@ class TestRequestEmailChange:
 
         saved_token.verify(params["token"][0], TokenType.EMAIL_CHANGE_VERIFICATION)
 
-    @pytest.mark.asyncio
     async def test_email_taken_by_other_user_raises(
         self, user_factory: UserFactory, user_service: UserService
     ):
@@ -126,7 +89,6 @@ class TestRequestEmailChange:
         with pytest.raises(DomainException):
             await user_service.request_email_change(user, other.email)
 
-    @pytest.mark.asyncio
     async def test_issuing_token_replaces_existing_token_of_same_type(
         self,
         user_factory: UserFactory,
@@ -155,7 +117,6 @@ class TestRequestEmailChange:
 
 
 class TestChangeNumber:
-    @pytest.mark.asyncio
     async def test_changes_phone_number_and_invalidates_phone_verification_status(
         self, user_factory: UserFactory, user_service: UserService
     ):
@@ -167,7 +128,6 @@ class TestChangeNumber:
         assert saved.phone_number == "+621111111111"
         assert saved.phone_verified_at is None
 
-    @pytest.mark.asyncio
     async def test_issues_valid_token(
         self,
         user_factory: UserFactory,
@@ -183,7 +143,6 @@ class TestChangeNumber:
         assert saved_token is not None
         assert saved_token.user_id == user.id
 
-    @pytest.mark.asyncio
     async def test_phone_number_taken_by_other_user_raises(
         self, user_factory: UserFactory, user_service: UserService
     ):
@@ -197,7 +156,6 @@ class TestChangeNumber:
 
 
 class TestChangeProfile:
-    @pytest.mark.asyncio
     async def test_all_changes_saved_to_db(
         self, user_factory: UserFactory, user_service: UserService
     ):
@@ -212,7 +170,6 @@ class TestChangeProfile:
         assert saved.full_name == "Okabe Rintaro"
         assert saved.avatar_url == "/picture.jpg"
 
-    @pytest.mark.asyncio
     async def test_avatar_url_unchanged(
         self, user_factory: UserFactory, user_service: UserService
     ):
@@ -225,7 +182,6 @@ class TestChangeProfile:
         assert saved.full_name == "Okabe Rintaro"
         assert saved.avatar_url is None
 
-    @pytest.mark.asyncio
     async def test_remove_avatar_url(
         self, user_factory: UserFactory, user_service: UserService
     ):
@@ -239,7 +195,6 @@ class TestChangeProfile:
 
 
 class TestStatusChange:
-    @pytest.mark.asyncio
     async def test_suspend_and_unsuspend(
         self, user_factory: UserFactory, user_service: UserService
     ):
@@ -256,7 +211,6 @@ class TestStatusChange:
         assert unsuspended is not None
         assert unsuspended.status == UserStatus.ACTIVE
 
-    @pytest.mark.asyncio
     async def test_delete_remove_visibility(
         self, user_factory: UserFactory, user_service: UserService
     ):
@@ -271,7 +225,6 @@ class TestStatusChange:
 
 
 class TestList:
-    @pytest.mark.asyncio
     async def test_list_success(
         self, user_factory: UserFactory, user_service: UserService
     ):

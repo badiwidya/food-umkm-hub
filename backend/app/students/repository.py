@@ -2,7 +2,7 @@ from uuid import UUID
 
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import contains_eager
 
 from app.students.entity import Student
 from app.students.model import StudentModel
@@ -17,7 +17,8 @@ class StudentRepository:
     async def get_by_user_id(self, user_id: UUID) -> Student | None:
         model = await self._session.scalar(
             select(StudentModel)
-            .options(joinedload(StudentModel.user))
+            .join(StudentModel.user)
+            .options(contains_eager(StudentModel.user))
             .where(StudentModel.user_id == user_id, UserModel.deleted_at.is_(None))
         )
 

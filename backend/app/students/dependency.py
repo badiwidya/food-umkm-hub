@@ -13,8 +13,11 @@ def get_student_repo(
     return StudentRepository(session=session)
 
 
+StudentRepoDep = Annotated[StudentRepository, Depends(get_student_repo)]
+
+
 def get_student_service(
-    student_repo: Annotated[StudentRepository, Depends(get_student_repo)],
+    student_repo: StudentRepoDep,
 ) -> StudentService:
     return StudentService(student_repo=student_repo)
 

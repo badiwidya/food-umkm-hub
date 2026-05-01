@@ -16,15 +16,21 @@ def get_user_repo(
     return UserRepository(session)
 
 
+UserRepoDep = Annotated[UserRepository, Depends(get_user_repo)]
+
+
 def get_token_repo(
     session: SessionDep,
 ) -> VerificationTokenRepository:
     return VerificationTokenRepository(session)
 
 
+TokenRepoDep = Annotated[VerificationTokenRepository, Depends(get_token_repo)]
+
+
 def get_user_service(
-    user_repo: Annotated[UserRepository, Depends(get_user_repo)],
-    token_repo: Annotated[VerificationTokenRepository, Depends(get_token_repo)],
+    user_repo: UserRepoDep,
+    token_repo: TokenRepoDep,
 ) -> UserService:
     return UserService(user_repo=user_repo, token_repo=token_repo)
 

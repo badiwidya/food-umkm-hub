@@ -71,6 +71,8 @@ class User:
     ) -> None:
         has_changed = False
         if not isinstance(full_name, TUnset):
+            if not full_name.strip():
+                raise DomainException("Nama tidak boleh kosong.")
             if full_name.strip() != self.full_name:
                 self.full_name = full_name.strip()
                 has_changed = True
