@@ -5,7 +5,6 @@ services:
   postgres:
     image: postgres:18-alpine
     container_name: food-umkm-hub-db
-    restart: always
     env_file:
       - ./backend/.env
     volumes:
@@ -16,7 +15,6 @@ services:
   postgres_test:
     image: postgres:18-alpine
     container_name: food-umkm-hub-db-test
-    restart: always
     env_file:
       - ./backend/.env.test
     tmpfs:
