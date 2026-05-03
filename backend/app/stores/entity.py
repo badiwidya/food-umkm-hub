@@ -34,17 +34,32 @@ class Store:
         qris_image_url: str | None = None,
         maps_link: str | None = None,
     ) -> Store:
+        normalized_name = name.strip()
+        if not normalized_name:
+            raise DomainException("Nama toko tidak boleh kosong.")
+
+        normalized_desc = description.strip()
+        if not normalized_desc:
+            raise DomainException("Deskripsi toko tidak boleh kosong.")
+
+        normalized_address = address.strip()
+        if not normalized_address:
+            raise DomainException("Alamat toko tidak boleh kosong")
+
+        normalized_photo = photo_url.strip() if photo_url is not None else None
+        normalized_maps = maps_link.strip() if maps_link is not None else None
+        normalized_qris = qris_image_url.strip() if qris_image_url is not None else None
         return cls(
-            name=name.strip(),
+            name=normalized_name,
             owner_id=owner_id,
-            description=description.strip(),
-            address=address.strip(),
-            photo_url=photo_url,
-            qris_image_url=qris_image_url,
-            maps_link=maps_link,
+            description=normalized_desc,
+            address=normalized_address,
+            photo_url=normalized_photo,
+            qris_image_url=normalized_qris,
+            maps_link=normalized_maps,
         )
 
-    def change_informations(
+    def change_info(
         self,
         name: str | TUnset = UNSET,
         description: str | TUnset = UNSET,
@@ -56,39 +71,47 @@ class Store:
         has_changed = False
 
         if not isinstance(name, TUnset):
-            if not name.strip():
+            normalized_name = name.strip()
+            if not normalized_name:
                 raise DomainException("Nama tidak boleh kosong.")
-            if name.strip() != self.name:
-                self.name = name.strip()
+            if normalized_name != self.name:
+                self.name = normalized_name
                 has_changed = True
 
         if not isinstance(description, TUnset):
-            if not description.strip():
+            normalized_desc = description.strip()
+            if not normalized_desc:
                 raise DomainException("Deskripsi tidak boleh kosong.")
-            if description.strip() != self.description:
-                self.description = description.strip()
+            if normalized_desc != self.description:
+                self.description = normalized_desc
                 has_changed = True
 
         if not isinstance(address, TUnset):
-            if not address.strip():
+            normalized_address = address.strip()
+            if not normalized_address:
                 raise DomainException("Alamat tidak boleh kosong.")
-            if address.strip() != self.address:
-                self.address = address.strip()
+            if normalized_address != self.address:
+                self.address = normalized_address
                 has_changed = True
 
         if not isinstance(photo_url, TUnset):
-            if photo_url != self.photo_url:
-                self.photo_url = photo_url
+            normalized_photo = photo_url.strip() if photo_url is not None else None
+            if normalized_photo != self.photo_url:
+                self.photo_url = normalized_photo
                 has_changed = True
 
         if not isinstance(qris_image_url, TUnset):
-            if qris_image_url != self.qris_image_url:
-                self.qris_image_url = qris_image_url
+            normalized_qris = (
+                qris_image_url.strip() if qris_image_url is not None else None
+            )
+            if normalized_qris != self.qris_image_url:
+                self.qris_image_url = normalized_qris
                 has_changed = True
 
         if not isinstance(maps_link, TUnset):
-            if maps_link != self.maps_link:
-                self.maps_link = maps_link
+            normalized_maps = maps_link.strip() if maps_link is not None else None
+            if normalized_maps != self.maps_link:
+                self.maps_link = normalized_maps
                 has_changed = True
 
         if has_changed:

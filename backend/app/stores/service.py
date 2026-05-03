@@ -50,7 +50,7 @@ class StoreService:
         return stores, total_count
 
     async def update_information(self, store: Store, updates: dict[str, Any]) -> None:
-        store.change_informations(
+        store.change_info(
             name=updates.get("name", UNSET),
             description=updates.get("description", UNSET),
             address=updates.get("address", UNSET),

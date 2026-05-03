@@ -51,7 +51,7 @@ def test_create_default_values(store: Store):
 
 
 def test_change_informations_updates_fields(store: Store):
-    store.change_informations(
+    store.change_info(
         name="Toko Baru",
         description="Deskripsi baru.",
         address="Alamat baru.",
@@ -64,20 +64,20 @@ def test_change_informations_updates_fields(store: Store):
 
 def test_change_informations_unset_fields_unchanged(store: Store):
     original_name = store.name
-    store.change_informations(description="Deskripsi baru.")
+    store.change_info(description="Deskripsi baru.")
 
     assert store.name == original_name
 
 
 def test_change_informations_nullable_field_can_be_set_to_none(approved_store: Store):
     approved_store.photo_url = "/foto.jpg"
-    approved_store.change_informations(photo_url=None)
+    approved_store.change_info(photo_url=None)
 
     assert approved_store.photo_url is None
 
 
 def test_change_informations_nullable_field_can_be_set(store: Store):
-    store.change_informations(
+    store.change_info(
         photo_url="/foto.jpg",
         maps_link="https://maps.google.com",
         qris_image_url="/qris.jpg",
@@ -90,17 +90,17 @@ def test_change_informations_nullable_field_can_be_set(store: Store):
 
 def test_change_informations_empty_name_raises(store: Store):
     with pytest.raises(DomainException):
-        store.change_informations(name="   ")
+        store.change_info(name="   ")
 
 
 def test_change_informations_empty_description_raises(store: Store):
     with pytest.raises(DomainException):
-        store.change_informations(description="   ")
+        store.change_info(description="   ")
 
 
 def test_change_informations_empty_address_raises(store: Store):
     with pytest.raises(DomainException):
-        store.change_informations(address="   ")
+        store.change_info(address="   ")
 
 
 # Store.approve

@@ -16,7 +16,7 @@ class StudentService:
     async def update_information(
         self, student: Student, updates: dict[str, Any]
     ) -> None:
-        student.change_academic_informations(
+        student.change_academic_info(
             updates.get("nim", UNSET),
             updates.get("faculty", UNSET),
             updates.get("department", UNSET),

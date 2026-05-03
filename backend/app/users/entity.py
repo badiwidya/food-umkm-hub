@@ -40,10 +40,22 @@ class User:
         password_hash: str,
         role: UserRole,
     ) -> User:
+        normalized_name = full_name.strip()
+        if not normalized_name:
+            raise DomainException("Nama tidak boleh kosong.")
+
+        normalized_email = email.strip().lower()
+        if not normalized_email:
+            raise DomainException("Email tidak boleh kosong.")
+
+        normalized_phone = phone_number.strip()
+        if not normalized_phone:
+            raise DomainException("Nomor telepon tidak boleh kosong.")
+
         return cls(
-            full_name=full_name.strip(),
-            email=email.strip().lower(),
-            phone_number=phone_number.strip(),
+            full_name=normalized_name,
+            email=normalized_email,
+            phone_number=normalized_phone,
             password_hash=password_hash,
             role=role,
         )
@@ -64,22 +76,25 @@ class User:
     def is_suspended(self) -> bool:
         return self.status == UserStatus.SUSPENDED
 
-    def change_profile_details(
+    def change_info(
         self,
         full_name: str | TUnset = UNSET,
         avatar_url: str | None | TUnset = UNSET,
     ) -> None:
         has_changed = False
+
         if not isinstance(full_name, TUnset):
-            if not full_name.strip():
+            normalized_name = full_name.strip()
+            if not normalized_name:
                 raise DomainException("Nama tidak boleh kosong.")
-            if full_name.strip() != self.full_name:
-                self.full_name = full_name.strip()
+            if normalized_name != self.full_name:
+                self.full_name = normalized_name
                 has_changed = True
 
         if not isinstance(avatar_url, TUnset):
-            if avatar_url != self.avatar_url:
-                self.avatar_url = avatar_url
+            normalized_avatar = avatar_url.strip() if avatar_url is not None else None
+            if normalized_avatar != self.avatar_url:
+                self.avatar_url = normalized_avatar
                 has_changed = True
 
         if has_changed:

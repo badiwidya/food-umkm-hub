@@ -83,7 +83,7 @@ def test_admin_cannot_be_deleted_or_suspended(admin: User):
 
 
 def test_change_profile_details(user: User):
-    user.change_profile_details(full_name="Nama Baru", avatar_url=None)
+    user.change_info(full_name="Nama Baru", avatar_url=None)
 
     assert user.full_name == "Nama Baru"
     assert user.avatar_url is None
@@ -91,7 +91,7 @@ def test_change_profile_details(user: User):
 
 def test_change_profile_details_rejects_invalid_name(user: User):
     with pytest.raises(DomainException):
-        user.change_profile_details(full_name="   ")
+        user.change_info(full_name="   ")
 
 
 # Email change flow

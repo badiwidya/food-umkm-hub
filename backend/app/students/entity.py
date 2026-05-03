@@ -17,14 +17,26 @@ class Student:
 
     @classmethod
     def create(cls, user: User, nim: str, faculty: str, department: str) -> Student:
+        normalized_nim = nim.strip().upper()
+        if not normalized_nim:
+            raise DomainException("NIM tidak boleh kosong.")
+
+        normalized_faculty = faculty.strip()
+        if not normalized_faculty:
+            raise DomainException("Fakultas tidak boleh kosong.")
+
+        normalized_department = department.strip()
+        if not normalized_department:
+            raise DomainException("Departemen tidak boleh kosong.")
+
         return cls(
             user=user,
-            nim=nim.strip().upper(),
-            faculty=faculty.strip(),
-            department=department.strip(),
+            nim=normalized_nim,
+            faculty=normalized_faculty,
+            department=normalized_department,
         )
 
-    def change_academic_informations(
+    def change_academic_info(
         self,
         nim: str | TUnset = UNSET,
         faculty: str | TUnset = UNSET,
@@ -33,24 +45,27 @@ class Student:
         has_changed = False
 
         if not isinstance(nim, TUnset):
-            if not nim.strip():
+            normalized_nim = nim.strip().upper()
+            if not normalized_nim:
                 raise DomainException("NIM tidak boleh kosong.")
-            if nim.strip().upper() != self.nim:
-                self.nim = nim.strip().upper()
+            if normalized_nim != self.nim:
+                self.nim = normalized_nim
                 has_changed = True
 
         if not isinstance(faculty, TUnset):
-            if not faculty.strip():
+            normalized_faculty = faculty.strip()
+            if not normalized_faculty:
                 raise DomainException("Fakultas tidak boleh kosong.")
-            if faculty.strip() != self.faculty:
-                self.faculty = faculty.strip()
+            if normalized_faculty != self.faculty:
+                self.faculty = normalized_faculty
                 has_changed = True
 
         if not isinstance(department, TUnset):
-            if not department.strip():
+            normalized_department = department.strip()
+            if not normalized_department:
                 raise DomainException("Departemen tidak boleh kosong.")
-            if department.strip() != self.department:
-                self.department = department.strip()
+            if normalized_department != self.department:
+                self.department = normalized_department
                 has_changed = True
 
         if has_changed:
