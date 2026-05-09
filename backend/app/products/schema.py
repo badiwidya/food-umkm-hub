@@ -33,3 +33,7 @@ class Pagination(BaseModel):
 class ProductListResponse(BaseModel):
     metadata: Pagination
     data: list[ProductSummaryResponse]
+
+
+class ProductDetailResponse(ProductSummaryResponse):
+    description: str | None

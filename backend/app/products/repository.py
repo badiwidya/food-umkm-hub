@@ -1,4 +1,5 @@
 from typing import Any
+from uuid import UUID
 
 from sqlalchemy import case, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -75,6 +76,23 @@ class ProductRepository:
         count = await self._session.scalar(count_stmt)
 
         return [self._to_entity(model) for model in models], count or 0
+
+    async def get_by_id(self, id: UUID) -> Product | None:
+        model = await self._session.scalar(
+            select(ProductModel)
+            .join(StoreModel)
+            .join(UserModel)
+            .options(contains_eager(ProductModel.store))
+            .where(
+                UserModel.deleted_at.is_(None),
+                ProductModel.deleted_at.is_(None),
+                ProductModel.id == id,
+            )
+        )
+        if model is None:
+            return None
+
+        return self._to_entity(model)
 
     @staticmethod
     def _to_entity(model: ProductModel) -> Product:

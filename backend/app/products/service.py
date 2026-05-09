@@ -1,3 +1,6 @@
+from uuid import UUID
+
+from app.exception import NotFoundException
 from app.products.entity import Product
 from app.products.enum import ProductCategory
 from app.products.repository import ProductRepository
@@ -29,3 +32,9 @@ class ProductService:
         )
 
         return products, total_count
+
+    async def get_details(self, id: UUID) -> Product:
+        product = await self._product_repo.get_by_id(id)
+        if product is None:
+            raise NotFoundException("Produk tidak ada")
+        return product

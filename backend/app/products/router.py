@@ -1,10 +1,16 @@
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import APIRouter, Query, status
 
 from app.products.dependency import ProductServiceDep
 from app.products.enum import ProductCategory
-from app.products.schema import Pagination, ProductListResponse, ProductSummaryResponse
+from app.products.schema import (
+    Pagination,
+    ProductDetailResponse,
+    ProductListResponse,
+    ProductSummaryResponse,
+)
 
 product_router = APIRouter(prefix="/products", tags=["Products"])
 
@@ -36,3 +42,12 @@ async def get_all_products(
         ),
         data=[ProductSummaryResponse.model_validate(product) for product in products],
     )
+
+
+@product_router.get("/{id}", status_code=status.HTTP_200_OK)
+async def get_product_details(
+    product_service: ProductServiceDep, id: UUID
+) -> ProductDetailResponse:
+    product = await product_service.get_details(id)
+
+    return ProductDetailResponse.model_validate(product)
