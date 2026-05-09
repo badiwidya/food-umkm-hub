@@ -1,7 +1,8 @@
 from datetime import datetime
+from decimal import Decimal
 from uuid import UUID
 
-from sqlalchemy import DateTime, MetaData, Uuid
+from sqlalchemy import DateTime, MetaData, Numeric, Uuid
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
@@ -23,4 +24,8 @@ class Base(DeclarativeBase):
         }
     )
 
-    type_annotation_map = {datetime: DateTime(timezone=True), UUID: Uuid()}
+    type_annotation_map = {
+        datetime: DateTime(timezone=True),
+        UUID: Uuid(),
+        Decimal: Numeric(precision=12, scale=0),
+    }
