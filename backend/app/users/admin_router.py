@@ -6,6 +6,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Query, status
 
+from app.dependency import PaginationQueryDep
 from app.users.dependency import UserServiceDep, UserTargetDep
 from app.users.enum import UserRole, UserStatus
 from app.users.schema import Pagination, UserListResponse, UserResponse
@@ -20,16 +21,20 @@ user_admin_router = APIRouter()
 )
 async def list_users(
     user_service: UserServiceDep,
-    page: Annotated[int, Query(ge=1)] = 1,
-    page_size: Annotated[int, Query(ge=1, le=100)] = 20,
+    pagination: PaginationQueryDep,
     status: Annotated[UserStatus | None, Query()] = None,
     role: Annotated[UserRole | None, Query()] = None,
 ) -> UserListResponse:
     users, count = await user_service.list(
-        page=page, page_size=page_size, status_filter=status, role_filter=role
+        page=pagination.page,
+        page_size=pagination.page_size,
+        status_filter=status,
+        role_filter=role,
     )
     return UserListResponse(
-        metadata=Pagination(page=page, page_size=page_size, total=count),
+        metadata=Pagination(
+            page=pagination.page, page_size=pagination.page_size, total=count
+        ),
         data=[UserResponse.model_validate(user) for user in users],
     )
 

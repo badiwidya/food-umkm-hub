@@ -9,6 +9,7 @@ from uuid import UUID
 from fastapi import APIRouter, Body, Query, status
 from pydantic import BeforeValidator
 
+from app.dependency import PaginationQueryDep
 from app.exception import NotFoundException
 from app.stores.dependency import StoreServiceDep, StoreTargetDep
 from app.stores.enum import ApprovalStatus
@@ -29,9 +30,8 @@ store_admin_router = APIRouter()
 )
 async def list_all(
     store_service: StoreServiceDep,
+    pagination: PaginationQueryDep,
     keyword: Annotated[str | None, Query(alias="q")] = None,
-    page: Annotated[int, Query(ge=1)] = 1,
-    page_size: Annotated[int, Query(ge=1, le=100)] = 15,
     # Default pending karena fokus utama admin adalah kurasi registrasi toko
     status: Annotated[
         Annotated[
@@ -41,11 +41,18 @@ async def list_all(
     ] = ApprovalStatus.PENDING,
 ) -> dict:
     stores_with_owner, count = await store_service.list_all(
-        keyword=keyword, page=page, page_size=page_size, status=status
+        keyword=keyword,
+        page=pagination.page,
+        page_size=pagination.page_size,
+        status=status,
     )
 
     return {
-        "metadata": {"total": count, "page": page, "page_size": page_size},
+        "metadata": {
+            "total": count,
+            "page": pagination.page,
+            "page_size": pagination.page_size,
+        },
         "data": [
             {
                 **asdict(store_with_owner.store),

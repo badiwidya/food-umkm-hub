@@ -4,6 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, Query, status
 
 from app.auth.dependency import CurrentStoreDep
+from app.dependency import PaginationQueryDep
 from app.exception import NotFoundException
 from app.stores.dependency import StoreServiceDep
 from app.stores.schema import (
@@ -23,15 +24,16 @@ store_router = APIRouter(prefix="/stores", tags=["Stores"])
 )
 async def list(
     store_service: StoreServiceDep,
+    pagination: PaginationQueryDep,
     keyword: Annotated[str | None, Query(alias="q")] = None,
-    page: Annotated[int, Query(ge=1)] = 1,
-    page_size: Annotated[int, Query(ge=1, le=100)] = 12,
 ) -> StoreListResponse:
     stores, count = await store_service.list(
-        keyword=keyword, page=page, page_size=page_size
+        keyword=keyword, page=pagination.page, page_size=pagination.page_size
     )
     return StoreListResponse(
-        metadata=Pagination(total=count, page=page, page_size=page_size),
+        metadata=Pagination(
+            total=count, page=pagination.page, page_size=pagination.page_size
+        ),
         data=[StoreResponse.model_validate(store) for store in stores],
     )
 

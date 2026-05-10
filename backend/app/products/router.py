@@ -4,6 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, Query, status
 
 from app.auth.dependency import CurrentStoreDep
+from app.dependency import PaginationQueryDep
 from app.products.dependency import AuthorizedProductTargetDep, ProductServiceDep
 from app.products.dto import CreateProductDTO
 from app.products.enum import ProductCategory
@@ -25,26 +26,25 @@ store_product_router = APIRouter(prefix="/stores", tags=["Products"])
 @product_router.get("/", status_code=status.HTTP_200_OK)
 async def get_all_products(
     product_service: ProductServiceDep,
+    pagination: PaginationQueryDep,
     store_open: Annotated[bool | None, Query()] = None,
     available: Annotated[bool | None, Query()] = None,
     category: Annotated[ProductCategory | None, Query()] = None,
     keyword: Annotated[str | None, Query(alias="q")] = None,
-    page: Annotated[int, Query(ge=1)] = 1,
-    page_size: Annotated[int, Query(ge=1, le=100)] = 16,
 ) -> ProductListResponse:
     products, count = await product_service.list_all(
         is_store_open=store_open,
         is_product_available=available,
         category=category,
         keyword=keyword,
-        page=page,
-        page_size=page_size,
+        page=pagination.page,
+        page_size=pagination.page_size,
     )
 
     return ProductListResponse(
         metadata=Pagination(
-            page=page,
-            page_size=page_size,
+            page=pagination.page,
+            page_size=pagination.page_size,
             total=count,
         ),
         data=[ProductSummaryResponse.model_validate(product) for product in products],
@@ -114,25 +114,24 @@ async def update_product_availability(
 async def get_my_products(
     product_service: ProductServiceDep,
     store: CurrentStoreDep,
+    pagination: PaginationQueryDep,
     available: Annotated[bool | None, Query()] = None,
     category: Annotated[ProductCategory | None, Query()] = None,
     keyword: Annotated[str | None, Query(alias="q")] = None,
-    page: Annotated[int, Query(ge=1)] = 1,
-    page_size: Annotated[int, Query(ge=1, le=100)] = 16,
 ) -> ProductListResponse:
     products, count = await product_service.list_by_store(
         store_id=store.id,
         is_product_available=available,
         category=category,
         keyword=keyword,
-        page=page,
-        page_size=page_size,
+        page=pagination.page,
+        page_size=pagination.page_size,
         is_owner=True,
     )
     return ProductListResponse(
         metadata=Pagination(
-            page=page,
-            page_size=page_size,
+            page=pagination.page,
+            page_size=pagination.page_size,
             total=count,
         ),
         data=[ProductSummaryResponse.model_validate(product) for product in products],
@@ -143,25 +142,24 @@ async def get_my_products(
 async def get_products_by_store(
     product_service: ProductServiceDep,
     store_id: UUID,
+    pagination: PaginationQueryDep,
     available: Annotated[bool | None, Query()] = None,
     category: Annotated[ProductCategory | None, Query()] = None,
     keyword: Annotated[str | None, Query(alias="q")] = None,
-    page: Annotated[int, Query(ge=1)] = 1,
-    page_size: Annotated[int, Query(ge=1, le=100)] = 16,
 ) -> ProductListResponse:
     products, count = await product_service.list_by_store(
         store_id=store_id,
         is_product_available=available,
         category=category,
         keyword=keyword,
-        page=page,
-        page_size=page_size,
+        page=pagination.page,
+        page_size=pagination.page_size,
         is_owner=False,
     )
     return ProductListResponse(
         metadata=Pagination(
-            page=page,
-            page_size=page_size,
+            page=pagination.page,
+            page_size=pagination.page_size,
             total=count,
         ),
         data=[ProductSummaryResponse.model_validate(product) for product in products],
