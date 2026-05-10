@@ -29,12 +29,74 @@ class ProductRepository:
             UserModel.deleted_at.is_(None),
             ProductModel.deleted_at.is_(None),
         ]
-        orders = []
+        orders: list[Any] = [ProductModel.is_available.desc()]
 
         if category is not None:
             filters.append(ProductModel.category == category)
         if is_store_open is not None:
             filters.append(StoreModel.is_open == is_store_open)
+        if is_product_available is not None:
+            filters.append(ProductModel.is_available == is_product_available)
+        if keyword is not None:
+            search_term = f"%{keyword}"
+            filters.append(
+                or_(
+                    ProductModel.name.ilike(search_term),
+                    ProductModel.description.ilike(search_term),
+                )
+            )
+            orders.append(
+                case(
+                    (ProductModel.name.ilike(search_term), 1),
+                    (ProductModel.description.ilike(search_term), 2),
+                    else_=3,
+                ).asc()
+            )
+
+        # TODO: refactor, kebanyakan join, inefficient, consider pake cascade soft delete
+        stmt = (
+            select(ProductModel)
+            .join(StoreModel)
+            .join(UserModel)
+            .options(contains_eager(ProductModel.store))
+            .where(*filters)
+            .order_by(*orders, ProductModel.id.asc())
+            .offset(offset)
+            .limit(limit)
+        )
+        count_stmt = (
+            select(func.count())
+            .select_from(ProductModel)
+            .join(StoreModel)
+            .join(UserModel)
+            .where(*filters)
+        )
+
+        models = (await self._session.scalars(stmt)).all()
+        count = await self._session.scalar(count_stmt)
+
+        return [self._to_entity(model) for model in models], count or 0
+
+    async def get_all_by_store(
+        self,
+        store_id: UUID,
+        is_product_available: bool | None,
+        category: ProductCategory | None,
+        keyword: str | None,
+        offset: int,
+        limit: int,
+        is_owner: bool,
+    ) -> tuple[list[Product], int]:
+        filters: list[Any] = [
+            UserModel.deleted_at.is_(None),
+            ProductModel.deleted_at.is_(None),
+            ProductModel.store_id == store_id,
+        ]
+        orders: list[Any] = []
+        if not is_owner:
+            orders.append(ProductModel.is_available.desc())
+        if category is not None:
+            filters.append(ProductModel.category == category)
         if is_product_available is not None:
             filters.append(ProductModel.is_available == is_product_available)
         if keyword is not None:

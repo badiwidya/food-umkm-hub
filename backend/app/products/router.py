@@ -19,6 +19,7 @@ from app.products.schema import (
 from app.schema import MessageResponse
 
 product_router = APIRouter(prefix="/products", tags=["Products"])
+store_product_router = APIRouter(prefix="/stores", tags=["Products"])
 
 
 @product_router.get("/", status_code=status.HTTP_200_OK)
@@ -31,7 +32,7 @@ async def get_all_products(
     page: Annotated[int, Query(ge=1)] = 1,
     page_size: Annotated[int, Query(ge=1, le=100)] = 16,
 ) -> ProductListResponse:
-    products, count = await product_service.list(
+    products, count = await product_service.list_all(
         is_store_open=store_open,
         is_product_available=available,
         category=category,
@@ -107,3 +108,61 @@ async def update_product_availability(
 ) -> ProductDetailResponse:
     product = await product_service.update_availability(product, payload.is_available)
     return ProductDetailResponse.model_validate(product)
+
+
+@store_product_router.get("/me/products", status_code=status.HTTP_200_OK)
+async def get_my_products(
+    product_service: ProductServiceDep,
+    store: CurrentStoreDep,
+    available: Annotated[bool | None, Query()] = None,
+    category: Annotated[ProductCategory | None, Query()] = None,
+    keyword: Annotated[str | None, Query(alias="q")] = None,
+    page: Annotated[int, Query(ge=1)] = 1,
+    page_size: Annotated[int, Query(ge=1, le=100)] = 16,
+) -> ProductListResponse:
+    products, count = await product_service.list_by_store(
+        store_id=store.id,
+        is_product_available=available,
+        category=category,
+        keyword=keyword,
+        page=page,
+        page_size=page_size,
+        is_owner=True,
+    )
+    return ProductListResponse(
+        metadata=Pagination(
+            page=page,
+            page_size=page_size,
+            total=count,
+        ),
+        data=[ProductSummaryResponse.model_validate(product) for product in products],
+    )
+
+
+@store_product_router.get("/{store_id}/products", status_code=status.HTTP_200_OK)
+async def get_products_by_store(
+    product_service: ProductServiceDep,
+    store_id: UUID,
+    available: Annotated[bool | None, Query()] = None,
+    category: Annotated[ProductCategory | None, Query()] = None,
+    keyword: Annotated[str | None, Query(alias="q")] = None,
+    page: Annotated[int, Query(ge=1)] = 1,
+    page_size: Annotated[int, Query(ge=1, le=100)] = 16,
+) -> ProductListResponse:
+    products, count = await product_service.list_by_store(
+        store_id=store_id,
+        is_product_available=available,
+        category=category,
+        keyword=keyword,
+        page=page,
+        page_size=page_size,
+        is_owner=False,
+    )
+    return ProductListResponse(
+        metadata=Pagination(
+            page=page,
+            page_size=page_size,
+            total=count,
+        ),
+        data=[ProductSummaryResponse.model_validate(product) for product in products],
+    )
