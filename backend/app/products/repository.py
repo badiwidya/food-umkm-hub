@@ -94,6 +94,10 @@ class ProductRepository:
 
         return self._to_entity(model)
 
+    async def save(self, product: Product) -> None:
+        model = self._to_model(product)
+        self._session.add(model)
+
     @staticmethod
     def _to_entity(model: ProductModel) -> Product:
         return Product(

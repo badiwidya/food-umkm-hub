@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from app.exception import NotFoundException
+from app.products.dto import CreateProductDTO
 from app.products.entity import Product
 from app.products.enum import ProductCategory
 from app.products.repository import ProductRepository
@@ -37,4 +38,17 @@ class ProductService:
         product = await self._product_repo.get_by_id(id)
         if product is None:
             raise NotFoundException("Produk tidak ada")
+        return product
+
+    async def create(self, dto: CreateProductDTO) -> Product:
+        product = Product.create(
+            store_id=dto.store.id,
+            store_name=dto.store.name,
+            name=dto.name,
+            price=dto.price,
+            category=dto.category,
+            photo_url=dto.photo_url,
+            description=dto.description,
+        )
+        await self._product_repo.save(product)
         return product

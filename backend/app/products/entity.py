@@ -12,7 +12,7 @@ from app.sentinel import UNSET, TUnset
 class Product:
     id: UUID = field(default_factory=uuid7)
     store_id: UUID
-    store_name: str | None = None
+    store_name: str
     name: str
     description: str | None = None
     price: Decimal
@@ -31,6 +31,7 @@ class Product:
     def create(
         cls,
         store_id: UUID,
+        store_name: str,
         name: str,
         price: Decimal,
         category: ProductCategory,
@@ -49,6 +50,7 @@ class Product:
 
         return cls(
             store_id=store_id,
+            store_name=store_name,
             name=normalized_name,
             price=price,
             category=category,

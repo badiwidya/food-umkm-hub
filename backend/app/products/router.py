@@ -3,9 +3,12 @@ from uuid import UUID
 
 from fastapi import APIRouter, Query, status
 
+from app.auth.dependency import CurrentStoreDep
 from app.products.dependency import ProductServiceDep
+from app.products.dto import CreateProductDTO
 from app.products.enum import ProductCategory
 from app.products.schema import (
+    CreateProductRequest,
     Pagination,
     ProductDetailResponse,
     ProductListResponse,
@@ -42,6 +45,25 @@ async def get_all_products(
         ),
         data=[ProductSummaryResponse.model_validate(product) for product in products],
     )
+
+
+@product_router.post("/", status_code=status.HTTP_201_CREATED)
+async def create_product(
+    product_service: ProductServiceDep,
+    store: CurrentStoreDep,
+    payload: CreateProductRequest,
+) -> ProductDetailResponse:
+    dto = CreateProductDTO(
+        store=store,
+        name=payload.name,
+        price=payload.price,
+        category=payload.category,
+        description=payload.description,
+        photo_url=payload.photo_url,
+    )
+    product = await product_service.create(dto)
+
+    return ProductDetailResponse.model_validate(product)
 
 
 @product_router.get("/{id}", status_code=status.HTTP_200_OK)

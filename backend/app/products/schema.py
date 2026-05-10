@@ -1,3 +1,4 @@
+from datetime import datetime
 from decimal import Decimal
 from typing import Annotated
 from uuid import UUID
@@ -37,3 +38,13 @@ class ProductListResponse(BaseModel):
 
 class ProductDetailResponse(ProductSummaryResponse):
     description: str | None
+    updated_at: datetime
+    created_at: datetime
+
+
+class CreateProductRequest(BaseModel):
+    name: str
+    price: Decimal
+    category: ProductCategory
+    photo_url: str | None = None
+    description: str | None = None
