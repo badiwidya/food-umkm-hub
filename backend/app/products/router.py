@@ -13,6 +13,7 @@ from app.products.schema import (
     ProductDetailResponse,
     ProductListResponse,
     ProductSummaryResponse,
+    UpdateAvailabilityRequest,
     UpdateProductRequest,
 )
 from app.schema import MessageResponse
@@ -96,3 +97,13 @@ async def delete_product(
 ) -> MessageResponse:
     await product_service.delete(product)
     return MessageResponse(message="Produk berhasil dihapus")
+
+
+@product_router.patch("/{id}/availability", status_code=status.HTTP_200_OK)
+async def update_product_availability(
+    product_service: ProductServiceDep,
+    product: AuthorizedProductTargetDep,
+    payload: UpdateAvailabilityRequest,
+) -> ProductDetailResponse:
+    product = await product_service.update_availability(product, payload.is_available)
+    return ProductDetailResponse.model_validate(product)

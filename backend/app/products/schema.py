@@ -63,3 +63,7 @@ class UpdateProductRequest(BaseModel):
         if not v:
             raise ValueError("Nama tidak boleh kosong.")
         return v
+
+
+class UpdateAvailabilityRequest(BaseModel):
+    is_available: bool

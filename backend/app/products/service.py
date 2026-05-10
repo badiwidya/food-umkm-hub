@@ -71,3 +71,13 @@ class ProductService:
     async def delete(self, product: Product) -> None:
         product.delete()
         await self._product_repo.update(product)
+
+    async def update_availability(
+        self, product: Product, is_available: bool
+    ) -> Product:
+        if is_available:
+            product.mark_as_available()
+        else:
+            product.mark_as_unavailable()
+        await self._product_repo.update(product)
+        return product
