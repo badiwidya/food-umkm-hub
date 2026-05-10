@@ -38,7 +38,7 @@ class ProductRepository:
         if is_product_available is not None:
             filters.append(ProductModel.is_available == is_product_available)
         if keyword is not None:
-            search_term = f"%{keyword}"
+            search_term = f"%{keyword}%"
             filters.append(
                 or_(
                     ProductModel.name.ilike(search_term),
@@ -100,7 +100,7 @@ class ProductRepository:
         if is_product_available is not None:
             filters.append(ProductModel.is_available == is_product_available)
         if keyword is not None:
-            search_term = f"%{keyword}"
+            search_term = f"%{keyword}%"
             filters.append(
                 or_(
                     ProductModel.name.ilike(search_term),
