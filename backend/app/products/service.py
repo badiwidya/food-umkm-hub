@@ -67,3 +67,7 @@ class ProductService:
         )
         await self._product_repo.update(product)
         return product
+
+    async def delete(self, product: Product) -> None:
+        product.delete()
+        await self._product_repo.update(product)

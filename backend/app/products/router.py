@@ -15,6 +15,7 @@ from app.products.schema import (
     ProductSummaryResponse,
     UpdateProductRequest,
 )
+from app.schema import MessageResponse
 
 product_router = APIRouter(prefix="/products", tags=["Products"])
 
@@ -86,3 +87,12 @@ async def update_product_information(
         product, payload.model_dump(exclude_unset=True)
     )
     return ProductDetailResponse.model_validate(product)
+
+
+@product_router.delete("/{id}", status_code=status.HTTP_200_OK)
+async def delete_product(
+    product_service: ProductServiceDep,
+    product: AuthorizedProductTargetDep,
+) -> MessageResponse:
+    await product_service.delete(product)
+    return MessageResponse(message="Produk berhasil dihapus")
