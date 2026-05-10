@@ -98,6 +98,10 @@ class ProductRepository:
         model = self._to_model(product)
         self._session.add(model)
 
+    async def update(self, product: Product) -> None:
+        model = self._to_model(product)
+        await self._session.merge(model)
+
     @staticmethod
     def _to_entity(model: ProductModel) -> Product:
         return Product(

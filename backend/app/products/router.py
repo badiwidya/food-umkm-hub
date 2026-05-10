@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, Query, status
 
 from app.auth.dependency import CurrentStoreDep
-from app.products.dependency import ProductServiceDep
+from app.products.dependency import AuthorizedProductTargetDep, ProductServiceDep
 from app.products.dto import CreateProductDTO
 from app.products.enum import ProductCategory
 from app.products.schema import (
@@ -13,6 +13,7 @@ from app.products.schema import (
     ProductDetailResponse,
     ProductListResponse,
     ProductSummaryResponse,
+    UpdateProductRequest,
 )
 
 product_router = APIRouter(prefix="/products", tags=["Products"])
@@ -72,4 +73,16 @@ async def get_product_details(
 ) -> ProductDetailResponse:
     product = await product_service.get_details(id)
 
+    return ProductDetailResponse.model_validate(product)
+
+
+@product_router.patch("/{id}", status_code=status.HTTP_200_OK)
+async def update_product_information(
+    product_service: ProductServiceDep,
+    product: AuthorizedProductTargetDep,
+    payload: UpdateProductRequest,
+) -> ProductDetailResponse:
+    product = await product_service.update_information(
+        product, payload.model_dump(exclude_unset=True)
+    )
     return ProductDetailResponse.model_validate(product)

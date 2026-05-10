@@ -1,3 +1,4 @@
+from typing import Any
 from uuid import UUID
 
 from app.exception import NotFoundException
@@ -5,6 +6,7 @@ from app.products.dto import CreateProductDTO
 from app.products.entity import Product
 from app.products.enum import ProductCategory
 from app.products.repository import ProductRepository
+from app.sentinel import UNSET
 
 
 class ProductService:
@@ -51,4 +53,17 @@ class ProductService:
             description=dto.description,
         )
         await self._product_repo.save(product)
+        return product
+
+    async def update_information(
+        self, product: Product, updates: dict[str, Any]
+    ) -> Product:
+        product.change_info(
+            name=updates.get("name", UNSET),
+            price=updates.get("price", UNSET),
+            category=updates.get("category", UNSET),
+            description=updates.get("description", UNSET),
+            photo_url=updates.get("photo_url", UNSET),
+        )
+        await self._product_repo.update(product)
         return product

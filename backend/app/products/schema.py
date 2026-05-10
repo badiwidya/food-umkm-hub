@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, PlainSerializer
+from pydantic import BaseModel, ConfigDict, PlainSerializer, field_validator
 
 from app.products.enum import ProductCategory
 
@@ -48,3 +48,18 @@ class CreateProductRequest(BaseModel):
     category: ProductCategory
     photo_url: str | None = None
     description: str | None = None
+
+
+class UpdateProductRequest(BaseModel):
+    name: str | None = None
+    price: Decimal | None = None
+    category: ProductCategory | None = None
+    photo_url: str | None = None
+    description: str | None = None
+
+    @field_validator("name", mode="after")
+    @classmethod
+    def is_null(cls, v: str | None) -> str | None:
+        if not v:
+            raise ValueError("Nama tidak boleh kosong.")
+        return v
