@@ -3,13 +3,14 @@ from decimal import Decimal
 from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, PlainSerializer, field_validator
+from pydantic import PlainSerializer, field_validator
 
 from app.products.enum import ProductCategory
+from app.schema import BaseSchema, PaginatedResponse
 
 
 # TODO: rating
-class ProductSummaryResponse(BaseModel):
+class ProductSummaryResponse(BaseSchema):
     id: UUID
     store_id: UUID
     store_name: str
@@ -22,18 +23,8 @@ class ProductSummaryResponse(BaseModel):
     category: ProductCategory
     is_available: bool
 
-    model_config = ConfigDict(from_attributes=True)
 
-
-class Pagination(BaseModel):
-    total: int
-    page: int
-    page_size: int
-
-
-class ProductListResponse(BaseModel):
-    metadata: Pagination
-    data: list[ProductSummaryResponse]
+ProductListResponse = PaginatedResponse[list[ProductSummaryResponse]]
 
 
 class ProductDetailResponse(ProductSummaryResponse):
@@ -42,7 +33,7 @@ class ProductDetailResponse(ProductSummaryResponse):
     created_at: datetime
 
 
-class CreateProductRequest(BaseModel):
+class CreateProductRequest(BaseSchema):
     name: str
     price: Decimal
     category: ProductCategory
@@ -50,7 +41,7 @@ class CreateProductRequest(BaseModel):
     description: str | None = None
 
 
-class UpdateProductRequest(BaseModel):
+class UpdateProductRequest(BaseSchema):
     name: str | None = None
     price: Decimal | None = None
     category: ProductCategory | None = None
@@ -65,5 +56,5 @@ class UpdateProductRequest(BaseModel):
         return v
 
 
-class UpdateAvailabilityRequest(BaseModel):
+class UpdateAvailabilityRequest(BaseSchema):
     is_available: bool

@@ -1,13 +1,14 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import field_validator
 
+from app.schema import BaseSchema, PaginatedResponse
 from app.stores.enum import ApprovalStatus
 from app.users.schema import UserResponse
 
 
-class StoreResponse(BaseModel):
+class StoreResponse(BaseSchema):
     id: UUID
     name: str
     description: str
@@ -21,10 +22,8 @@ class StoreResponse(BaseModel):
     updated_at: datetime
     created_at: datetime
 
-    model_config = ConfigDict(from_attributes=True)
 
-
-class UpdateStoreRequest(BaseModel):
+class UpdateStoreRequest(BaseSchema):
     name: str | None = None
     description: str | None = None
     address: str | None = None
@@ -40,25 +39,15 @@ class UpdateStoreRequest(BaseModel):
         return v
 
 
-class Pagination(BaseModel):
-    total: int
-    page: int
-    page_size: int
-
-
-class StoreListResponse(BaseModel):
-    metadata: Pagination
-    data: list[StoreResponse]
+StoreListResponse = PaginatedResponse[list[StoreResponse]]
 
 
 class StoreWithOwnerResponse(StoreResponse):
     owner: UserResponse
 
 
-class StoreWithOwnerListResponse(BaseModel):
-    metadata: Pagination
-    data: list[StoreWithOwnerResponse]
+StoreWithOwnerListResponse = PaginatedResponse[list[StoreWithOwnerResponse]]
 
 
-class RejectionNotesRequest(BaseModel):
+class RejectionNotesRequest(BaseSchema):
     notes: str | None = None

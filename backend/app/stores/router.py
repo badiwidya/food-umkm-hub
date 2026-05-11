@@ -8,7 +8,6 @@ from app.dependency import PaginationQueryDep
 from app.exception import NotFoundException
 from app.stores.dependency import StoreServiceDep
 from app.stores.schema import (
-    Pagination,
     StoreListResponse,
     StoreResponse,
     UpdateStoreRequest,
@@ -31,9 +30,9 @@ async def list(
         keyword=keyword, page=pagination.page, page_size=pagination.page_size
     )
     return StoreListResponse(
-        metadata=Pagination(
-            total=count, page=pagination.page, page_size=pagination.page_size
-        ),
+        total=count,
+        page=pagination.page,
+        page_size=pagination.page_size,
         data=[StoreResponse.model_validate(store) for store in stores],
     )
 

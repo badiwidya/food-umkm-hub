@@ -9,7 +9,7 @@ from fastapi import APIRouter, Query, status
 from app.dependency import PaginationQueryDep
 from app.users.dependency import UserServiceDep, UserTargetDep
 from app.users.enum import UserRole, UserStatus
-from app.users.schema import Pagination, UserListResponse, UserResponse
+from app.users.schema import UserListResponse, UserResponse
 
 user_admin_router = APIRouter()
 
@@ -32,9 +32,9 @@ async def list_users(
         role_filter=role,
     )
     return UserListResponse(
-        metadata=Pagination(
-            page=pagination.page, page_size=pagination.page_size, total=count
-        ),
+        page=pagination.page,
+        page_size=pagination.page_size,
+        total=count,
         data=[UserResponse.model_validate(user) for user in users],
     )
 

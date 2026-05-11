@@ -3,9 +3,10 @@ from typing import Annotated
 from uuid import UUID
 
 import phonenumbers
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+from pydantic import EmailStr, Field, field_validator
 from pydantic_extra_types.phone_numbers import PhoneNumberValidator
 
+from app.schema import BaseSchema, PaginatedResponse
 from app.users.enum import UserRole, UserStatus
 
 IDPhoneNumber = Annotated[
@@ -16,7 +17,7 @@ IDPhoneNumber = Annotated[
 ]
 
 
-class UserResponse(BaseModel):
+class UserResponse(BaseSchema):
     id: UUID
     full_name: str
     avatar_url: str | None
@@ -27,21 +28,11 @@ class UserResponse(BaseModel):
     email_verified_at: datetime | None
     phone_verified_at: datetime | None
 
-    model_config = ConfigDict(from_attributes=True)
+
+UserListResponse = PaginatedResponse[list[UserResponse]]
 
 
-class Pagination(BaseModel):
-    total: int
-    page: int
-    page_size: int
-
-
-class UserListResponse(BaseModel):
-    metadata: Pagination
-    data: list[UserResponse]
-
-
-class UpdateProfileRequest(BaseModel):
+class UpdateProfileRequest(BaseSchema):
     full_name: Annotated[str | None, Field(min_length=3)] = None
     avatar_url: str | None = None
 
@@ -53,18 +44,18 @@ class UpdateProfileRequest(BaseModel):
         return v
 
 
-class EmailChangeRequest(BaseModel):
+class EmailChangeRequest(BaseSchema):
     email: EmailStr
 
 
-class NumberChangeRequest(BaseModel):
+class NumberChangeRequest(BaseSchema):
     phone_number: IDPhoneNumber
 
 
-class ChangePasswordRequest(BaseModel):
+class ChangePasswordRequest(BaseSchema):
     old_password: Annotated[str, Field(min_length=8)]
     new_password: Annotated[str, Field(min_length=8)]
 
 
-class VerifyPhoneRequest(BaseModel):
+class VerifyPhoneRequest(BaseSchema):
     otp: str

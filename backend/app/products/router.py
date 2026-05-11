@@ -10,7 +10,6 @@ from app.products.dto import CreateProductDTO
 from app.products.enum import ProductCategory
 from app.products.schema import (
     CreateProductRequest,
-    Pagination,
     ProductDetailResponse,
     ProductListResponse,
     ProductSummaryResponse,
@@ -42,11 +41,9 @@ async def get_all_products(
     )
 
     return ProductListResponse(
-        metadata=Pagination(
-            page=pagination.page,
-            page_size=pagination.page_size,
-            total=count,
-        ),
+        page=pagination.page,
+        page_size=pagination.page_size,
+        total=count,
         data=[ProductSummaryResponse.model_validate(product) for product in products],
     )
 
@@ -129,11 +126,9 @@ async def get_my_products(
         is_owner=True,
     )
     return ProductListResponse(
-        metadata=Pagination(
-            page=pagination.page,
-            page_size=pagination.page_size,
-            total=count,
-        ),
+        page=pagination.page,
+        page_size=pagination.page_size,
+        total=count,
         data=[ProductSummaryResponse.model_validate(product) for product in products],
     )
 
@@ -157,10 +152,8 @@ async def get_products_by_store(
         is_owner=False,
     )
     return ProductListResponse(
-        metadata=Pagination(
-            page=pagination.page,
-            page_size=pagination.page_size,
-            total=count,
-        ),
+        page=pagination.page,
+        page_size=pagination.page_size,
+        total=count,
         data=[ProductSummaryResponse.model_validate(product) for product in products],
     )

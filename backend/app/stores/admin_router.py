@@ -26,7 +26,6 @@ store_admin_router = APIRouter()
     "/",
     summary="Mendapatkan daftar semua toko beserta data pemiliknya.",
     status_code=status.HTTP_200_OK,
-    response_model=StoreWithOwnerListResponse,
 )
 async def list_all(
     store_service: StoreServiceDep,
@@ -39,7 +38,7 @@ async def list_all(
         ],
         Query(),
     ] = ApprovalStatus.PENDING,
-) -> dict:
+) -> StoreWithOwnerListResponse:
     stores_with_owner, count = await store_service.list_all(
         keyword=keyword,
         page=pagination.page,
@@ -47,20 +46,20 @@ async def list_all(
         status=status,
     )
 
-    return {
-        "metadata": {
-            "total": count,
-            "page": pagination.page,
-            "page_size": pagination.page_size,
-        },
-        "data": [
-            {
-                **asdict(store_with_owner.store),
-                "owner": {**asdict(store_with_owner.owner)},
-            }
+    return StoreWithOwnerListResponse(
+        page=pagination.page,
+        page_size=pagination.page_size,
+        total=count,
+        data=[
+            StoreWithOwnerResponse.model_validate(
+                {
+                    **asdict(store_with_owner.store),
+                    "owner": {**asdict(store_with_owner.owner)},
+                }
+            )
             for store_with_owner in stores_with_owner
         ],
-    }
+    )
 
 
 @store_admin_router.get(
