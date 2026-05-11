@@ -1,9 +1,7 @@
 from datetime import datetime
-from decimal import Decimal
-from typing import Annotated
 from uuid import UUID
 
-from pydantic import PlainSerializer, field_validator
+from pydantic import NonNegativeInt, PlainSerializer, field_validator
 
 from app.products.enum import ProductCategory
 from app.schema import BaseSchema, PaginatedResponse
@@ -15,10 +13,8 @@ class ProductSummaryResponse(BaseSchema):
     store_id: UUID
     store_name: str
     name: str
-    price: Annotated[
-        Decimal,
-        PlainSerializer(lambda x: int(round(x)), return_type=int, when_used="json"),
-    ]
+    price: NonNegativeInt
+
     photo_url: str | None
     category: ProductCategory
     is_available: bool
@@ -35,7 +31,7 @@ class ProductDetailResponse(ProductSummaryResponse):
 
 class CreateProductRequest(BaseSchema):
     name: str
-    price: Decimal
+    price: NonNegativeInt
     category: ProductCategory
     photo_url: str | None = None
     description: str | None = None
@@ -43,7 +39,7 @@ class CreateProductRequest(BaseSchema):
 
 class UpdateProductRequest(BaseSchema):
     name: str | None = None
-    price: Decimal | None = None
+    price: NonNegativeInt | None = None
     category: ProductCategory | None = None
     photo_url: str | None = None
     description: str | None = None

@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
-from decimal import Decimal
 from uuid import UUID, uuid7
 
 from app.exception import DomainException
@@ -15,7 +14,7 @@ class Product:
     store_name: str
     name: str
     description: str | None = None
-    price: Decimal
+    price: int
     photo_url: str | None = None
     category: ProductCategory
     is_available: bool = False
@@ -33,7 +32,7 @@ class Product:
         store_id: UUID,
         store_name: str,
         name: str,
-        price: Decimal,
+        price: int,
         category: ProductCategory,
         description: str | None = None,
         photo_url: str | None = None,
@@ -61,7 +60,7 @@ class Product:
     def change_info(
         self,
         name: str | TUnset = UNSET,
-        price: Decimal | TUnset = UNSET,
+        price: int | TUnset = UNSET,
         category: ProductCategory | TUnset = UNSET,
         description: str | None | TUnset = UNSET,
         photo_url: str | None | TUnset = UNSET,
