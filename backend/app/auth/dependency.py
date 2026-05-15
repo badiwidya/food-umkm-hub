@@ -38,7 +38,7 @@ def get_token_payload(
     token: Annotated[str | None, Depends(oauth2_scheme)] = None,
 ) -> JWTPayload:
     if token is None:
-        raise AuthenticationException("Autentikasi diperlukan.", "missing_token")
+        raise AuthenticationException("Autentikasi diperlukan", "missing_token")
     payload = verify_access_token(token)
 
     return payload

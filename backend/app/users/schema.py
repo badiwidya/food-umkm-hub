@@ -40,7 +40,7 @@ class UpdateProfileRequest(BaseSchema):
     @classmethod
     def is_null(cls, v: str | None) -> str | None:
         if not v:
-            raise ValueError("Nama tidak boleh kosong.")
+            raise ValueError("nama tidak boleh kosong")
         return v
 
 

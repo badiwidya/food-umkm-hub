@@ -11,6 +11,7 @@ from app.users.schema import (
     EmailChangeRequest,
     NumberChangeRequest,
     UpdateProfileRequest,
+    UserResponse,
     VerifyPhoneRequest,
 )
 
@@ -20,13 +21,14 @@ user_router = APIRouter(prefix="/users", tags=["Users"])
 @user_router.patch(
     "/me",
     summary="Memperbarui profil pengguna yang sedang login.",
-    status_code=status.HTTP_204_NO_CONTENT,
+    status_code=status.HTTP_200_OK,
 )
 async def update_current_profile(
     user_service: UserServiceDep, user: CurrentUserDep, payload: UpdateProfileRequest
-) -> None:
+) -> UserResponse:
     data = payload.model_dump(exclude_unset=True)
-    await user_service.update_profile(user, data)
+    updated_user = await user_service.update_profile(user, data)
+    return UserResponse.model_validate(updated_user)
 
 
 @user_router.delete(
@@ -83,9 +85,12 @@ async def change_phone_number(
     background_tasks: BackgroundTasks,
     user: CurrentUserDep,
     payload: NumberChangeRequest,
-) -> None:
-    otp = await user_service.change_phone_number(user, str(payload.phone_number))
+) -> UserResponse:
+    otp, updated_user = await user_service.change_phone_number(
+        user, str(payload.phone_number)
+    )
     background_tasks.add_task(send_otp, str(payload.phone_number), otp)
+    return UserResponse.model_validate(updated_user)
 
 
 @user_router.post(

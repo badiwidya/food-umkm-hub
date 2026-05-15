@@ -35,18 +35,19 @@ class UserService:
 
         return users, total_count
 
-    async def update_profile(self, user: User, updates: dict[str, Any]) -> None:
+    async def update_profile(self, user: User, updates: dict[str, Any]) -> User:
         user.change_info(
             full_name=updates.get("full_name", UNSET),
             avatar_url=updates.get("avatar_url", UNSET),
         )
 
         await self._user_repo.update(user)
+        return user
 
     async def request_email_change(self, user: User, new_email: str) -> str:
         existing = await self._user_repo.get_by_email(new_email.strip().lower())
         if existing is not None and existing.id != user.id:
-            raise DomainException("Email sudah digunakan oleh akun lain.")
+            raise DomainException("Email sudah digunakan oleh akun lain")
 
         user.request_email_change(new_email)
         await self._user_repo.update(user)
@@ -70,7 +71,7 @@ class UserService:
             user.id, TokenType.PHONE_OTP
         )
         if token is None:
-            raise DomainException("Tidak ada kode OTP yang aktif.", "otp_not_found")
+            raise DomainException("Tidak ada kode OTP yang aktif", "otp_not_found")
 
         token.verify(raw_otp, TokenType.PHONE_OTP)
 
@@ -79,19 +80,21 @@ class UserService:
         await self._user_repo.update(user)
         await self._token_repo.delete_by_id(token.id)
 
-    async def change_phone_number(self, user: User, new_number: str) -> str:
+    async def change_phone_number(
+        self, user: User, new_number: str
+    ) -> tuple[str, User]:
         existing = await self._user_repo.get_by_phone_number(new_number.strip())
         if existing is not None and existing.id != user.id:
-            raise DomainException("Nomor telepon sudah digunakan oleh akun lain.")
+            raise DomainException("Nomor telepon sudah digunakan oleh akun lain")
 
         user.change_phone_number(new_number)
         await self._user_repo.update(user)
 
-        return await self.issue_phone_verification_otp(user)
+        return await self.issue_phone_verification_otp(user), user
 
     async def issue_phone_verification_otp(self, user: User) -> str:
         if user.is_phone_verified:
-            raise DomainException("Tidak ada nomor telepon yang perlu diverifikasi.")
+            raise DomainException("Tidak ada nomor telepon yang perlu diverifikasi")
 
         _, raw_otp = await self._issue_verification_token(user, TokenType.PHONE_OTP)
 
@@ -101,7 +104,7 @@ class UserService:
         self, user: User, old_password: str, new_password: str
     ) -> None:
         if not verify_password(old_password, user.password_hash):
-            raise DomainException("Password lama tidak sesuai.")
+            raise DomainException("Password lama tidak sesuai")
 
         new_password_hash = hash_password(new_password)
         user.change_password(new_password_hash)

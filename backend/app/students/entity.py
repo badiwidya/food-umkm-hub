@@ -27,7 +27,7 @@ class Student:
 
         normalized_department = department.strip()
         if not normalized_department:
-            raise DomainException("Departemen tidak boleh kosong.")
+            raise DomainException("Departemen tidak boleh kosong")
 
         return cls(
             user=user,
