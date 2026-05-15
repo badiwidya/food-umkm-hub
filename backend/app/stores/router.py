@@ -8,8 +8,9 @@ from app.dependency import PaginationQueryDep
 from app.exception import NotFoundException
 from app.stores.dependency import StoreServiceDep
 from app.stores.schema import (
+    StoreDetailResponse,
     StoreListResponse,
-    StoreResponse,
+    StoreSummaryResponse,
     UpdateStoreRequest,
 )
 
@@ -33,7 +34,7 @@ async def list(
         total=count,
         page=pagination.page,
         page_size=pagination.page_size,
-        data=[StoreResponse.model_validate(store) for store in stores],
+        data=[StoreSummaryResponse.model_validate(store) for store in stores],
     )
 
 
@@ -42,21 +43,22 @@ async def list(
     summary="Mendapatkan profil toko milik penjual yang sedang login.",
     status_code=status.HTTP_200_OK,
 )
-async def get_me(store: CurrentStoreDep) -> StoreResponse:
-    return StoreResponse.model_validate(store)
+async def get_me(store: CurrentStoreDep) -> StoreDetailResponse:
+    return StoreDetailResponse.model_validate(store)
 
 
 @store_router.patch(
     "/me",
     summary="Memperbarui informasi toko milik penjual yang sedang login.",
-    status_code=status.HTTP_204_NO_CONTENT,
+    status_code=status.HTTP_200_OK,
 )
 async def patch_me(
     store_service: StoreServiceDep, store: CurrentStoreDep, payload: UpdateStoreRequest
-) -> None:
-    await store_service.update_information(
+) -> StoreDetailResponse:
+    updated_store = await store_service.update_information(
         store, payload.model_dump(exclude_unset=True)
     )
+    return StoreDetailResponse.model_validate(updated_store)
 
 
 @store_router.post(
@@ -93,8 +95,8 @@ async def resubmit_application(
     summary="Mendapatkan detail toko berdasarkan ID.",
     status_code=status.HTTP_200_OK,
 )
-async def get_detail(store_service: StoreServiceDep, id: UUID) -> StoreResponse:
+async def get_detail(store_service: StoreServiceDep, id: UUID) -> StoreDetailResponse:
     store = await store_service.get_by_id(id)
     if store is None:
         raise NotFoundException("Toko tidak ada")
-    return StoreResponse.model_validate(store)
+    return StoreDetailResponse.model_validate(store)

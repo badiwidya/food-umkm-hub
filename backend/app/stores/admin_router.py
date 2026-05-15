@@ -15,8 +15,9 @@ from app.stores.dependency import StoreServiceDep, StoreTargetDep
 from app.stores.enum import ApprovalStatus
 from app.stores.schema import (
     RejectionNotesRequest,
+    StoreWithOwnerDetailResponse,
     StoreWithOwnerListResponse,
-    StoreWithOwnerResponse,
+    StoreWithOwnerSummaryResponse,
 )
 
 store_admin_router = APIRouter()
@@ -51,7 +52,7 @@ async def list_all(
         page_size=pagination.page_size,
         total=count,
         data=[
-            StoreWithOwnerResponse.model_validate(
+            StoreWithOwnerSummaryResponse.model_validate(
                 {
                     **asdict(store_with_owner.store),
                     "owner": {**asdict(store_with_owner.owner)},
@@ -66,15 +67,14 @@ async def list_all(
     "/{id}",
     summary="Mendapatkan detail toko beserta data pemiliknya berdasarkan ID.",
     status_code=status.HTTP_200_OK,
-    response_model=StoreWithOwnerResponse,
 )
 async def get_store_with_owner_details(
     store_service: StoreServiceDep, id: UUID
-) -> StoreWithOwnerResponse:
+) -> StoreWithOwnerDetailResponse:
     store_with_owner = await store_service.get_by_id_with_owner(id)
     if store_with_owner is None:
         raise NotFoundException("Toko tidak ada")
-    return StoreWithOwnerResponse.model_validate(
+    return StoreWithOwnerDetailResponse.model_validate(
         {**asdict(store_with_owner.owner), "owner": {**asdict(store_with_owner.owner)}}
     )
 

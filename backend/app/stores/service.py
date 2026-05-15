@@ -49,7 +49,7 @@ class StoreService:
 
         return stores, total_count
 
-    async def update_information(self, store: Store, updates: dict[str, Any]) -> None:
+    async def update_information(self, store: Store, updates: dict[str, Any]) -> Store:
         store.change_info(
             name=updates.get("name", UNSET),
             description=updates.get("description", UNSET),
@@ -60,6 +60,7 @@ class StoreService:
         )
 
         await self._store_repo.update(store)
+        return store
 
     async def approve(self, store: Store) -> None:
         store.approve()

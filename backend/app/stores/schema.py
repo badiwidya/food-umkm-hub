@@ -8,17 +8,20 @@ from app.stores.enum import ApprovalStatus
 from app.users.schema import UserResponse
 
 
-class StoreResponse(BaseSchema):
+class StoreSummaryResponse(BaseSchema):
     id: UUID
     name: str
+    photo_url: str | None
+    is_open: bool
+
+
+class StoreDetailResponse(StoreSummaryResponse):
     description: str
     address: str
-    photo_url: str | None
     qris_image_url: str | None
     maps_link: str | None
     approval_status: ApprovalStatus
     approval_notes: str | None
-    is_open: bool
     updated_at: datetime
     created_at: datetime
 
@@ -39,14 +42,18 @@ class UpdateStoreRequest(BaseSchema):
         return v
 
 
-StoreListResponse = PaginatedResponse[list[StoreResponse]]
+StoreListResponse = PaginatedResponse[list[StoreSummaryResponse]]
 
 
-class StoreWithOwnerResponse(StoreResponse):
+class StoreWithOwnerSummaryResponse(StoreSummaryResponse):
     owner: UserResponse
 
 
-StoreWithOwnerListResponse = PaginatedResponse[list[StoreWithOwnerResponse]]
+class StoreWithOwnerDetailResponse(StoreDetailResponse):
+    owner: UserResponse
+
+
+StoreWithOwnerListResponse = PaginatedResponse[list[StoreWithOwnerSummaryResponse]]
 
 
 class RejectionNotesRequest(BaseSchema):
