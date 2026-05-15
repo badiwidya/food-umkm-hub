@@ -15,7 +15,7 @@ class StudentService:
 
     async def update_information(
         self, student: Student, updates: dict[str, Any]
-    ) -> None:
+    ) -> Student:
         student.change_academic_info(
             updates.get("nim", UNSET),
             updates.get("faculty", UNSET),
@@ -23,3 +23,4 @@ class StudentService:
         )
 
         await self._student_repo.update(student)
+        return student

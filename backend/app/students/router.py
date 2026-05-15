@@ -21,13 +21,14 @@ async def get_me(student: CurrentStudentDep) -> StudentResponse:
 @student_router.patch(
     "/me",
     summary="Memperbarui informasi akademik mahasiswa yang sedang login.",
-    status_code=status.HTTP_204_NO_CONTENT,
+    status_code=status.HTTP_200_OK,
 )
 async def update(
     student_service: StudentServiceDep,
     student: CurrentStudentDep,
     payload: UpdateStudentRequest,
-) -> None:
+) -> StudentResponse:
     await student_service.update_information(
         student, payload.model_dump(exclude_unset=True)
     )
+    return StudentResponse.model_validate(student)
