@@ -23,7 +23,7 @@ user_router = APIRouter(prefix="/users", tags=["Users"])
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def update_current_profile(
-    user: CurrentUserDep, user_service: UserServiceDep, payload: UpdateProfileRequest
+    user_service: UserServiceDep, user: CurrentUserDep, payload: UpdateProfileRequest
 ) -> None:
     data = payload.model_dump(exclude_unset=True)
     await user_service.update_profile(user, data)
@@ -35,7 +35,7 @@ async def update_current_profile(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_current_user(
-    user: CurrentUserDep, user_service: UserServiceDep
+    user_service: UserServiceDep, user: CurrentUserDep
 ) -> None:
     await user_service.delete(user)
 
@@ -46,9 +46,9 @@ async def delete_current_user(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def request_email_change(
-    user: CurrentUserDep,
     user_service: UserServiceDep,
     background_tasks: BackgroundTasks,
+    user: CurrentUserDep,
     payload: EmailChangeRequest,
 ) -> None:
     url = await user_service.request_email_change(user, payload.email)
@@ -63,8 +63,8 @@ async def request_email_change(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def resend_email_change_verification(
-    user: CurrentUserDep,
     user_service: UserServiceDep,
+    user: CurrentUserDep,
     background_tasks: BackgroundTasks,
 ) -> None:
     url = await user_service.issue_email_change_verification_token(user)
@@ -79,9 +79,9 @@ async def resend_email_change_verification(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def change_phone_number(
-    user: CurrentUserDep,
     user_service: UserServiceDep,
     background_tasks: BackgroundTasks,
+    user: CurrentUserDep,
     payload: NumberChangeRequest,
 ) -> None:
     otp = await user_service.change_phone_number(user, str(payload.phone_number))
@@ -94,7 +94,7 @@ async def change_phone_number(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def verify_phone(
-    user: CurrentUserDep, user_service: UserServiceDep, payload: VerifyPhoneRequest
+    user_service: UserServiceDep, user: CurrentUserDep, payload: VerifyPhoneRequest
 ) -> None:
     await user_service.verify_phone(user, payload.otp)
 
@@ -105,9 +105,9 @@ async def verify_phone(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def resend_phone_otp(
-    user: CurrentUserDep,
     user_service: UserServiceDep,
     background_tasks: BackgroundTasks,
+    user: CurrentUserDep,
 ) -> None:
     otp = await user_service.issue_phone_verification_otp(user)
     background_tasks.add_task(send_otp, user.phone_number, otp)
@@ -119,6 +119,6 @@ async def resend_phone_otp(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def change_password(
-    user: CurrentUserDep, user_service: UserServiceDep, payload: ChangePasswordRequest
+    user_service: UserServiceDep, user: CurrentUserDep, payload: ChangePasswordRequest
 ) -> None:
     await user_service.change_password(user, payload.old_password, payload.new_password)

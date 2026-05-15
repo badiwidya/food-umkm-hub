@@ -28,8 +28,8 @@ async def list_users(
     users, count = await user_service.list(
         page=pagination.page,
         page_size=pagination.page_size,
-        status_filter=status,
-        role_filter=role,
+        status=status,
+        role=role,
     )
     return UserListResponse(
         page=pagination.page,
@@ -45,7 +45,7 @@ async def list_users(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_target_user(
-    target: UserTargetDep, user_service: UserServiceDep
+    user_service: UserServiceDep, target: UserTargetDep
 ) -> None:
     await user_service.delete(target)
 
@@ -56,7 +56,7 @@ async def delete_target_user(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def suspend_target_user(
-    target: UserTargetDep, user_service: UserServiceDep
+    user_service: UserServiceDep, target: UserTargetDep
 ) -> None:
     await user_service.suspend(target)
 
@@ -67,6 +67,6 @@ async def suspend_target_user(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def unsuspend_target_user(
-    target: UserTargetDep, user_service: UserServiceDep
+    user_service: UserServiceDep, target: UserTargetDep
 ) -> None:
     await user_service.unsuspend(target)

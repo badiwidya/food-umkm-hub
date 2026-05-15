@@ -22,15 +22,15 @@ class UserService:
 
     async def list(
         self,
-        page: int = 1,
-        page_size: int = 20,
-        status_filter: UserStatus | None = None,
-        role_filter: UserRole | None = None,
+        page: int,
+        page_size: int,
+        status: UserStatus | None,
+        role: UserRole | None,
     ) -> tuple[list[User], int]:
         limit = page_size
         offset = (page - 1) * page_size
         users, total_count = await self._user_repo.get_all(
-            limit=limit, offset=offset, status=status_filter, role=role_filter
+            limit=limit, offset=offset, status=status, role=role
         )
 
         return users, total_count
