@@ -29,7 +29,7 @@ async def get_all_products(
     store_open: Annotated[bool | None, Query()] = None,
     available: Annotated[bool | None, Query()] = None,
     category: Annotated[ProductCategory | None, Query()] = None,
-    keyword: Annotated[str | None, Query(alias="q")] = None,
+    keyword: Annotated[str | None, Query(alias="search")] = None,
 ) -> ProductListResponse:
     products, count = await product_service.list_all(
         is_store_open=store_open,
@@ -114,7 +114,7 @@ async def get_my_products(
     pagination: PaginationQueryDep,
     available: Annotated[bool | None, Query()] = None,
     category: Annotated[ProductCategory | None, Query()] = None,
-    keyword: Annotated[str | None, Query(alias="q")] = None,
+    keyword: Annotated[str | None, Query(alias="search")] = None,
 ) -> ProductListResponse:
     products, count = await product_service.list_by_store(
         store_id=store.id,
@@ -140,7 +140,7 @@ async def get_products_by_store(
     pagination: PaginationQueryDep,
     available: Annotated[bool | None, Query()] = None,
     category: Annotated[ProductCategory | None, Query()] = None,
-    keyword: Annotated[str | None, Query(alias="q")] = None,
+    keyword: Annotated[str | None, Query(alias="search")] = None,
 ) -> ProductListResponse:
     products, count = await product_service.list_by_store(
         store_id=store_id,
