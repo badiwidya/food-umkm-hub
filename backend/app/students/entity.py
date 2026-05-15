@@ -19,11 +19,11 @@ class Student:
     def create(cls, user: User, nim: str, faculty: str, department: str) -> Student:
         normalized_nim = nim.strip().upper()
         if not normalized_nim:
-            raise DomainException("NIM tidak boleh kosong.")
+            raise DomainException("NIM tidak boleh kosong")
 
         normalized_faculty = faculty.strip()
         if not normalized_faculty:
-            raise DomainException("Fakultas tidak boleh kosong.")
+            raise DomainException("Fakultas tidak boleh kosong")
 
         normalized_department = department.strip()
         if not normalized_department:
@@ -47,7 +47,7 @@ class Student:
         if not isinstance(nim, TUnset):
             normalized_nim = nim.strip().upper()
             if not normalized_nim:
-                raise DomainException("NIM tidak boleh kosong.")
+                raise DomainException("NIM tidak boleh kosong")
             if normalized_nim != self.nim:
                 self.nim = normalized_nim
                 has_changed = True
@@ -55,7 +55,7 @@ class Student:
         if not isinstance(faculty, TUnset):
             normalized_faculty = faculty.strip()
             if not normalized_faculty:
-                raise DomainException("Fakultas tidak boleh kosong.")
+                raise DomainException("Fakultas tidak boleh kosong")
             if normalized_faculty != self.faculty:
                 self.faculty = normalized_faculty
                 has_changed = True
@@ -63,7 +63,7 @@ class Student:
         if not isinstance(department, TUnset):
             normalized_department = department.strip()
             if not normalized_department:
-                raise DomainException("Departemen tidak boleh kosong.")
+                raise DomainException("Departemen tidak boleh kosong")
             if normalized_department != self.department:
                 self.department = normalized_department
                 has_changed = True

@@ -44,7 +44,7 @@ async def user_target_from_path(
 ) -> User:
     user = await user_service.get_by_id(id)
     if user is None:
-        raise NotFoundException("User tidak ada.")
+        raise NotFoundException("User tidak ada")
     return user
 
 

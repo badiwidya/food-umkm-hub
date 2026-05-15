@@ -42,15 +42,15 @@ class User:
     ) -> User:
         normalized_name = full_name.strip()
         if not normalized_name:
-            raise DomainException("Nama tidak boleh kosong.")
+            raise DomainException("Nama tidak boleh kosong")
 
         normalized_email = email.strip().lower()
         if not normalized_email:
-            raise DomainException("Email tidak boleh kosong.")
+            raise DomainException("Email tidak boleh kosong")
 
         normalized_phone = phone_number.strip()
         if not normalized_phone:
-            raise DomainException("Nomor telepon tidak boleh kosong.")
+            raise DomainException("Nomor telepon tidak boleh kosong")
 
         return cls(
             full_name=normalized_name,
@@ -86,7 +86,7 @@ class User:
         if not isinstance(full_name, TUnset):
             normalized_name = full_name.strip()
             if not normalized_name:
-                raise DomainException("Nama tidak boleh kosong.")
+                raise DomainException("Nama tidak boleh kosong")
             if normalized_name != self.full_name:
                 self.full_name = normalized_name
                 has_changed = True
@@ -109,11 +109,11 @@ class User:
     def request_email_change(self, new_email: str) -> None:
         if not self.is_email_verified:
             raise DomainException(
-                "Email saat ini belum diverifikasi.", "email_unverified"
+                "Email saat ini belum diverifikasi", "email_unverified"
             )
 
         if new_email.strip().lower() == self.email:
-            raise DomainException("Email baru tidak boleh sama dengan email saat ini.")
+            raise DomainException("Email baru tidak boleh sama dengan email saat ini")
 
         self.pending_email = new_email.strip().lower()
         self._touch()
@@ -121,7 +121,7 @@ class User:
     def apply_pending_email(self) -> None:
         if not self.pending_email:
             raise DomainException(
-                "Tidak ada permintaan perubahan email baru.",
+                "Tidak ada permintaan perubahan email baru",
             )
 
         self.email = self.pending_email
@@ -136,7 +136,7 @@ class User:
     def change_phone_number(self, new_number: str) -> None:
         if new_number.strip() == self.phone_number:
             raise DomainException(
-                "Nomor telepon baru tidak boleh sama dengan nomor telepon saat ini."
+                "Nomor telepon baru tidak boleh sama dengan nomor telepon saat ini"
             )
         self.phone_number = new_number.strip()
         self.phone_verified_at = None
@@ -150,7 +150,7 @@ class User:
         # Apapun yang terjadi, akun admin tidak boleh dihapus (baik oleh diri sendiri
         # ataupun admin lain). Ada prosedur yang harus diikuti.
         if self.role == UserRole.ADMIN:
-            raise DomainException("Akun Administrator tidak dapat dihapus.")
+            raise DomainException("Akun Administrator tidak dapat dihapus")
 
         if self.is_deleted:
             return
@@ -162,7 +162,7 @@ class User:
         # Apapun yang terjadi, akun admin tidak boleh disuspend (baik oleh diri sendiri
         # ataupun admin lain).
         if self.role == UserRole.ADMIN:
-            raise DomainException("Akun Administrator tidak dapat disuspend.")
+            raise DomainException("Akun Administrator tidak dapat disuspend")
 
         if self.is_suspended:
             return
@@ -233,12 +233,12 @@ class VerificationToken:
             inv_err_type = "invalid_otp"
 
         if self.token_type != expected_type:
-            raise DomainException(f"{name} tidak valid.", inv_err_type)
+            raise DomainException(f"{name} tidak valid", inv_err_type)
 
         if self.is_expired:
-            raise DomainException(f"{name} sudah tidak berlaku.", exp_err_type)
+            raise DomainException(f"{name} sudah tidak berlaku", exp_err_type)
 
         if not hmac.compare_digest(
             hashlib.sha256(raw_token.encode()).hexdigest(), self.token_hash
         ):
-            raise DomainException(f"{name} tidak valid.", inv_err_type)
+            raise DomainException(f"{name} tidak valid", inv_err_type)

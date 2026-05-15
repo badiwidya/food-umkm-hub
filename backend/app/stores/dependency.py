@@ -29,7 +29,7 @@ StoreServiceDep = Annotated[StoreService, Depends(get_store_service)]
 async def store_target_from_path(id: UUID, store_service: StoreServiceDep) -> Store:
     store = await store_service.get_by_id(id)
     if store is None:
-        raise NotFoundException("Toko tidak ada.")
+        raise NotFoundException("Toko tidak ada")
     return store
 
 

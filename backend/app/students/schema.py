@@ -19,5 +19,5 @@ class UpdateStudentRequest(BaseSchema):
     @classmethod
     def is_null(cls, v: str | None, info) -> str | None:
         if not v:
-            raise ValueError(f"{info.field_name} tidak boleh kosong.")
+            raise ValueError(f"{info.field_name} tidak boleh kosong")
         return v

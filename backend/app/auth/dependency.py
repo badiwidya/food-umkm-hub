@@ -49,7 +49,7 @@ JWTPayloadDep = Annotated[JWTPayload, Depends(get_token_payload)]
 
 def ensure_admin(payload: JWTPayloadDep) -> None:
     if UserRole(payload.role) != UserRole.ADMIN:
-        raise NotAllowedException("Aksi dilarang.")
+        raise NotAllowedException("Aksi dilarang")
 
 
 EnsureAdminDep = Depends(ensure_admin)
@@ -61,7 +61,7 @@ async def get_current_user(
 ) -> User:
     user = await user_service.get_by_id(payload.sub)
     if user is None:
-        raise AuthenticationException("Autentikasi gagal.")
+        raise AuthenticationException("Autentikasi gagal")
     _ensure_user_active(user)
     return user
 
@@ -74,10 +74,10 @@ async def get_current_student(
     student_service: StudentServiceDep,
 ) -> Student:
     if UserRole(payload.role) != UserRole.STUDENT:
-        raise NotAllowedException("Aksi dilarang.")
+        raise NotAllowedException("Aksi dilarang")
     student = await student_service.get_by_user_id(payload.sub)
     if student is None:
-        raise AuthenticationException("Autentikasi gagal.")
+        raise AuthenticationException("Autentikasi gagal")
     _ensure_user_active(student.user)
     return student
 
@@ -92,7 +92,7 @@ async def get_current_store(
         raise NotAllowedException("Aksi dilarang.")
     store_with_owner = await store_service.get_by_owner_id(payload.sub)
     if store_with_owner is None:
-        raise AuthenticationException("Autentikasi gagal.")
+        raise AuthenticationException("Autentikasi gagal")
     _ensure_user_active(store_with_owner.owner)
     return store_with_owner.store
 
@@ -102,4 +102,4 @@ CurrentStoreDep = Annotated[Store, Depends(get_current_store)]
 
 def _ensure_user_active(user: User):
     if user.is_suspended:
-        raise NotAllowedException("Akun Anda telah ditangguhkan.", "account_suspended")
+        raise NotAllowedException("Akun Anda telah ditangguhkan", "account_suspended")

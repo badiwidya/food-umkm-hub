@@ -38,11 +38,11 @@ class Product:
         photo_url: str | None = None,
     ) -> Product:
         if price <= 0:
-            raise DomainException("Harga produk harus lebih dari 0.")
+            raise DomainException("Harga produk harus lebih dari 0")
 
         normalized_name = name.strip()
         if not normalized_name:
-            raise DomainException("Nama produk tidak boleh kosong.")
+            raise DomainException("Nama produk tidak boleh kosong")
 
         normalized_desc = description.strip() if description is not None else None
         normalized_photo = photo_url.strip() if photo_url is not None else None
@@ -70,14 +70,14 @@ class Product:
         if not isinstance(name, TUnset):
             normalized_name = name.strip()
             if not normalized_name:
-                raise DomainException("Nama produk tidak boleh kosong.")
+                raise DomainException("Nama produk tidak boleh kosong")
             if normalized_name != self.name:
                 self.name = normalized_name
                 has_changed = True
 
         if not isinstance(price, TUnset):
             if price <= 0:
-                raise DomainException("Harga produk harus lebih dari 0.")
+                raise DomainException("Harga produk harus lebih dari 0")
             if price != self.price:
                 self.price = price
                 has_changed = True

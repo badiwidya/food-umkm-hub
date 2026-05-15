@@ -48,7 +48,7 @@ class UpdateProductRequest(BaseSchema):
     @classmethod
     def is_null(cls, v: str | None) -> str | None:
         if not v:
-            raise ValueError("Nama tidak boleh kosong.")
+            raise ValueError("Nama tidak boleh kosong")
         return v
 
 

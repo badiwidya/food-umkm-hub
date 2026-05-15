@@ -96,5 +96,5 @@ async def resubmit_application(
 async def get_detail(store_service: StoreServiceDep, id: UUID) -> StoreResponse:
     store = await store_service.get_by_id(id)
     if store is None:
-        raise NotFoundException("Toko tidak ada.")
+        raise NotFoundException("Toko tidak ada")
     return StoreResponse.model_validate(store)

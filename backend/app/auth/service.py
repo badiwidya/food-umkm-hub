@@ -76,17 +76,17 @@ class AuthService:
         user = await self._user_repo.get_by_email(email.strip().lower())
         if user is None or not verify_password(password, user.password_hash):
             raise AuthenticationException(
-                "Email atau password salah.", "invalid_credentials"
+                "Email atau password salah", "invalid_credentials"
             )
 
         if not user.is_email_verified:
             raise AuthenticationException(
-                "Email belum diverifikasi.", "email_unverified"
+                "Email belum diverifikasi", "email_unverified"
             )
 
         if user.is_suspended:
             raise NotAllowedException(
-                "Akun Anda telah ditangguhkan.", "account_suspended"
+                "Akun Anda telah ditangguhkan", "account_suspended"
             )
 
         access_token = create_access_token(
@@ -98,7 +98,7 @@ class AuthService:
     async def verify_email_change(self, token_id: UUID, raw_token: str) -> None:
         token = await self._token_repo.get_by_id(token_id)
         if token is None:
-            raise DomainException("Tautan verifikasi tidak valid.", "invalid_token")
+            raise DomainException("Tautan verifikasi tidak valid", "invalid_token")
 
         token.verify(raw_token, TokenType.EMAIL_CHANGE_VERIFICATION)
 
@@ -112,7 +112,7 @@ class AuthService:
     async def verify_email(self, token_id: UUID, raw_token: str) -> None:
         token = await self._token_repo.get_by_id(token_id)
         if token is None:
-            raise DomainException("Tautan verifikasi tidak valid.", "invalid_token")
+            raise DomainException("Tautan verifikasi tidak valid", "invalid_token")
 
         token.verify(raw_token, TokenType.EMAIL_VERIFICATION)
 
@@ -147,7 +147,7 @@ class AuthService:
     ) -> None:
         token = await self._token_repo.get_by_id(token_id)
         if token is None:
-            raise DomainException("Token reset password tidak valid.", "invalid_token")
+            raise DomainException("Token reset password tidak valid", "invalid_token")
 
         token.verify(raw_token, TokenType.PASSWORD_RESET)
 
@@ -166,8 +166,8 @@ class AuthService:
         )
         if existing is not None:
             if existing.email == email.strip().lower():
-                raise DomainException("Email sudah digunakan.", "email_taken")
-            raise DomainException("Nomor telepon sudah digunakan.", "phone_taken")
+                raise DomainException("Email sudah digunakan", "email_taken")
+            raise DomainException("Nomor telepon sudah digunakan", "phone_taken")
 
     async def _build_email_verification_link(self, user: User) -> str:
         token, raw_token = await self._issue_verification_token(
