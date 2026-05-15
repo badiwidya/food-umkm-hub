@@ -30,7 +30,7 @@ store_admin_router = APIRouter()
 async def list_all(
     store_service: StoreServiceDep,
     pagination: PaginationQueryDep,
-    keyword: Annotated[str | None, Query(alias="q")] = None,
+    keyword: Annotated[str | None, Query(alias="search")] = None,
     # Default pending karena fokus utama admin adalah kurasi registrasi toko
     status: Annotated[
         Annotated[
@@ -69,15 +69,14 @@ async def list_all(
     response_model=StoreWithOwnerResponse,
 )
 async def get_store_with_owner_details(
-    id: UUID, store_service: StoreServiceDep
-) -> dict:
+    store_service: StoreServiceDep, id: UUID
+) -> StoreWithOwnerResponse:
     store_with_owner = await store_service.get_by_id_with_owner(id)
     if store_with_owner is None:
         raise NotFoundException("Toko tidak ada.")
-    return {
-        **asdict(store_with_owner.store),
-        "owner": {**asdict(store_with_owner.owner)},
-    }
+    return StoreWithOwnerResponse.model_validate(
+        {**asdict(store_with_owner.owner), "owner": {**asdict(store_with_owner.owner)}}
+    )
 
 
 @store_admin_router.post(
@@ -86,7 +85,7 @@ async def get_store_with_owner_details(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def approve_application(
-    store: StoreTargetDep, store_service: StoreServiceDep
+    store_service: StoreServiceDep, store: StoreTargetDep
 ) -> None:
     await store_service.approve(store)
 
@@ -97,8 +96,8 @@ async def approve_application(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def reject_application(
-    store: StoreTargetDep,
     store_service: StoreServiceDep,
+    store: StoreTargetDep,
     payload: Annotated[RejectionNotesRequest | None, Body] = None,
 ) -> None:
     notes = payload.notes if payload else None
