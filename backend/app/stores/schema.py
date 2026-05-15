@@ -20,8 +20,6 @@ class StoreDetailResponse(StoreSummaryResponse):
     address: str
     qris_image_url: str | None
     maps_link: str | None
-    approval_status: ApprovalStatus
-    approval_notes: str | None
     updated_at: datetime
     created_at: datetime
 
@@ -45,12 +43,22 @@ class UpdateStoreRequest(BaseSchema):
 StoreListResponse = PaginatedResponse[list[StoreSummaryResponse]]
 
 
-class StoreWithOwnerSummaryResponse(StoreSummaryResponse):
+class StoreWithOwnerSummaryResponse(BaseSchema):
+    id: UUID
+    name: str
+    photo_url: str | None
+    approval_status: ApprovalStatus
     owner: UserResponse
 
 
-class StoreWithOwnerDetailResponse(StoreDetailResponse):
-    owner: UserResponse
+class StoreWithOwnerDetailResponse(StoreWithOwnerSummaryResponse):
+    description: str
+    address: str
+    qris_image_url: str | None
+    maps_link: str | None
+    approval_notes: str | None
+    updated_at: datetime
+    created_at: datetime
 
 
 StoreWithOwnerListResponse = PaginatedResponse[list[StoreWithOwnerSummaryResponse]]

@@ -75,7 +75,7 @@ async def get_store_with_owner_details(
     if store_with_owner is None:
         raise NotFoundException("Toko tidak ada")
     return StoreWithOwnerDetailResponse.model_validate(
-        {**asdict(store_with_owner.owner), "owner": {**asdict(store_with_owner.owner)}}
+        {**asdict(store_with_owner.store), "owner": {**asdict(store_with_owner.owner)}}
     )
 
 
