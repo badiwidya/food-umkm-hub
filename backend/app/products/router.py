@@ -16,7 +16,6 @@ from app.products.schema import (
     UpdateAvailabilityRequest,
     UpdateProductRequest,
 )
-from app.schema import MessageResponse
 
 product_router = APIRouter(prefix="/products", tags=["Products"])
 store_product_router = APIRouter(prefix="/stores", tags=["Products"])
@@ -88,13 +87,12 @@ async def update_product_information(
     return ProductDetailResponse.model_validate(product)
 
 
-@product_router.delete("/{id}", status_code=status.HTTP_200_OK)
+@product_router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_product(
     product_service: ProductServiceDep,
     product: AuthorizedProductTargetDep,
-) -> MessageResponse:
+) -> None:
     await product_service.delete(product)
-    return MessageResponse(message="Produk berhasil dihapus")
 
 
 @product_router.patch("/{id}/availability", status_code=status.HTTP_200_OK)

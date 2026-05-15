@@ -16,7 +16,3 @@ class PaginatedResponse[T](BaseSchema):
     page_size: int
     total: int
     data: T
-
-
-class MessageResponse(BaseSchema):
-    message: str
