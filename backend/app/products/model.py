@@ -1,8 +1,7 @@
 from datetime import datetime
-from decimal import Decimal
 from uuid import UUID
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import BigInteger, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -17,7 +16,7 @@ class ProductModel(Base):
     store_id: Mapped[UUID] = mapped_column(ForeignKey("stores.id"))
     name: Mapped[str]
     description: Mapped[str | None]
-    price: Mapped[Decimal]
+    price: Mapped[int] = mapped_column(BigInteger)
     photo_url: Mapped[str | None]
     category: Mapped[ProductCategory]
     is_available: Mapped[bool]

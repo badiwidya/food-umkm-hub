@@ -36,11 +36,11 @@ class Store:
     ) -> Store:
         normalized_name = name.strip()
         if not normalized_name:
-            raise DomainException("Nama toko tidak boleh kosong.")
+            raise DomainException("Nama toko tidak boleh kosong")
 
         normalized_desc = description.strip()
         if not normalized_desc:
-            raise DomainException("Deskripsi toko tidak boleh kosong.")
+            raise DomainException("Deskripsi toko tidak boleh kosong")
 
         normalized_address = address.strip()
         if not normalized_address:
@@ -73,7 +73,7 @@ class Store:
         if not isinstance(name, TUnset):
             normalized_name = name.strip()
             if not normalized_name:
-                raise DomainException("Nama tidak boleh kosong.")
+                raise DomainException("Nama tidak boleh kosong")
             if normalized_name != self.name:
                 self.name = normalized_name
                 has_changed = True
@@ -81,7 +81,7 @@ class Store:
         if not isinstance(description, TUnset):
             normalized_desc = description.strip()
             if not normalized_desc:
-                raise DomainException("Deskripsi tidak boleh kosong.")
+                raise DomainException("Deskripsi tidak boleh kosong")
             if normalized_desc != self.description:
                 self.description = normalized_desc
                 has_changed = True
@@ -89,7 +89,7 @@ class Store:
         if not isinstance(address, TUnset):
             normalized_address = address.strip()
             if not normalized_address:
-                raise DomainException("Alamat tidak boleh kosong.")
+                raise DomainException("Alamat tidak boleh kosong")
             if normalized_address != self.address:
                 self.address = normalized_address
                 has_changed = True
@@ -120,7 +120,7 @@ class Store:
     def open(self) -> None:
         if self.approval_status != ApprovalStatus.APPROVED:
             raise DomainException(
-                "Toko harus disetujui terlebih dahulu sebelum dapat mengubah status operasional."
+                "Toko harus disetujui terlebih dahulu sebelum dapat mengubah status operasional"
             )
         self.is_open = True
         self._touch()
@@ -128,7 +128,7 @@ class Store:
     def close(self) -> None:
         if self.approval_status != ApprovalStatus.APPROVED:
             raise DomainException(
-                "Toko harus disetujui terlebih dahulu sebelum dapat mengubah status operasional."
+                "Toko harus disetujui terlebih dahulu sebelum dapat mengubah status operasional"
             )
         self.is_open = False
         self._touch()
@@ -139,21 +139,21 @@ class Store:
             ApprovalStatus.REJECTED,
         ):
             raise DomainException(
-                "Hanya toko dengan status pending atau ditolak yang bisa disetujui."
+                "Hanya toko dengan status pending atau ditolak yang bisa disetujui"
             )
         self.approval_status = ApprovalStatus.APPROVED
         self._touch()
 
     def reject(self, notes: str | None) -> None:
         if self.approval_status != ApprovalStatus.PENDING:
-            raise DomainException("Hanya toko dengan status pending yang bisa ditolak.")
+            raise DomainException("Hanya toko dengan status pending yang bisa ditolak")
         self.approval_status = ApprovalStatus.REJECTED
         self.approval_notes = notes
         self._touch()
 
     def resubmit(self) -> None:
         if self.approval_status != ApprovalStatus.REJECTED:
-            raise DomainException("Hanya toko yang ditolak yang bisa mengajukan ulang.")
+            raise DomainException("Hanya toko yang ditolak yang bisa mengajukan ulang")
         self.approval_status = ApprovalStatus.PENDING
         self.approval_notes = None
         self._touch()

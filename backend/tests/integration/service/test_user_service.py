@@ -220,7 +220,7 @@ class TestStatusChange:
         deleted = await user_service.get_by_id(user.id)
         assert deleted is None
 
-        _, count = await user_service.list()
+        _, count = await user_service.list(1, 20, None, None)
         assert count == 0
 
 
@@ -249,11 +249,13 @@ class TestList:
             status=UserStatus.SUSPENDED,
         )
 
-        _, count_umkm = await user_service.list(role_filter=UserRole.SELLER)
+        _, count_umkm = await user_service.list(1, 10, None, role=UserRole.SELLER)
         assert count_umkm == 5
 
-        _, count_admin = await user_service.list(role_filter=UserRole.ADMIN)
+        _, count_admin = await user_service.list(1, 10, None, role=UserRole.ADMIN)
         assert count_admin == 5
 
-        _, count_suspended = await user_service.list(status_filter=UserStatus.SUSPENDED)
+        _, count_suspended = await user_service.list(
+            1, 10, status=UserStatus.SUSPENDED, role=None
+        )
         assert count_suspended == 1

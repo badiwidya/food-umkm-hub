@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
-from decimal import Decimal
 from uuid import UUID, uuid7
 
 from app.exception import DomainException
@@ -15,7 +14,7 @@ class Product:
     store_name: str
     name: str
     description: str | None = None
-    price: Decimal
+    price: int
     photo_url: str | None = None
     category: ProductCategory
     is_available: bool = False
@@ -33,17 +32,17 @@ class Product:
         store_id: UUID,
         store_name: str,
         name: str,
-        price: Decimal,
+        price: int,
         category: ProductCategory,
         description: str | None = None,
         photo_url: str | None = None,
     ) -> Product:
         if price <= 0:
-            raise DomainException("Harga produk harus lebih dari 0.")
+            raise DomainException("Harga produk harus lebih dari 0")
 
         normalized_name = name.strip()
         if not normalized_name:
-            raise DomainException("Nama produk tidak boleh kosong.")
+            raise DomainException("Nama produk tidak boleh kosong")
 
         normalized_desc = description.strip() if description is not None else None
         normalized_photo = photo_url.strip() if photo_url is not None else None
@@ -61,7 +60,7 @@ class Product:
     def change_info(
         self,
         name: str | TUnset = UNSET,
-        price: Decimal | TUnset = UNSET,
+        price: int | TUnset = UNSET,
         category: ProductCategory | TUnset = UNSET,
         description: str | None | TUnset = UNSET,
         photo_url: str | None | TUnset = UNSET,
@@ -71,14 +70,14 @@ class Product:
         if not isinstance(name, TUnset):
             normalized_name = name.strip()
             if not normalized_name:
-                raise DomainException("Nama produk tidak boleh kosong.")
+                raise DomainException("Nama produk tidak boleh kosong")
             if normalized_name != self.name:
                 self.name = normalized_name
                 has_changed = True
 
         if not isinstance(price, TUnset):
             if price <= 0:
-                raise DomainException("Harga produk harus lebih dari 0.")
+                raise DomainException("Harga produk harus lebih dari 0")
             if price != self.price:
                 self.price = price
                 has_changed = True

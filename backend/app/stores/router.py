@@ -4,12 +4,13 @@ from uuid import UUID
 from fastapi import APIRouter, Query, status
 
 from app.auth.dependency import CurrentStoreDep
+from app.dependency import PaginationQueryDep
 from app.exception import NotFoundException
 from app.stores.dependency import StoreServiceDep
 from app.stores.schema import (
-    Pagination,
+    StoreDetailResponse,
     StoreListResponse,
-    StoreResponse,
+    StoreSummaryResponse,
     UpdateStoreRequest,
 )
 
@@ -23,16 +24,17 @@ store_router = APIRouter(prefix="/stores", tags=["Stores"])
 )
 async def list(
     store_service: StoreServiceDep,
-    keyword: Annotated[str | None, Query(alias="q")] = None,
-    page: Annotated[int, Query(ge=1)] = 1,
-    page_size: Annotated[int, Query(ge=1, le=100)] = 12,
+    pagination: PaginationQueryDep,
+    keyword: Annotated[str | None, Query(alias="search")] = None,
 ) -> StoreListResponse:
     stores, count = await store_service.list(
-        keyword=keyword, page=page, page_size=page_size
+        keyword=keyword, page=pagination.page, page_size=pagination.page_size
     )
     return StoreListResponse(
-        metadata=Pagination(total=count, page=page, page_size=page_size),
-        data=[StoreResponse.model_validate(store) for store in stores],
+        total=count,
+        page=pagination.page,
+        page_size=pagination.page_size,
+        data=[StoreSummaryResponse.model_validate(store) for store in stores],
     )
 
 
@@ -41,21 +43,22 @@ async def list(
     summary="Mendapatkan profil toko milik penjual yang sedang login.",
     status_code=status.HTTP_200_OK,
 )
-async def get_me(store: CurrentStoreDep) -> StoreResponse:
-    return StoreResponse.model_validate(store)
+async def get_me(store: CurrentStoreDep) -> StoreDetailResponse:
+    return StoreDetailResponse.model_validate(store)
 
 
 @store_router.patch(
     "/me",
     summary="Memperbarui informasi toko milik penjual yang sedang login.",
-    status_code=status.HTTP_204_NO_CONTENT,
+    status_code=status.HTTP_200_OK,
 )
 async def patch_me(
-    payload: UpdateStoreRequest, store: CurrentStoreDep, store_service: StoreServiceDep
-) -> None:
-    await store_service.update_information(
+    store_service: StoreServiceDep, store: CurrentStoreDep, payload: UpdateStoreRequest
+) -> StoreDetailResponse:
+    updated_store = await store_service.update_information(
         store, payload.model_dump(exclude_unset=True)
     )
+    return StoreDetailResponse.model_validate(updated_store)
 
 
 @store_router.post(
@@ -63,7 +66,7 @@ async def patch_me(
     summary="Membuka toko untuk menerima pesanan.",
     status_code=status.HTTP_204_NO_CONTENT,
 )
-async def open_me(store: CurrentStoreDep, store_service: StoreServiceDep) -> None:
+async def open_me(store_service: StoreServiceDep, store: CurrentStoreDep) -> None:
     await store_service.open(store)
 
 
@@ -72,7 +75,7 @@ async def open_me(store: CurrentStoreDep, store_service: StoreServiceDep) -> Non
     summary="Menutup toko sementara.",
     status_code=status.HTTP_204_NO_CONTENT,
 )
-async def close_me(store: CurrentStoreDep, store_service: StoreServiceDep) -> None:
+async def close_me(store_service: StoreServiceDep, store: CurrentStoreDep) -> None:
     await store_service.close(store)
 
 
@@ -82,7 +85,7 @@ async def close_me(store: CurrentStoreDep, store_service: StoreServiceDep) -> No
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def resubmit_application(
-    store: CurrentStoreDep, store_service: StoreServiceDep
+    store_service: StoreServiceDep, store: CurrentStoreDep
 ) -> None:
     await store_service.resubmit(store)
 
@@ -92,8 +95,8 @@ async def resubmit_application(
     summary="Mendapatkan detail toko berdasarkan ID.",
     status_code=status.HTTP_200_OK,
 )
-async def get_detail(id: UUID, store_service: StoreServiceDep) -> StoreResponse:
+async def get_detail(store_service: StoreServiceDep, id: UUID) -> StoreDetailResponse:
     store = await store_service.get_by_id(id)
     if store is None:
-        raise NotFoundException("Toko tidak ada.")
-    return StoreResponse.model_validate(store)
+        raise NotFoundException("Toko tidak ada")
+    return StoreDetailResponse.model_validate(store)

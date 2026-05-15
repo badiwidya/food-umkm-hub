@@ -1,30 +1,30 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import field_validator
 
+from app.schema import BaseSchema, PaginatedResponse
 from app.stores.enum import ApprovalStatus
 from app.users.schema import UserResponse
 
 
-class StoreResponse(BaseModel):
+class StoreSummaryResponse(BaseSchema):
     id: UUID
     name: str
+    photo_url: str | None
+    is_open: bool
+
+
+class StoreDetailResponse(StoreSummaryResponse):
     description: str
     address: str
-    photo_url: str | None
     qris_image_url: str | None
     maps_link: str | None
-    approval_status: ApprovalStatus
-    approval_notes: str | None
-    is_open: bool
     updated_at: datetime
     created_at: datetime
 
-    model_config = ConfigDict(from_attributes=True)
 
-
-class UpdateStoreRequest(BaseModel):
+class UpdateStoreRequest(BaseSchema):
     name: str | None = None
     description: str | None = None
     address: str | None = None
@@ -36,29 +36,33 @@ class UpdateStoreRequest(BaseModel):
     @classmethod
     def is_null(cls, v: str | None, info) -> str | None:
         if not v:
-            raise ValueError(f"{info.field_name} tidak boleh kosong.")
+            raise ValueError(f"{info.field_name} tidak boleh kosong")
         return v
 
 
-class Pagination(BaseModel):
-    total: int
-    page: int
-    page_size: int
+StoreListResponse = PaginatedResponse[list[StoreSummaryResponse]]
 
 
-class StoreListResponse(BaseModel):
-    metadata: Pagination
-    data: list[StoreResponse]
-
-
-class StoreWithOwnerResponse(StoreResponse):
+class StoreWithOwnerSummaryResponse(BaseSchema):
+    id: UUID
+    name: str
+    photo_url: str | None
+    approval_status: ApprovalStatus
     owner: UserResponse
 
 
-class StoreWithOwnerListResponse(BaseModel):
-    metadata: Pagination
-    data: list[StoreWithOwnerResponse]
+class StoreWithOwnerDetailResponse(StoreWithOwnerSummaryResponse):
+    description: str
+    address: str
+    qris_image_url: str | None
+    maps_link: str | None
+    approval_notes: str | None
+    updated_at: datetime
+    created_at: datetime
 
 
-class RejectionNotesRequest(BaseModel):
+StoreWithOwnerListResponse = PaginatedResponse[list[StoreWithOwnerSummaryResponse]]
+
+
+class RejectionNotesRequest(BaseSchema):
     notes: str | None = None

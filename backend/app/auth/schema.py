@@ -1,12 +1,13 @@
 from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import EmailStr, Field
 
+from app.schema import BaseSchema
 from app.users.schema import IDPhoneNumber
 
 
-class RegisterBaseRequest(BaseModel):
+class RegisterBaseRequest(BaseSchema):
     full_name: str
     email: EmailStr
     phone_number: IDPhoneNumber
@@ -19,7 +20,7 @@ class RegisterStudentRequest(RegisterBaseRequest):
     department: str
 
 
-class RegisterStoreRequest(BaseModel):
+class RegisterStoreRequest(BaseSchema):
     name: str
     description: str
     address: str
@@ -32,29 +33,29 @@ class RegisterSellerRequest(RegisterBaseRequest):
     store: RegisterStoreRequest
 
 
-class LoginRequest(BaseModel):
+class LoginRequest(BaseSchema):
     email: EmailStr
     password: str
 
 
-class LoginResponse(BaseModel):
+class LoginResponse(BaseSchema):
     access_token: str
 
 
-class VerifyTokenRequest(BaseModel):
+class VerifyTokenRequest(BaseSchema):
     token_id: UUID
     token: str
 
 
-class ResendEmailVerificationRequest(BaseModel):
+class ResendEmailVerificationRequest(BaseSchema):
     email: EmailStr
 
 
-class ResetPasswordRequest(BaseModel):
+class ResetPasswordRequest(BaseSchema):
     email: EmailStr
 
 
-class ConfirmResetPasswordRequest(BaseModel):
+class ConfirmResetPasswordRequest(BaseSchema):
     token_id: UUID
     token: str
     new_password: Annotated[str, Field(min_length=8)]

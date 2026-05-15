@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from decimal import Decimal
 
 from app.products.enum import ProductCategory
 from app.stores.entity import Store
@@ -9,7 +8,7 @@ from app.stores.entity import Store
 class CreateProductDTO:
     store: Store
     name: str
-    price: Decimal
+    price: int
     category: ProductCategory
     description: str | None
     photo_url: str | None

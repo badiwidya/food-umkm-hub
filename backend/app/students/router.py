@@ -13,22 +13,22 @@ student_router = APIRouter(prefix="/students", tags=["Students"])
     "/me",
     summary="Mendapatkan data mahasiswa yang sedang login",
     status_code=status.HTTP_200_OK,
-    response_model=StudentResponse,
 )
-async def get_me(student: CurrentStudentDep) -> dict:
-    return {**asdict(student.user), **asdict(student)}
+async def get_me(student: CurrentStudentDep) -> StudentResponse:
+    return StudentResponse.model_validate({**asdict(student.user), **asdict(student)})
 
 
 @student_router.patch(
     "/me",
     summary="Memperbarui informasi akademik mahasiswa yang sedang login.",
-    status_code=status.HTTP_204_NO_CONTENT,
+    status_code=status.HTTP_200_OK,
 )
 async def update(
-    payload: UpdateStudentRequest,
-    student: CurrentStudentDep,
     student_service: StudentServiceDep,
-) -> None:
+    student: CurrentStudentDep,
+    payload: UpdateStudentRequest,
+) -> StudentResponse:
     await student_service.update_information(
         student, payload.model_dump(exclude_unset=True)
     )
+    return StudentResponse.model_validate(student)

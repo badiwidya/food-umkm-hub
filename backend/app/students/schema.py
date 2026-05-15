@@ -1,5 +1,6 @@
-from pydantic import BaseModel, field_validator
+from pydantic import field_validator
 
+from app.schema import BaseSchema
 from app.users.schema import UserResponse
 
 
@@ -9,7 +10,7 @@ class StudentResponse(UserResponse):
     department: str
 
 
-class UpdateStudentRequest(BaseModel):
+class UpdateStudentRequest(BaseSchema):
     nim: str | None = None
     faculty: str | None = None
     department: str | None = None
@@ -18,5 +19,5 @@ class UpdateStudentRequest(BaseModel):
     @classmethod
     def is_null(cls, v: str | None, info) -> str | None:
         if not v:
-            raise ValueError(f"{info.field_name} tidak boleh kosong.")
+            raise ValueError(f"{info.field_name} tidak boleh kosong")
         return v

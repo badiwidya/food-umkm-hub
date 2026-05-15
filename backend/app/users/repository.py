@@ -61,10 +61,10 @@ class UserRepository:
 
     async def get_all(
         self,
-        offset: int = 0,
-        limit: int = 20,
-        status: UserStatus | None = None,
-        role: UserRole | None = None,
+        offset: int,
+        limit: int,
+        status: UserStatus | None,
+        role: UserRole | None,
     ) -> tuple[list[User], int]:
         filters = []
         if status is not None:

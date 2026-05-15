@@ -40,6 +40,6 @@ def verify_access_token(token: str) -> JWTPayload:
 
         return JWTPayload(sub=UUID(payload["sub"]), role=payload["role"])
     except jwt.ExpiredSignatureError as e:
-        raise AuthenticationException("Sesi telah berakhir.", "expired_token") from e
+        raise AuthenticationException("Sesi telah berakhir", "expired_token") from e
     except jwt.InvalidTokenError as e:
-        raise AuthenticationException("Autentikasi gagal.", "invalid_token") from e
+        raise AuthenticationException("Autentikasi gagal", "invalid_token") from e
