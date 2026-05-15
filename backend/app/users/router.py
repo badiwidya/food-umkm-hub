@@ -78,7 +78,7 @@ async def resend_email_change_verification(
 @user_router.post(
     "/me/phone",
     summary="Mengubah nomor telepon pengguna yang sedang login.",
-    status_code=status.HTTP_204_NO_CONTENT,
+    status_code=status.HTTP_200_OK,
 )
 async def change_phone_number(
     user_service: UserServiceDep,
