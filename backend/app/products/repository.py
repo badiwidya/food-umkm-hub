@@ -37,45 +37,9 @@ class ProductRepository:
             filters.append(StoreModel.is_open == is_store_open)
         if is_product_available is not None:
             filters.append(ProductModel.is_available == is_product_available)
-        if keyword is not None:
-            search_term = f"%{keyword}%"
-            filters.append(
-                or_(
-                    ProductModel.name.ilike(search_term),
-                    ProductModel.description.ilike(search_term),
-                )
-            )
-            orders.append(
-                case(
-                    (ProductModel.name.ilike(search_term), 1),
-                    (ProductModel.description.ilike(search_term), 2),
-                    else_=3,
-                ).asc()
-            )
+        self._apply_keyword(filters, orders, keyword)
 
-        # TODO: refactor, kebanyakan join, inefficient, consider pake cascade soft delete
-        stmt = (
-            select(ProductModel)
-            .join(StoreModel)
-            .join(UserModel)
-            .options(contains_eager(ProductModel.store))
-            .where(*filters)
-            .order_by(*orders, ProductModel.id.asc())
-            .offset(offset)
-            .limit(limit)
-        )
-        count_stmt = (
-            select(func.count())
-            .select_from(ProductModel)
-            .join(StoreModel)
-            .join(UserModel)
-            .where(*filters)
-        )
-
-        models = (await self._session.scalars(stmt)).all()
-        count = await self._session.scalar(count_stmt)
-
-        return [self._to_entity(model) for model in models], count or 0
+        return await self._execute_paginated_query(filters, orders, offset, limit)
 
     async def get_all_by_store(
         self,
@@ -99,45 +63,9 @@ class ProductRepository:
             filters.append(ProductModel.category == category)
         if is_product_available is not None:
             filters.append(ProductModel.is_available == is_product_available)
-        if keyword is not None:
-            search_term = f"%{keyword}%"
-            filters.append(
-                or_(
-                    ProductModel.name.ilike(search_term),
-                    ProductModel.description.ilike(search_term),
-                )
-            )
-            orders.append(
-                case(
-                    (ProductModel.name.ilike(search_term), 1),
-                    (ProductModel.description.ilike(search_term), 2),
-                    else_=3,
-                ).asc()
-            )
+        self._apply_keyword(filters, orders, keyword)
 
-        # TODO: refactor, kebanyakan join, inefficient, consider pake cascade soft delete
-        stmt = (
-            select(ProductModel)
-            .join(StoreModel)
-            .join(UserModel)
-            .options(contains_eager(ProductModel.store))
-            .where(*filters)
-            .order_by(*orders, ProductModel.id.asc())
-            .offset(offset)
-            .limit(limit)
-        )
-        count_stmt = (
-            select(func.count())
-            .select_from(ProductModel)
-            .join(StoreModel)
-            .join(UserModel)
-            .where(*filters)
-        )
-
-        models = (await self._session.scalars(stmt)).all()
-        count = await self._session.scalar(count_stmt)
-
-        return [self._to_entity(model) for model in models], count or 0
+        return await self._execute_paginated_query(filters, orders, offset, limit)
 
     async def get_by_id(self, id: UUID) -> Product | None:
         model = await self._session.scalar(
@@ -163,6 +91,57 @@ class ProductRepository:
     async def update(self, product: Product) -> None:
         model = self._to_model(product)
         await self._session.merge(model)
+
+    def _apply_keyword(
+        self,
+        filters: list[Any],
+        orders: list[Any],
+        keyword: str | None,
+    ) -> None:
+        if keyword is None:
+            return
+        search_term = f"%{keyword}%"
+        filters.append(
+            or_(
+                ProductModel.name.ilike(search_term),
+                ProductModel.description.ilike(search_term),
+            )
+        )
+        orders.append(
+            case(
+                (ProductModel.name.ilike(search_term), 1),
+                (ProductModel.description.ilike(search_term), 2),
+                else_=3,
+            ).asc()
+        )
+
+    async def _execute_paginated_query(
+        self, filters: list[Any], orders: list[Any], offset: int, limit: int
+    ) -> tuple[list[Product], int]:
+        """Eksekusi query dan count"""
+        stmt = (
+            select(ProductModel)
+            .join(StoreModel)
+            .join(UserModel)
+            .options(contains_eager(ProductModel.store))
+            .where(*filters)
+            .order_by(*orders, ProductModel.id.asc())
+            .offset(offset)
+            .limit(limit)
+        )
+
+        count_stmt = (
+            select(func.count())
+            .select_from(ProductModel)
+            .join(StoreModel)
+            .join(UserModel)
+            .where(*filters)
+        )
+
+        models = (await self._session.scalars(stmt)).all()
+        count = await self._session.scalar(count_stmt)
+
+        return [self._to_entity(model) for model in models], count or 0
 
     @staticmethod
     def _to_entity(model: ProductModel) -> Product:
