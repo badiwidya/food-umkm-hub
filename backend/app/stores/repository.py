@@ -1,18 +1,16 @@
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import Select, case, select
+from sqlalchemy import case, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.sql import func
 from sqlalchemy.sql.operators import or_
 
-from app.stores.dto import StoreWithOwner
-from app.stores.entity import Store
-from app.stores.enum import ApprovalStatus
+from app.domains.seller import Seller
+from app.domains.store import Store, StoreApprovalStatus
 from app.stores.model import StoreModel
 from app.users.model import UserModel
-from app.users.repository import UserRepository
 
 
 class StoreRepository:
@@ -23,6 +21,7 @@ class StoreRepository:
         model = await self._session.scalar(
             select(StoreModel)
             .join(StoreModel.owner)
+            .options(contains_eager(StoreModel.owner))
             .where(StoreModel.id == store_id, UserModel.deleted_at.is_(None))
         )
 
@@ -31,22 +30,7 @@ class StoreRepository:
 
         return self._to_entity(model)
 
-    async def get_by_id_with_owner(self, store_id: UUID) -> StoreWithOwner | None:
-        model = await self._session.scalar(
-            select(StoreModel)
-            .join(StoreModel.owner)
-            .options(contains_eager(StoreModel.owner))
-            .where(StoreModel.id == store_id, UserModel.deleted_at.is_(None))
-        )
-
-        if model is None:
-            return None
-
-        return StoreWithOwner(
-            store=self._to_entity(model), owner=UserRepository.to_entity(model.owner)
-        )
-
-    async def get_by_owner_id(self, owner_id: UUID) -> StoreWithOwner | None:
+    async def get_by_owner_id(self, owner_id: UUID) -> Store | None:
         model = await self._session.scalar(
             select(StoreModel)
             .join(StoreModel.owner)
@@ -57,67 +41,21 @@ class StoreRepository:
         if model is None:
             return None
 
-        return StoreWithOwner(
-            store=self._to_entity(model), owner=UserRepository.to_entity(model.owner)
-        )
+        return self._to_entity(model)
 
     async def get_all(
         self,
-        status: ApprovalStatus | None = None,
-        keyword: str | None = None,
-        offset: int = 0,
-        limit: int = 12,
-    ) -> tuple[list[Store], int]:
-        stmt, count_stmt = self._build_get_all_query(
-            status=status, keyword=keyword, offset=offset, limit=limit
-        )
-
-        models = (await self._session.scalars(stmt)).all()
-        count = await self._session.scalar(count_stmt)
-
-        return [self._to_entity(model) for model in models], (count or 0)
-
-    async def get_all_with_owner(
-        self,
-        status: ApprovalStatus | None = None,
-        keyword: str | None = None,
-        offset: int = 0,
-        limit: int = 12,
-    ) -> tuple[list[StoreWithOwner], int]:
-        stmt, count_stmt = self._build_get_all_query(
-            status=status, keyword=keyword, offset=offset, limit=limit
-        )
-        stmt = stmt.options(contains_eager(StoreModel.owner))
-
-        models = (await self._session.scalars(stmt)).all()
-        count = await self._session.scalar(count_stmt)
-
-        return [
-            StoreWithOwner(
-                store=self._to_entity(model),
-                owner=UserRepository.to_entity(model.owner),
-            )
-            for model in models
-        ], (count or 0)
-
-    async def save(self, store: Store) -> None:
-        model = self._to_model(store)
-        self._session.add(model)
-
-    async def update(self, store: Store) -> None:
-        model = self._to_model(store)
-        await self._session.merge(model)
-
-    def _build_get_all_query(
-        self,
-        status: ApprovalStatus | None,
+        is_open: bool | None,
+        status: StoreApprovalStatus | None,
         keyword: str | None,
         offset: int,
         limit: int,
-    ) -> tuple[Select, Select]:
+    ) -> tuple[list[Store], int]:
         filters: list[Any] = [UserModel.deleted_at.is_(None)]
         orders: list[Any] = []
 
+        if is_open is not None:
+            filters.append(StoreModel.is_open == is_open)
         if status is not None:
             filters.append(StoreModel.approval_status == status)
         if keyword is not None:
@@ -128,7 +66,6 @@ class StoreRepository:
                     StoreModel.description.ilike(search_term),
                 )
             )
-
             orders.append(
                 case(
                     (StoreModel.name.ilike(search_term), 1),
@@ -137,9 +74,27 @@ class StoreRepository:
                 ).asc()
             )
 
+        return await self._execute_paginated_query(filters, orders, offset, limit)
+
+    async def save(self, store: Store) -> None:
+        model = self._to_model(store)
+        self._session.add(model)
+
+    async def update(self, store: Store) -> None:
+        model = self._to_model(store)
+        await self._session.merge(model)
+
+    async def _execute_paginated_query(
+        self,
+        filters: list[Any],
+        orders: list[Any],
+        offset: int,
+        limit: int,
+    ) -> tuple[list[Store], int]:
         stmt = (
             select(StoreModel)
             .join(StoreModel.owner)
+            .options(contains_eager(StoreModel.owner))
             .where(*filters)
             .order_by(*orders, StoreModel.id.asc())
             .offset(offset)
@@ -152,14 +107,35 @@ class StoreRepository:
             .where(*filters)
         )
 
-        return stmt, count_stmt
+        models = (await self._session.scalars(stmt)).all()
+        count = await self._session.scalar(count_stmt)
+
+        return [self._to_entity(model) for model in models], count or 0
 
     @staticmethod
     def _to_entity(model: StoreModel) -> Store:
-        return Store(
+        seller = Seller(
+            id=model.owner.id,
+            store=None,
+            full_name=model.owner.full_name,
+            avatar_url=model.owner.avatar_url,
+            email=model.owner.email,
+            pending_email=model.owner.pending_email,
+            phone_number=model.owner.phone_number,
+            password_hash=model.owner.password_hash,
+            role=model.owner.role,
+            status=model.owner.status,
+            email_verified_at=model.owner.email_verified_at,
+            phone_verified_at=model.owner.phone_verified_at,
+            updated_at=model.owner.updated_at,
+            created_at=model.owner.created_at,
+            deleted_at=model.owner.deleted_at,
+        )
+
+        store = Store(
             id=model.id,
-            owner_id=model.owner_id,
             name=model.name,
+            owner=seller,
             description=model.description,
             address=model.address,
             photo_url=model.photo_url,
@@ -172,11 +148,14 @@ class StoreRepository:
             created_at=model.created_at,
         )
 
+        seller.store = store
+        return store
+
     @staticmethod
     def _to_model(store: Store) -> StoreModel:
         return StoreModel(
             id=store.id,
-            owner_id=store.owner_id,
+            owner_id=store.owner.id,
             name=store.name,
             description=store.description,
             address=store.address,

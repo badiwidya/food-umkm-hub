@@ -6,9 +6,10 @@ from typing import Annotated
 
 from fastapi import APIRouter, Query, status
 
+from app.auth.dependency import CurrentAdminDep
 from app.dependency import PaginationQueryDep
+from app.domains.user import UserRole, UserStatus
 from app.users.dependency import UserServiceDep, UserTargetDep
-from app.users.enum import UserRole, UserStatus
 from app.users.schema import UserListResponse, UserResponse
 
 user_admin_router = APIRouter()
@@ -45,9 +46,9 @@ async def list_users(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_target_user(
-    user_service: UserServiceDep, target: UserTargetDep
+    user_service: UserServiceDep, target: UserTargetDep, admin: CurrentAdminDep
 ) -> None:
-    await user_service.delete(target)
+    await user_service.delete_target(admin, target)
 
 
 @user_admin_router.post(
@@ -56,9 +57,9 @@ async def delete_target_user(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def suspend_target_user(
-    user_service: UserServiceDep, target: UserTargetDep
+    user_service: UserServiceDep, target: UserTargetDep, admin: CurrentAdminDep
 ) -> None:
-    await user_service.suspend_target(target)
+    await user_service.suspend_target(admin, target)
 
 
 @user_admin_router.post(
@@ -67,6 +68,6 @@ async def suspend_target_user(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def unsuspend_target_user(
-    user_service: UserServiceDep, target: UserTargetDep
+    user_service: UserServiceDep, target: UserTargetDep, admin: CurrentAdminDep
 ) -> None:
-    await user_service.unsuspend_target(target)
+    await user_service.unsuspend_target(admin, target)

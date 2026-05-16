@@ -161,7 +161,7 @@ class Store:
         self.approval_notes = notes
         self._touch()
 
-    def _resubmit(self) -> None:
+    def resubmit(self) -> None:
         if self.approval_status != StoreApprovalStatus.REJECTED:
             raise DomainException("Hanya toko yang ditolak yang bisa mengajukan ulang")
         self.approval_status = StoreApprovalStatus.PENDING

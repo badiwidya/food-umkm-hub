@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import NonNegativeInt, PlainSerializer, field_validator
+from pydantic import NonNegativeInt, field_validator
 
 from app.products.enum import ProductCategory
 from app.schema import BaseSchema, PaginatedResponse

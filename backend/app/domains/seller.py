@@ -31,8 +31,8 @@ class Seller(User):
         photo_url: str | None,
         qris_image_url: str | None,
         maps_link: str | None,
-    ) -> None:
-        self.store = Store.create(
+    ) -> Store:
+        store = Store.create(
             name=name,
             owner=self,
             description=description,
@@ -41,3 +41,5 @@ class Seller(User):
             qris_image_url=qris_image_url,
             maps_link=maps_link,
         )
+        self.store = store
+        return store

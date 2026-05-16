@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
+from app.domains.store import Store
 from app.products.enum import ProductCategory
-from app.stores.entity import Store
 
 
 @dataclass(kw_only=True)

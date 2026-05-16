@@ -2,14 +2,13 @@ from uuid import UUID
 
 from app.auth.dto import RegisterSellerDTO, RegisterStudentDTO
 from app.config import settings
+from app.domains.seller import Seller
+from app.domains.student import Student, User
+from app.domains.verification_token import VerificationToken, VerificationTokenType
 from app.exception import AuthenticationException, DomainException, NotAllowedException
 from app.security import create_access_token, hash_password, verify_password
-from app.stores.entity import Store
 from app.stores.repository import StoreRepository
-from app.students.entity import Student
 from app.students.repository import StudentRepository
-from app.users.entity import User, VerificationToken
-from app.users.enum import TokenType, UserRole
 from app.users.repository import UserRepository, VerificationTokenRepository
 
 
@@ -29,37 +28,32 @@ class AuthService:
     async def register_student(self, dto: RegisterStudentDTO) -> str:
         await self._ensure_email_and_phone_not_taken(dto.email, dto.phone_number)
 
-        user = User.register(
+        student = Student.register(
             full_name=dto.full_name,
             email=dto.email,
             phone_number=dto.phone_number,
             password_hash=hash_password(dto.password),
-            role=UserRole.STUDENT,
+            nim=dto.nim,
+            faculty=dto.faculty,
+            department=dto.department,
         )
 
-        student = Student.create(
-            user=user, nim=dto.nim, faculty=dto.faculty, department=dto.department
-        )
-
-        await self._user_repo.save(user)
         await self._student_repo.save(student)
 
-        return await self._build_email_verification_link(user)
+        return await self._build_email_verification_link(student)
 
     async def register_seller(self, dto: RegisterSellerDTO) -> str:
         await self._ensure_email_and_phone_not_taken(dto.email, dto.phone_number)
 
-        user = User.register(
+        seller = Seller.register(
             full_name=dto.full_name,
             email=dto.email,
             phone_number=dto.phone_number,
             password_hash=hash_password(dto.password),
-            role=UserRole.SELLER,
         )
 
-        store = Store.create(
+        store = seller.create_store(
             name=dto.store.name,
-            owner_id=user.id,
             description=dto.store.description,
             address=dto.store.address,
             photo_url=dto.store.photo_url,
@@ -67,10 +61,10 @@ class AuthService:
             qris_image_url=dto.store.qris_image_url,
         )
 
-        await self._user_repo.save(user)
+        await self._user_repo.save(seller)
         await self._store_repo.save(store)
 
-        return await self._build_email_verification_link(user)
+        return await self._build_email_verification_link(seller)
 
     async def login(self, email: str, password: str) -> str:
         user = await self._user_repo.get_by_email(email.strip().lower())
@@ -100,7 +94,7 @@ class AuthService:
         if token is None:
             raise DomainException("Tautan verifikasi tidak valid", "invalid_token")
 
-        token.verify(raw_token, TokenType.EMAIL_CHANGE_VERIFICATION)
+        token.verify(raw_token, VerificationTokenType.EMAIL_CHANGE_VERIFICATION)
 
         user = await self._user_repo.get_by_id(token.user_id)
         assert user is not None
@@ -114,7 +108,7 @@ class AuthService:
         if token is None:
             raise DomainException("Tautan verifikasi tidak valid", "invalid_token")
 
-        token.verify(raw_token, TokenType.EMAIL_VERIFICATION)
+        token.verify(raw_token, VerificationTokenType.EMAIL_VERIFICATION)
 
         user = await self._user_repo.get_by_id(token.user_id)
         assert user is not None
@@ -135,7 +129,7 @@ class AuthService:
             return None
 
         token, raw_token = await self._issue_verification_token(
-            user, TokenType.PASSWORD_RESET
+            user, VerificationTokenType.PASSWORD_RESET
         )
 
         reset_password_link = f"{settings.FRONTEND_URL}/click/reset-password?token={raw_token}&id={token.id}"
@@ -149,7 +143,7 @@ class AuthService:
         if token is None:
             raise DomainException("Token reset password tidak valid", "invalid_token")
 
-        token.verify(raw_token, TokenType.PASSWORD_RESET)
+        token.verify(raw_token, VerificationTokenType.PASSWORD_RESET)
 
         user = await self._user_repo.get_by_id(token.user_id)
         assert user is not None
@@ -171,7 +165,7 @@ class AuthService:
 
     async def _build_email_verification_link(self, user: User) -> str:
         token, raw_token = await self._issue_verification_token(
-            user, TokenType.EMAIL_VERIFICATION
+            user, VerificationTokenType.EMAIL_VERIFICATION
         )
 
         verification_link = f"{settings.FRONTEND_URL}/click/verify-email?token={raw_token}&id={token.id}"
@@ -179,7 +173,7 @@ class AuthService:
         return verification_link
 
     async def _issue_verification_token(
-        self, user: User, type: TokenType
+        self, user: User, type: VerificationTokenType
     ) -> tuple[VerificationToken, str]:
         await self._token_repo.delete_by_user_and_type(user.id, type)
         token, raw_token = VerificationToken.create(user.id, type)

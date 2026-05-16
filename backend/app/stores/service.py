@@ -1,10 +1,9 @@
 from typing import Any
 from uuid import UUID
 
+from app.domains.admin import Admin
+from app.domains.store import Store, StoreApprovalStatus
 from app.sentinel import UNSET
-from app.stores.dto import StoreWithOwner
-from app.stores.entity import Store
-from app.stores.enum import ApprovalStatus
 from app.stores.repository import StoreRepository
 
 
@@ -12,45 +11,46 @@ class StoreService:
     def __init__(self, store_repo: StoreRepository) -> None:
         self._store_repo = store_repo
 
-    async def get_by_id(self, store_id: UUID) -> Store | None:
+    async def get_details(self, store_id: UUID) -> Store | None:
         return await self._store_repo.get_by_id(store_id)
 
-    async def get_by_id_with_owner(self, store_id: UUID) -> StoreWithOwner | None:
-        return await self._store_repo.get_by_id_with_owner(store_id)
-
-    async def get_by_owner_id(self, owner_id: UUID) -> StoreWithOwner | None:
+    async def get_details_by_owner_id(self, owner_id: UUID) -> Store | None:
         return await self._store_repo.get_by_owner_id(owner_id)
 
-    async def list(
-        self, keyword: str | None = None, page: int = 1, page_size: int = 12
+    async def list_for_public(
+        self, is_open: bool | None, keyword: str | None, page: int, page_size: int
     ) -> tuple[list[Store], int]:
         limit = page_size
         offset = (page - 1) * page_size
 
         stores, total_count = await self._store_repo.get_all(
-            status=ApprovalStatus.APPROVED, keyword=keyword, offset=offset, limit=limit
+            is_open=is_open,
+            status=StoreApprovalStatus.APPROVED,
+            keyword=keyword,
+            offset=offset,
+            limit=limit,
         )
 
         return stores, total_count
 
-    async def list_all(
+    async def list_for_admin(
         self,
+        keyword: str | None,
+        status: StoreApprovalStatus | None,
         page: int,
         page_size: int,
-        keyword: str | None = None,
-        status: ApprovalStatus | None = None,
-    ) -> tuple[list[StoreWithOwner], int]:
+    ) -> tuple[list[Store], int]:
         limit = page_size
         offset = (page - 1) * page_size
 
-        stores, total_count = await self._store_repo.get_all_with_owner(
-            status=status, keyword=keyword, offset=offset, limit=limit
+        stores, total_count = await self._store_repo.get_all(
+            is_open=None, status=status, keyword=keyword, offset=offset, limit=limit
         )
 
         return stores, total_count
 
     async def update_information(self, store: Store, updates: dict[str, Any]) -> Store:
-        store.change_info(
+        store.change_information(
             name=updates.get("name", UNSET),
             description=updates.get("description", UNSET),
             address=updates.get("address", UNSET),
@@ -62,27 +62,24 @@ class StoreService:
         await self._store_repo.update(store)
         return store
 
-    async def approve(self, store: Store) -> None:
-        store.approve()
-
+    async def approve(self, admin: Admin, store: Store) -> None:
+        admin.approve_store_application(store)
         await self._store_repo.update(store)
 
-    async def reject(self, store: Store, notes: str | None = None) -> None:
-        store.reject(notes)
-
+    async def reject(
+        self, admin: Admin, store: Store, notes: str | None = None
+    ) -> None:
+        admin.reject_store_application(store, notes)
         await self._store_repo.update(store)
 
     async def resubmit(self, store: Store) -> None:
         store.resubmit()
-
         await self._store_repo.update(store)
 
     async def open(self, store: Store) -> None:
         store.open()
-
         await self._store_repo.update(store)
 
     async def close(self, store: Store) -> None:
         store.close()
-
         await self._store_repo.update(store)

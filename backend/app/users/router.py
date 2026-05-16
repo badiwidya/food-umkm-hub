@@ -18,6 +18,15 @@ from app.users.schema import (
 user_router = APIRouter(prefix="/users", tags=["Users"])
 
 
+@user_router.get(
+    "/me",
+    summary="Mendapatkan informasi pengguna yang sedang login.",
+    status_code=status.HTTP_200_OK,
+)
+async def get_me(user: CurrentUserDep) -> UserResponse:
+    return UserResponse.model_validate(user)
+
+
 @user_router.patch(
     "/me",
     summary="Memperbarui profil pengguna yang sedang login.",

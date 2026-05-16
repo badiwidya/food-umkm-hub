@@ -25,10 +25,14 @@ store_router = APIRouter(prefix="/stores", tags=["Stores"])
 async def list(
     store_service: StoreServiceDep,
     pagination: PaginationQueryDep,
+    is_open: Annotated[bool | None, Query()] = None,
     keyword: Annotated[str | None, Query(alias="search")] = None,
 ) -> StoreListResponse:
-    stores, count = await store_service.list(
-        keyword=keyword, page=pagination.page, page_size=pagination.page_size
+    stores, count = await store_service.list_for_public(
+        is_open=is_open,
+        keyword=keyword,
+        page=pagination.page,
+        page_size=pagination.page_size,
     )
     return StoreListResponse(
         total=count,
@@ -96,7 +100,7 @@ async def resubmit_application(
     status_code=status.HTTP_200_OK,
 )
 async def get_detail(store_service: StoreServiceDep, id: UUID) -> StoreDetailResponse:
-    store = await store_service.get_by_id(id)
+    store = await store_service.get_details(id)
     if store is None:
         raise NotFoundException("Toko tidak ada")
     return StoreDetailResponse.model_validate(store)

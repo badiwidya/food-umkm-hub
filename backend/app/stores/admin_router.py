@@ -2,17 +2,16 @@
 Prefix: /admin/stores
 """
 
-from dataclasses import asdict
 from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Body, Query, status
-from pydantic import BeforeValidator
 
+from app.auth.dependency import CurrentAdminDep
 from app.dependency import PaginationQueryDep
+from app.domains.store import StoreApprovalStatus
 from app.exception import NotFoundException
 from app.stores.dependency import StoreServiceDep, StoreTargetDep
-from app.stores.enum import ApprovalStatus
 from app.stores.schema import (
     RejectionNotesRequest,
     StoreWithOwnerDetailResponse,
@@ -32,15 +31,9 @@ async def list_all(
     store_service: StoreServiceDep,
     pagination: PaginationQueryDep,
     keyword: Annotated[str | None, Query(alias="search")] = None,
-    # Default pending karena fokus utama admin adalah kurasi registrasi toko
-    status: Annotated[
-        Annotated[
-            ApprovalStatus | None, BeforeValidator(lambda v: None if v == "" else v)
-        ],
-        Query(),
-    ] = ApprovalStatus.PENDING,
+    status: Annotated[StoreApprovalStatus | None, Query()] = None,
 ) -> StoreWithOwnerListResponse:
-    stores_with_owner, count = await store_service.list_all(
+    stores, count = await store_service.list_for_admin(
         keyword=keyword,
         page=pagination.page,
         page_size=pagination.page_size,
@@ -51,15 +44,7 @@ async def list_all(
         page=pagination.page,
         page_size=pagination.page_size,
         total=count,
-        data=[
-            StoreWithOwnerSummaryResponse.model_validate(
-                {
-                    **asdict(store_with_owner.store),
-                    "owner": {**asdict(store_with_owner.owner)},
-                }
-            )
-            for store_with_owner in stores_with_owner
-        ],
+        data=[StoreWithOwnerSummaryResponse.model_validate(store) for store in stores],
     )
 
 
@@ -71,12 +56,10 @@ async def list_all(
 async def get_store_with_owner_details(
     store_service: StoreServiceDep, id: UUID
 ) -> StoreWithOwnerDetailResponse:
-    store_with_owner = await store_service.get_by_id_with_owner(id)
-    if store_with_owner is None:
+    store = await store_service.get_details(id)
+    if store is None:
         raise NotFoundException("Toko tidak ada")
-    return StoreWithOwnerDetailResponse.model_validate(
-        {**asdict(store_with_owner.store), "owner": {**asdict(store_with_owner.owner)}}
-    )
+    return StoreWithOwnerDetailResponse.model_validate(store)
 
 
 @store_admin_router.post(
@@ -85,9 +68,9 @@ async def get_store_with_owner_details(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def approve_application(
-    store_service: StoreServiceDep, store: StoreTargetDep
+    store_service: StoreServiceDep, store: StoreTargetDep, admin: CurrentAdminDep
 ) -> None:
-    await store_service.approve(store)
+    await store_service.approve(admin, store)
 
 
 @store_admin_router.post(
@@ -98,7 +81,8 @@ async def approve_application(
 async def reject_application(
     store_service: StoreServiceDep,
     store: StoreTargetDep,
+    admin: CurrentAdminDep,
     payload: Annotated[RejectionNotesRequest | None, Body] = None,
 ) -> None:
     notes = payload.notes if payload else None
-    await store_service.reject(store, notes)
+    await store_service.reject(admin, store, notes)
