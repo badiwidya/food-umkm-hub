@@ -17,7 +17,7 @@ class Seller(User):
         return cls(
             full_name=normalized_user_fields.get("full_name", full_name),
             email=normalized_user_fields.get("email", email),
-            phone_number=normalized_user_fields.get("phone_nummber", phone_number),
+            phone_number=normalized_user_fields.get("phone_number", phone_number),
             password_hash=password_hash,
             role=UserRole.SELLER,
             store=None,
