@@ -3,8 +3,8 @@ from uuid import UUID
 from sqlalchemy import delete, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.users.entity import User, VerificationToken
-from app.users.enum import TokenType, UserRole, UserStatus
+from app.domains.user import User, UserRole, UserStatus
+from app.domains.verification_token import VerificationToken, VerificationTokenType
 from app.users.model import UserModel, VerificationTokenModel
 
 
@@ -147,7 +147,7 @@ class VerificationTokenRepository:
         return self._to_entity(model)
 
     async def get_by_user_and_type(
-        self, user_id: UUID, type: TokenType
+        self, user_id: UUID, type: VerificationTokenType
     ) -> VerificationToken | None:
         model = await self._session.scalar(
             select(VerificationTokenModel)
@@ -170,7 +170,7 @@ class VerificationTokenRepository:
         )
 
     async def delete_by_user_and_type(
-        self, user_id: UUID, token_type: TokenType
+        self, user_id: UUID, token_type: VerificationTokenType
     ) -> None:
         await self._session.execute(
             delete(VerificationTokenModel)

@@ -4,22 +4,21 @@ from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 
 from app.auth.service import AuthService
+from app.domains.store import Store
+from app.domains.student import Student
+from app.domains.user import User, UserRole
 from app.exception import AuthenticationException, NotAllowedException
 from app.security import JWTPayload, verify_access_token
 from app.stores.dependency import StoreRepoDep, StoreServiceDep
-from app.stores.entity import Store
 from app.students.dependency import StudentRepoDep, StudentServiceDep
-from app.students.entity import Student
-from app.users.dependency import TokenRepoDep, UserRepoDep, UserServiceDep
-from app.users.entity import User
-from app.users.enum import UserRole
+from app.users.dependency import UserRepoDep, UserServiceDep, VerificationTokenRepoDep
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login", auto_error=False)
 
 
 async def get_auth_service(
     user_repo: UserRepoDep,
-    token_repo: TokenRepoDep,
+    token_repo: VerificationTokenRepoDep,
     student_repo: StudentRepoDep,
     store_repo: StoreRepoDep,
 ) -> AuthService:
@@ -59,7 +58,7 @@ async def get_current_user(
     payload: JWTPayloadDep,
     user_service: UserServiceDep,
 ) -> User:
-    user = await user_service.get_by_id(payload.sub)
+    user = await user_service.get_details(payload.sub)
     if user is None:
         raise AuthenticationException("Autentikasi gagal")
     _ensure_user_active(user)

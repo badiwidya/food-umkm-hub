@@ -2,11 +2,12 @@ from typing import Any
 from uuid import UUID
 
 from app.config import settings
+from app.domains.admin import Admin
+from app.domains.user import User, UserRole, UserStatus
+from app.domains.verification_token import VerificationToken, VerificationTokenType
 from app.exception import DomainException
 from app.security import hash_password, verify_password
 from app.sentinel import UNSET
-from app.users.entity import User, VerificationToken
-from app.users.enum import TokenType, UserRole, UserStatus
 from app.users.repository import UserRepository, VerificationTokenRepository
 
 
@@ -17,7 +18,7 @@ class UserService:
         self._user_repo = user_repo
         self._token_repo = token_repo
 
-    async def get_by_id(self, user_id: UUID) -> User | None:
+    async def get_details(self, user_id: UUID) -> User | None:
         return await self._user_repo.get_by_id(user_id)
 
     async def list(
@@ -36,7 +37,7 @@ class UserService:
         return users, total_count
 
     async def update_profile(self, user: User, updates: dict[str, Any]) -> User:
-        user.change_info(
+        user.change_profile_information(
             full_name=updates.get("full_name", UNSET),
             avatar_url=updates.get("avatar_url", UNSET),
         )
@@ -59,7 +60,7 @@ class UserService:
             raise DomainException("Tidak ada email yang perlu diverifikasi")
 
         token, raw_token = await self._issue_verification_token(
-            user, TokenType.EMAIL_CHANGE_VERIFICATION
+            user, VerificationTokenType.EMAIL_CHANGE_VERIFICATION
         )
 
         verification_link = f"{settings.FRONTEND_URL}/click/change-email?token={raw_token}&id={token.id}"
@@ -68,12 +69,12 @@ class UserService:
 
     async def verify_phone(self, user: User, raw_otp: str) -> None:
         token = await self._token_repo.get_by_user_and_type(
-            user.id, TokenType.PHONE_OTP
+            user.id, VerificationTokenType.PHONE_OTP
         )
         if token is None:
             raise DomainException("Tidak ada kode OTP yang aktif", "otp_not_found")
 
-        token.verify(raw_otp, TokenType.PHONE_OTP)
+        token.verify(raw_otp, VerificationTokenType.PHONE_OTP)
 
         user.mark_phone_as_verified()
 
@@ -96,7 +97,9 @@ class UserService:
         if user.is_phone_verified:
             raise DomainException("Tidak ada nomor telepon yang perlu diverifikasi")
 
-        _, raw_otp = await self._issue_verification_token(user, TokenType.PHONE_OTP)
+        _, raw_otp = await self._issue_verification_token(
+            user, VerificationTokenType.PHONE_OTP
+        )
 
         return raw_otp
 
@@ -111,20 +114,24 @@ class UserService:
 
         await self._user_repo.update(user)
 
-    async def suspend(self, user: User) -> None:
-        user.suspend()
+    async def suspend_target(self, admin: Admin, user: User) -> None:
+        admin.suspend_user(user)
         await self._user_repo.update(user)
 
-    async def unsuspend(self, user: User) -> None:
-        user.unsuspend()
+    async def unsuspend_target(self, admin: Admin, user: User) -> None:
+        admin.unsuspend_user(user)
         await self._user_repo.update(user)
 
-    async def delete(self, user: User) -> None:
+    async def delete_target(self, admin: Admin, user: User) -> None:
+        admin.delete_user(user)
+        await self._user_repo.update(user)
+
+    async def delete_self(self, user: User) -> None:
         user.delete()
         await self._user_repo.update(user)
 
     async def _issue_verification_token(
-        self, user: User, type: TokenType
+        self, user: User, type: VerificationTokenType
     ) -> tuple[VerificationToken, str]:
         # Memastikan tidak ada token lama yang tersimpan
         await self._token_repo.delete_by_user_and_type(user.id, type)

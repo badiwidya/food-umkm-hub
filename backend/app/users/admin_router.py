@@ -58,7 +58,7 @@ async def delete_target_user(
 async def suspend_target_user(
     user_service: UserServiceDep, target: UserTargetDep
 ) -> None:
-    await user_service.suspend(target)
+    await user_service.suspend_target(target)
 
 
 @user_admin_router.post(
@@ -69,4 +69,4 @@ async def suspend_target_user(
 async def unsuspend_target_user(
     user_service: UserServiceDep, target: UserTargetDep
 ) -> None:
-    await user_service.unsuspend(target)
+    await user_service.unsuspend_target(target)

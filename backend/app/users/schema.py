@@ -6,8 +6,8 @@ import phonenumbers
 from pydantic import EmailStr, Field, field_validator
 from pydantic_extra_types.phone_numbers import PhoneNumberValidator
 
+from app.domains.user import UserRole, UserStatus
 from app.schema import BaseSchema, PaginatedResponse
-from app.users.enum import UserRole, UserStatus
 
 IDPhoneNumber = Annotated[
     str | phonenumbers.PhoneNumber,

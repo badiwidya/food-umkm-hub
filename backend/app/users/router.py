@@ -39,7 +39,7 @@ async def update_current_profile(
 async def delete_current_user(
     user_service: UserServiceDep, user: CurrentUserDep
 ) -> None:
-    await user_service.delete(user)
+    await user_service.delete_self(user)
 
 
 @user_router.post(

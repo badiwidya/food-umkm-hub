@@ -1,11 +1,17 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlalchemy import ForeignKey, Index, String, UniqueConstraint, text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
-from app.users.enum import TokenType, UserRole, UserStatus
+from app.domains.user import UserRole, UserStatus
+from app.domains.verification_token import VerificationTokenType
+
+if TYPE_CHECKING:
+    from app.stores.model import StoreModel
+    from app.students.model import StudentModel
 
 
 class UserModel(Base):
@@ -25,6 +31,15 @@ class UserModel(Base):
     deleted_at: Mapped[datetime | None]
     updated_at: Mapped[datetime]
     created_at: Mapped[datetime]
+
+    # if seller have store
+    store: Mapped[StoreModel] = relationship(
+        lazy="raise", innerjoin=True, back_populates="owner"
+    )
+    # if student have student_profile
+    student_profile: Mapped[StudentModel] = relationship(
+        lazy="raise", innerjoin=True, back_populates="user"
+    )
 
     __table_args__ = (
         Index(
@@ -47,7 +62,7 @@ class VerificationTokenModel(Base):
 
     id: Mapped[UUID] = mapped_column(primary_key=True)
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
-    token_type: Mapped[TokenType]
+    token_type: Mapped[VerificationTokenType]
     token_hash: Mapped[str]
     expires_at: Mapped[datetime]
 
