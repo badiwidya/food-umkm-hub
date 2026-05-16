@@ -1,25 +1,26 @@
-from typing import Annotated
+from typing import Annotated, cast
+from uuid import UUID
 
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 
 from app.auth.service import AuthService
+from app.domains.admin import Admin
+from app.domains.store import Store
+from app.domains.student import Student
+from app.domains.user import User, UserRole
 from app.exception import AuthenticationException, NotAllowedException
 from app.security import JWTPayload, verify_access_token
 from app.stores.dependency import StoreRepoDep, StoreServiceDep
-from app.stores.entity import Store
 from app.students.dependency import StudentRepoDep, StudentServiceDep
-from app.students.entity import Student
-from app.users.dependency import TokenRepoDep, UserRepoDep, UserServiceDep
-from app.users.entity import User
-from app.users.enum import UserRole
+from app.users.dependency import UserRepoDep, UserServiceDep, VerificationTokenRepoDep
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login", auto_error=False)
 
 
 async def get_auth_service(
     user_repo: UserRepoDep,
-    token_repo: TokenRepoDep,
+    token_repo: VerificationTokenRepoDep,
     student_repo: StudentRepoDep,
     store_repo: StoreRepoDep,
 ) -> AuthService:
@@ -47,22 +48,36 @@ def get_token_payload(
 JWTPayloadDep = Annotated[JWTPayload, Depends(get_token_payload)]
 
 
-def ensure_admin(payload: JWTPayloadDep) -> None:
+def ensure_admin(payload: JWTPayloadDep) -> UUID:
     if UserRole(payload.role) != UserRole.ADMIN:
         raise NotAllowedException("Aksi dilarang")
+    return payload.sub
 
 
 EnsureAdminDep = Depends(ensure_admin)
+
+
+async def get_current_admin(
+    admin_id: Annotated[UUID, Depends(ensure_admin)], user_service: UserServiceDep
+):
+    admin = await user_service.get_details(admin_id)
+    if admin is None:
+        raise AuthenticationException("Autentikasi gagal")
+    return cast(Admin, admin)
+
+
+CurrentAdminDep = Annotated[Admin, Depends(get_current_admin)]
 
 
 async def get_current_user(
     payload: JWTPayloadDep,
     user_service: UserServiceDep,
 ) -> User:
-    user = await user_service.get_by_id(payload.sub)
+    user = await user_service.get_details(payload.sub)
     if user is None:
         raise AuthenticationException("Autentikasi gagal")
-    _ensure_user_active(user)
+    if user.is_suspended:
+        raise NotAllowedException("Akun Anda telah ditangguhkan", "account_suspended")
     return user
 
 
@@ -75,10 +90,11 @@ async def get_current_student(
 ) -> Student:
     if UserRole(payload.role) != UserRole.STUDENT:
         raise NotAllowedException("Aksi dilarang")
-    student = await student_service.get_by_user_id(payload.sub)
+    student = await student_service.get_details(payload.sub)
     if student is None:
         raise AuthenticationException("Autentikasi gagal")
-    _ensure_user_active(student.user)
+    if student.is_suspended:
+        raise NotAllowedException("Akun Anda telah ditangguhkan", "account_suspended")
     return student
 
 
@@ -90,16 +106,10 @@ async def get_current_store(
 ) -> Store:
     if UserRole(payload.role) != UserRole.SELLER:
         raise NotAllowedException("Aksi dilarang.")
-    store_with_owner = await store_service.get_by_owner_id(payload.sub)
-    if store_with_owner is None:
+    store = await store_service.get_details_by_owner_id(payload.sub)
+    if store is None:
         raise AuthenticationException("Autentikasi gagal")
-    _ensure_user_active(store_with_owner.owner)
-    return store_with_owner.store
+    return store
 
 
 CurrentStoreDep = Annotated[Store, Depends(get_current_store)]
-
-
-def _ensure_user_active(user: User):
-    if user.is_suspended:
-        raise NotAllowedException("Akun Anda telah ditangguhkan", "account_suspended")

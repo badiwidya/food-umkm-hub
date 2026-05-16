@@ -1,5 +1,3 @@
-from dataclasses import asdict
-
 from fastapi import APIRouter, status
 
 from app.auth.dependency import CurrentStudentDep
@@ -15,7 +13,7 @@ student_router = APIRouter(prefix="/students", tags=["Students"])
     status_code=status.HTTP_200_OK,
 )
 async def get_me(student: CurrentStudentDep) -> StudentResponse:
-    return StudentResponse.model_validate({**asdict(student.user), **asdict(student)})
+    return StudentResponse.model_validate(student)
 
 
 @student_router.patch(

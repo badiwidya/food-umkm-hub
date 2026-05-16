@@ -2,16 +2,16 @@ from collections.abc import Awaitable, Callable
 from uuid import UUID
 
 import pytest
+from app.stores.entity import Store
+from app.stores.enum import ApprovalStatus
+from app.users.entity import User
+from app.users.enum import UserRole
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.exception import DomainException
 from app.security import hash_password
-from app.stores.entity import Store
-from app.stores.enum import ApprovalStatus
 from app.stores.repository import StoreRepository
 from app.stores.service import StoreService
-from app.users.entity import User
-from app.users.enum import UserRole
 from app.users.repository import UserRepository
 
 StoreFactory = Callable[..., Awaitable[Store]]
@@ -78,7 +78,7 @@ class TestList:
             name="Toko Approved", approval_status=ApprovalStatus.APPROVED
         )
 
-        stores, count = await store_service.list()
+        stores, count = await store_service.list_for_public()
 
         assert count == 1
         assert stores[0].name == "Toko Approved"
@@ -93,7 +93,7 @@ class TestList:
             name="Toko Elektronik", approval_status=ApprovalStatus.APPROVED
         )
 
-        stores, count = await store_service.list(keyword="Warung")
+        stores, count = await store_service.list_for_public(keyword="Warung")
 
         assert count == 1
         assert stores[0].name == "Warung Makan Enak"
@@ -112,7 +112,7 @@ class TestList:
             approval_status=ApprovalStatus.APPROVED,
         )
 
-        stores, count = await store_service.list(keyword="tradisional")
+        stores, count = await store_service.list_for_public(keyword="tradisional")
 
         assert count == 1
         assert stores[0].name == "Toko A"
@@ -125,7 +125,7 @@ class TestList:
                 name=f"Toko {i}", approval_status=ApprovalStatus.APPROVED
             )
 
-        stores, count = await store_service.list(page=1, page_size=3)
+        stores, count = await store_service.list_for_public(page=1, page_size=3)
 
         assert count == 5
         assert len(stores) == 3
@@ -143,7 +143,7 @@ class TestListAll:
             name="Toko Rejected", approval_status=ApprovalStatus.REJECTED
         )
 
-        _, count = await store_service.list_all(page=1, page_size=10, status=None)
+        _, count = await store_service.list_for_admin(page=1, page_size=10, status=None)
 
         assert count == 3
 
@@ -160,7 +160,7 @@ class TestListAll:
             name="Toko Approved", approval_status=ApprovalStatus.APPROVED
         )
 
-        stores, count = await store_service.list_all(
+        stores, count = await store_service.list_for_admin(
             page=1, page_size=10, status=ApprovalStatus.PENDING
         )
 
@@ -183,7 +183,9 @@ class TestListAll:
         await UserRepository(db_session).save(user)
         await store_factory(name="Toko Okabe", owner_id=user.id)
 
-        stores, _ = await store_service.list_all(page=1, page_size=10, status=None)
+        stores, _ = await store_service.list_for_admin(
+            page=1, page_size=10, status=None
+        )
 
         assert stores[0].owner.full_name == "Okabe Rintaro"
 
@@ -197,7 +199,7 @@ class TestUpdateInformation:
             store, {"name": "Nama Baru", "address": "Alamat Baru"}
         )
 
-        saved = await store_service.get_by_id(store.id)
+        saved = await store_service.get_details(store.id)
         assert saved is not None
         assert saved.name == "Nama Baru"
         assert saved.address == "Alamat Baru"
@@ -208,7 +210,7 @@ class TestUpdateInformation:
         store = await store_factory(description="Deskripsi asli.")
         await store_service.update_information(store, {"name": "Nama Baru"})
 
-        saved = await store_service.get_by_id(store.id)
+        saved = await store_service.get_details(store.id)
         assert saved is not None
         assert saved.description == "Deskripsi asli."
 
@@ -218,7 +220,7 @@ class TestUpdateInformation:
         store = await store_factory(photo_url="/foto.jpg")
         await store_service.update_information(store, {"photo_url": None})
 
-        saved = await store_service.get_by_id(store.id)
+        saved = await store_service.get_details(store.id)
         assert saved is not None
         assert saved.photo_url is None
 
@@ -237,7 +239,7 @@ class TestApproveRejectResubmit:
         store = await store_factory(approval_status=ApprovalStatus.PENDING)
         await store_service.approve(store)
 
-        saved = await store_service.get_by_id(store.id)
+        saved = await store_service.get_details(store.id)
         assert saved is not None
         assert saved.approval_status == ApprovalStatus.APPROVED
 
@@ -247,7 +249,7 @@ class TestApproveRejectResubmit:
         store = await store_factory(approval_status=ApprovalStatus.PENDING)
         await store_service.reject(store, notes="Dokumen tidak lengkap.")
 
-        saved = await store_service.get_by_id(store.id)
+        saved = await store_service.get_details(store.id)
         assert saved is not None
         assert saved.approval_status == ApprovalStatus.REJECTED
         assert saved.approval_notes == "Dokumen tidak lengkap."
@@ -261,7 +263,7 @@ class TestApproveRejectResubmit:
         )
         await store_service.resubmit(store)
 
-        saved = await store_service.get_by_id(store.id)
+        saved = await store_service.get_details(store.id)
         assert saved is not None
         assert saved.approval_status == ApprovalStatus.PENDING
         assert saved.approval_notes is None
@@ -274,7 +276,7 @@ class TestOpenClose:
         store = await store_factory(approval_status=ApprovalStatus.APPROVED)
         await store_service.open(store)
 
-        saved = await store_service.get_by_id(store.id)
+        saved = await store_service.get_details(store.id)
         assert saved is not None
         assert saved.is_open is True
 
@@ -286,6 +288,6 @@ class TestOpenClose:
         )
         await store_service.close(store)
 
-        saved = await store_service.get_by_id(store.id)
+        saved = await store_service.get_details(store.id)
         assert saved is not None
         assert saved.is_open is False

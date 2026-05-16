@@ -1,10 +1,10 @@
 from uuid import UUID
 
-from sqlalchemy import select, update
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import contains_eager
 
-from app.students.entity import Student
+from app.domains.student import Student
 from app.students.model import StudentModel
 from app.users.model import UserModel
 from app.users.repository import UserRepository
@@ -28,39 +28,54 @@ class StudentRepository:
         return self._to_entity(model)
 
     async def save(self, student: Student) -> None:
-        model = self._to_model(student)
-        self._session.add(model)
+        user_model = UserRepository._to_model(student)
+        student_model = self._to_model(student)
+        self._session.add(user_model)
+        self._session.add(student_model)
 
     async def update(self, student: Student) -> None:
-        await self._session.execute(
-            update(StudentModel)
-            .where(StudentModel.user_id == student.user.id)
-            .values(
-                nim=student.nim,
-                faculty=student.faculty,
-                department=student.department,
-                updated_at=student.updated_at,
-            )
+        user_model = UserRepository._to_model(student)
+        await self._session.merge(user_model)
+
+        # TODO: double db trip
+        student_id = await self._session.scalar(
+            select(StudentModel.id).where(StudentModel.user_id == student.id)
         )
+        # TODO: Bad error handling
+        if student_id is None:
+            raise RuntimeError()
+
+        student_model = self._to_model(student)
+        student_model.id = student_id
+        await self._session.merge(student_model)
 
     @staticmethod
     def _to_entity(model: StudentModel) -> Student:
         return Student(
-            user=UserRepository.to_entity(model.user),
+            id=model.user.id,
+            full_name=model.user.full_name,
+            avatar_url=model.user.avatar_url,
+            email=model.user.email,
+            pending_email=model.user.pending_email,
+            phone_number=model.user.phone_number,
+            password_hash=model.user.password_hash,
+            status=model.user.status,
+            role=model.user.role,
+            email_verified_at=model.user.email_verified_at,
+            phone_verified_at=model.user.phone_verified_at,
             nim=model.nim,
             faculty=model.faculty,
             department=model.department,
-            updated_at=model.updated_at,
-            created_at=model.created_at,
+            updated_at=model.user.updated_at,
+            created_at=model.user.created_at,
+            deleted_at=model.user.deleted_at,
         )
 
     @staticmethod
     def _to_model(student: Student) -> StudentModel:
         return StudentModel(
-            user_id=student.user.id,
+            user_id=student.id,
             nim=student.nim,
             faculty=student.faculty,
             department=student.department,
-            updated_at=student.updated_at,
-            created_at=student.created_at,
         )

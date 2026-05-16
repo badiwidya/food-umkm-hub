@@ -5,8 +5,7 @@ from sqlalchemy import case, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import contains_eager
 
-from app.products.entity import Product
-from app.products.enum import ProductCategory
+from app.domains.product import Product, ProductCategory, StoreSummary
 from app.products.model import ProductModel
 from app.stores.model import StoreModel
 from app.users.model import UserModel
@@ -70,8 +69,8 @@ class ProductRepository:
     async def get_by_id(self, id: UUID) -> Product | None:
         model = await self._session.scalar(
             select(ProductModel)
-            .join(StoreModel)
-            .join(UserModel)
+            .join(ProductModel.store)
+            .join(StoreModel.owner)
             .options(contains_eager(ProductModel.store))
             .where(
                 UserModel.deleted_at.is_(None),
@@ -118,11 +117,10 @@ class ProductRepository:
     async def _execute_paginated_query(
         self, filters: list[Any], orders: list[Any], offset: int, limit: int
     ) -> tuple[list[Product], int]:
-        """Eksekusi query dan count"""
         stmt = (
             select(ProductModel)
-            .join(StoreModel)
-            .join(UserModel)
+            .join(ProductModel.store)
+            .join(StoreModel.owner)
             .options(contains_eager(ProductModel.store))
             .where(*filters)
             .order_by(*orders, ProductModel.id.asc())
@@ -147,9 +145,12 @@ class ProductRepository:
     def _to_entity(model: ProductModel) -> Product:
         return Product(
             id=model.id,
-            store_id=model.store_id,
-            store_name=model.store.name,
             name=model.name,
+            store=StoreSummary(
+                id=model.store.id,
+                name=model.store.name,
+                photo_url=model.store.photo_url,
+            ),
             price=model.price,
             category=model.category,
             description=model.description,
@@ -164,7 +165,7 @@ class ProductRepository:
     def _to_model(product: Product) -> ProductModel:
         return ProductModel(
             id=product.id,
-            store_id=product.store_id,
+            store_id=product.store.id,
             name=product.name,
             price=product.price,
             category=product.category,

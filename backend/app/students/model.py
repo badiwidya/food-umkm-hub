@@ -1,11 +1,13 @@
-from datetime import datetime
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid7
 
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
-from app.users.model import UserModel
+
+if TYPE_CHECKING:
+    from app.users.model import UserModel
 
 
 class StudentModel(Base):
@@ -16,7 +18,7 @@ class StudentModel(Base):
     nim: Mapped[str] = mapped_column(unique=True)
     faculty: Mapped[str]
     department: Mapped[str]
-    updated_at: Mapped[datetime]
-    created_at: Mapped[datetime]
 
-    user: Mapped[UserModel] = relationship(lazy="raise", innerjoin=True)
+    user: Mapped[UserModel] = relationship(
+        lazy="raise", innerjoin=True, back_populates="student_profile"
+    )

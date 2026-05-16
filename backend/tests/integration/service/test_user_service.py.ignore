@@ -3,11 +3,11 @@ from urllib.parse import parse_qs, urlparse
 from uuid import UUID
 
 import pytest
+from app.users.enum import TokenType, UserRole, UserStatus
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.exception import DomainException
 from app.security import verify_password
-from app.users.enum import TokenType, UserRole, UserStatus
 from app.users.repository import UserRepository, VerificationTokenRepository
 from app.users.service import UserService
 from tests.integration.conftest import UserFactory
@@ -33,7 +33,7 @@ class TestChangePassword:
         user = await user_factory()
         await user_service.change_password(user, "supersecret", "supersecret123")
 
-        saved = await user_service.get_by_id(user.id)
+        saved = await user_service.get_details(user.id)
         assert saved is not None
         assert verify_password("supersecret123", saved.password_hash)
 
@@ -44,7 +44,7 @@ class TestChangePassword:
         with pytest.raises(DomainException):
             await user_service.change_password(user, "wrong", "supersecret123")
 
-        saved = await user_service.get_by_id(user.id)
+        saved = await user_service.get_details(user.id)
         assert saved is not None
         assert not verify_password("supersecret123", saved.password_hash)
 
@@ -56,7 +56,7 @@ class TestRequestEmailChange:
         user = await user_factory(email_verified_at=datetime.now(UTC))
         await user_service.request_email_change(user, "kurisu@amadeus.com")
 
-        saved = await user_service.get_by_id(user.id)
+        saved = await user_service.get_details(user.id)
         assert saved is not None
         assert saved.pending_email == "kurisu@amadeus.com"
 
@@ -123,7 +123,7 @@ class TestChangeNumber:
         user = await user_factory(phone_verified_at=datetime.now(UTC))
         await user_service.change_phone_number(user, "+621111111111")
 
-        saved = await user_service.get_by_id(user.id)
+        saved = await user_service.get_details(user.id)
         assert saved is not None
         assert saved.phone_number == "+621111111111"
         assert saved.phone_verified_at is None
@@ -164,7 +164,7 @@ class TestChangeProfile:
             user, {"full_name": "Okabe Rintaro", "avatar_url": "/picture.jpg"}
         )
 
-        saved = await user_service.get_by_id(user.id)
+        saved = await user_service.get_details(user.id)
 
         assert saved is not None
         assert saved.full_name == "Okabe Rintaro"
@@ -176,7 +176,7 @@ class TestChangeProfile:
         user = await user_factory()
         await user_service.update_profile(user, {"full_name": "Okabe Rintaro"})
 
-        saved = await user_service.get_by_id(user.id)
+        saved = await user_service.get_details(user.id)
 
         assert saved is not None
         assert saved.full_name == "Okabe Rintaro"
@@ -188,7 +188,7 @@ class TestChangeProfile:
         user = await user_factory(avatar_url="/picture.jpg")
         await user_service.update_profile(user, {"avatar_url": None})
 
-        saved = await user_service.get_by_id(user.id)
+        saved = await user_service.get_details(user.id)
 
         assert saved is not None
         assert saved.avatar_url is None
@@ -199,15 +199,15 @@ class TestStatusChange:
         self, user_factory: UserFactory, user_service: UserService
     ):
         user = await user_factory()
-        await user_service.suspend(user)
+        await user_service.suspend_target(user)
 
-        suspended = await user_service.get_by_id(user.id)
+        suspended = await user_service.get_details(user.id)
         assert suspended is not None
         assert suspended.status == UserStatus.SUSPENDED
 
-        await user_service.unsuspend(suspended)
+        await user_service.unsuspend_target(suspended)
 
-        unsuspended = await user_service.get_by_id(user.id)
+        unsuspended = await user_service.get_details(user.id)
         assert unsuspended is not None
         assert unsuspended.status == UserStatus.ACTIVE
 
@@ -217,7 +217,7 @@ class TestStatusChange:
         user = await user_factory()
         await user_service.delete(user)
 
-        deleted = await user_service.get_by_id(user.id)
+        deleted = await user_service.get_details(user.id)
         assert deleted is None
 
         _, count = await user_service.list(1, 20, None, None)

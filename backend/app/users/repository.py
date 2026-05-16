@@ -3,8 +3,8 @@ from uuid import UUID
 from sqlalchemy import delete, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.users.entity import User, VerificationToken
-from app.users.enum import TokenType, UserRole, UserStatus
+from app.domains.user import User, UserRole, UserStatus
+from app.domains.verification_token import VerificationToken, VerificationTokenType
 from app.users.model import UserModel, VerificationTokenModel
 
 
@@ -20,7 +20,7 @@ class UserRepository:
         if model is None:
             return None
 
-        return self.to_entity(model)
+        return self._to_entity(model)
 
     async def get_by_email(self, email: str) -> User | None:
         model = await self._session.scalar(
@@ -32,7 +32,7 @@ class UserRepository:
         if model is None:
             return None
 
-        return self.to_entity(model)
+        return self._to_entity(model)
 
     async def get_by_phone_number(self, phone_number: str) -> User | None:
         model = await self._session.scalar(
@@ -44,7 +44,7 @@ class UserRepository:
         if model is None:
             return None
 
-        return self.to_entity(model)
+        return self._to_entity(model)
 
     async def get_by_email_or_phone(self, email: str, phone_number: str) -> User | None:
         model = await self._session.scalar(
@@ -57,7 +57,7 @@ class UserRepository:
         if model is None:
             return None
 
-        return self.to_entity(model)
+        return self._to_entity(model)
 
     async def get_all(
         self,
@@ -85,7 +85,7 @@ class UserRepository:
         models = (await self._session.scalars(stmt)).all()
         count = await self._session.scalar(count_stmt)
 
-        return [self.to_entity(model) for model in models], (count or 0)
+        return [self._to_entity(model) for model in models], (count or 0)
 
     async def save(self, user: User) -> None:
         model = self._to_model(user)
@@ -96,7 +96,7 @@ class UserRepository:
         await self._session.merge(model)
 
     @staticmethod
-    def to_entity(model: UserModel) -> User:
+    def _to_entity(model: UserModel) -> User:
         return User(
             id=model.id,
             full_name=model.full_name,
@@ -147,7 +147,7 @@ class VerificationTokenRepository:
         return self._to_entity(model)
 
     async def get_by_user_and_type(
-        self, user_id: UUID, type: TokenType
+        self, user_id: UUID, type: VerificationTokenType
     ) -> VerificationToken | None:
         model = await self._session.scalar(
             select(VerificationTokenModel)
@@ -170,7 +170,7 @@ class VerificationTokenRepository:
         )
 
     async def delete_by_user_and_type(
-        self, user_id: UUID, token_type: TokenType
+        self, user_id: UUID, token_type: VerificationTokenType
     ) -> None:
         await self._session.execute(
             delete(VerificationTokenModel)

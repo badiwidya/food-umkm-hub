@@ -1,13 +1,22 @@
-import hashlib
-import hmac
-import secrets
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
+from enum import StrEnum
 from uuid import UUID, uuid7
 
 from app.exception import DomainException
 from app.sentinel import UNSET, TUnset
-from app.users.enum import TokenType, UserRole, UserStatus
+
+
+class UserRole(StrEnum):
+    ADMIN = "admin"
+    STUDENT = "student"
+    SELLER = "seller"
+
+
+class UserStatus(StrEnum):
+    ACTIVE = "active"
+    INACTIVE = "inactive"
+    SUSPENDED = "suspended"
 
 
 @dataclass(kw_only=True)
@@ -31,35 +40,6 @@ class User:
     created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 
-    @classmethod
-    def register(
-        cls,
-        full_name: str,
-        email: str,
-        phone_number: str,
-        password_hash: str,
-        role: UserRole,
-    ) -> User:
-        normalized_name = full_name.strip()
-        if not normalized_name:
-            raise DomainException("Nama tidak boleh kosong")
-
-        normalized_email = email.strip().lower()
-        if not normalized_email:
-            raise DomainException("Email tidak boleh kosong")
-
-        normalized_phone = phone_number.strip()
-        if not normalized_phone:
-            raise DomainException("Nomor telepon tidak boleh kosong")
-
-        return cls(
-            full_name=normalized_name,
-            email=normalized_email,
-            phone_number=normalized_phone,
-            password_hash=password_hash,
-            role=role,
-        )
-
     @property
     def is_email_verified(self) -> bool:
         return self.email_verified_at is not None
@@ -76,7 +56,7 @@ class User:
     def is_suspended(self) -> bool:
         return self.status == UserStatus.SUSPENDED
 
-    def change_info(
+    def change_profile_information(
         self,
         full_name: str | TUnset = UNSET,
         avatar_url: str | None | TUnset = UNSET,
@@ -147,29 +127,19 @@ class User:
         self._touch()
 
     def delete(self) -> None:
-        # Apapun yang terjadi, akun admin tidak boleh dihapus (baik oleh diri sendiri
-        # ataupun admin lain). Ada prosedur yang harus diikuti.
-        if self.role == UserRole.ADMIN:
-            raise DomainException("Akun Administrator tidak dapat dihapus")
-
         if self.is_deleted:
             return
 
         self.deleted_at = datetime.now(UTC)
         self._touch()
 
-    def suspend(self) -> None:
-        # Apapun yang terjadi, akun admin tidak boleh disuspend (baik oleh diri sendiri
-        # ataupun admin lain).
-        if self.role == UserRole.ADMIN:
-            raise DomainException("Akun Administrator tidak dapat disuspend")
-
+    def _suspend(self) -> None:
         if self.is_suspended:
             return
         self.status = UserStatus.SUSPENDED
         self._touch()
 
-    def unsuspend(self) -> None:
+    def _unsuspend(self) -> None:
         if not self.is_suspended:
             return
         self.status = UserStatus.ACTIVE
@@ -178,67 +148,26 @@ class User:
     def _touch(self) -> None:
         self.updated_at = datetime.now(UTC)
 
+    @staticmethod
+    def _register_validate(
+        full_name: str,
+        email: str,
+        phone_number: str,
+    ) -> dict[str, str]:
+        normalized_name = full_name.strip()
+        if not normalized_name:
+            raise DomainException("Nama tidak boleh kosong")
 
-@dataclass(kw_only=True)
-class VerificationToken:
-    id: UUID = field(default_factory=uuid7)
-    user_id: UUID
-    token_type: TokenType
-    token_hash: str
-    expires_at: datetime
+        normalized_email = email.strip().lower()
+        if not normalized_email:
+            raise DomainException("Email tidak boleh kosong")
 
-    @classmethod
-    def create(
-        cls, user_id: UUID, token_type: TokenType
-    ) -> tuple[VerificationToken, str]:
-        now = datetime.now(UTC)
+        normalized_phone = phone_number.strip()
+        if not normalized_phone:
+            raise DomainException("Nomor telepon tidak boleh kosong")
 
-        if token_type == TokenType.PHONE_OTP:
-            raw_token = str(secrets.randbelow(1000000)).zfill(6)
-            expires_at = now + timedelta(minutes=5)
-        elif token_type == TokenType.EMAIL_VERIFICATION:
-            raw_token = secrets.token_urlsafe(32)
-            expires_at = now + timedelta(hours=24)
-        elif token_type == TokenType.EMAIL_CHANGE_VERIFICATION:
-            raw_token = secrets.token_urlsafe(32)
-            expires_at = now + timedelta(hours=3)
-        elif token_type == TokenType.PASSWORD_RESET:
-            raw_token = secrets.token_urlsafe(32)
-            expires_at = now + timedelta(hours=1)
-
-        return cls(
-            user_id=user_id,
-            token_hash=hashlib.sha256(raw_token.encode()).hexdigest(),
-            token_type=token_type,
-            expires_at=expires_at,
-        ), raw_token
-
-    @property
-    def is_expired(self) -> bool:
-        return self.expires_at < datetime.now(UTC)
-
-    def verify(self, raw_token: str, expected_type: TokenType) -> None:
-        exp_err_type = "expired_token"
-        inv_err_type = "invalid_token"
-        if (
-            expected_type == TokenType.EMAIL_VERIFICATION
-            or expected_type == TokenType.EMAIL_CHANGE_VERIFICATION
-        ):
-            name = "Tautan verifikasi"
-        elif expected_type == TokenType.PASSWORD_RESET:
-            name = "Tautan reset password"
-        elif expected_type == TokenType.PHONE_OTP:
-            name = "Kode OTP"
-            exp_err_type = "expired_otp"
-            inv_err_type = "invalid_otp"
-
-        if self.token_type != expected_type:
-            raise DomainException(f"{name} tidak valid", inv_err_type)
-
-        if self.is_expired:
-            raise DomainException(f"{name} sudah tidak berlaku", exp_err_type)
-
-        if not hmac.compare_digest(
-            hashlib.sha256(raw_token.encode()).hexdigest(), self.token_hash
-        ):
-            raise DomainException(f"{name} tidak valid", inv_err_type)
+        return {
+            "full_name": normalized_name,
+            "email": normalized_email,
+            "phone_number": normalized_phone,
+        }

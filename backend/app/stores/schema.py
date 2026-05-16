@@ -3,8 +3,8 @@ from uuid import UUID
 
 from pydantic import field_validator
 
+from app.domains.store import StoreApprovalStatus
 from app.schema import BaseSchema, PaginatedResponse
-from app.stores.enum import ApprovalStatus
 from app.users.schema import UserResponse
 
 
@@ -47,7 +47,7 @@ class StoreWithOwnerSummaryResponse(BaseSchema):
     id: UUID
     name: str
     photo_url: str | None
-    approval_status: ApprovalStatus
+    approval_status: StoreApprovalStatus
     owner: UserResponse
 
 

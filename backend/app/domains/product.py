@@ -1,17 +1,36 @@
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
+from enum import StrEnum
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid7
 
 from app.exception import DomainException
-from app.products.enum import ProductCategory
 from app.sentinel import UNSET, TUnset
+
+if TYPE_CHECKING:
+    from app.domains.store import Store
+
+
+class ProductCategory(StrEnum):
+    FOOD = "food"
+    DRINK = "drink"
+    SNACK = "snack"
+    OTHER = "other"
+
+
+# Pembakaian class StoreSummary untuk class product agar menghindari nested coposite yang
+# terlalu dalam serta menghindari load terlalu banyak di database
+@dataclass(kw_only=True)
+class StoreSummary:
+    id: UUID
+    name: str
+    photo_url: str | None
 
 
 @dataclass(kw_only=True)
 class Product:
     id: UUID = field(default_factory=uuid7)
-    store_id: UUID
-    store_name: str
+    store: StoreSummary
     name: str
     description: str | None = None
     price: int
@@ -29,8 +48,7 @@ class Product:
     @classmethod
     def create(
         cls,
-        store_id: UUID,
-        store_name: str,
+        store: Store,
         name: str,
         price: int,
         category: ProductCategory,
@@ -48,8 +66,7 @@ class Product:
         normalized_photo = photo_url.strip() if photo_url is not None else None
 
         return cls(
-            store_id=store_id,
-            store_name=store_name,
+            store=StoreSummary(id=store.id, name=store.name, photo_url=store.photo_url),
             name=normalized_name,
             price=price,
             category=category,
@@ -57,7 +74,7 @@ class Product:
             photo_url=normalized_photo,
         )
 
-    def change_info(
+    def change_information(
         self,
         name: str | TUnset = UNSET,
         price: int | TUnset = UNSET,

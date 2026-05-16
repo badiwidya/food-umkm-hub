@@ -1,23 +1,34 @@
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
+from enum import StrEnum
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid7
 
+from app.domains.product import Product, ProductCategory
 from app.exception import DomainException
 from app.sentinel import UNSET, TUnset
-from app.stores.enum import ApprovalStatus
+
+if TYPE_CHECKING:
+    from app.domains.seller import Seller
+
+
+class StoreApprovalStatus(StrEnum):
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
 
 
 @dataclass(kw_only=True)
 class Store:
     id: UUID = field(default_factory=uuid7)
     name: str
-    owner_id: UUID
+    owner: Seller
     description: str
     address: str
     photo_url: str | None = None
     qris_image_url: str | None = None
     maps_link: str | None = None
-    approval_status: ApprovalStatus = ApprovalStatus.PENDING
+    approval_status: StoreApprovalStatus = StoreApprovalStatus.PENDING
     approval_notes: str | None = None
     is_open: bool = False
     updated_at: datetime = field(default_factory=lambda: datetime.now(UTC))
@@ -27,7 +38,7 @@ class Store:
     def create(
         cls,
         name: str,
-        owner_id: UUID,
+        owner: Seller,
         description: str,
         address: str,
         photo_url: str | None = None,
@@ -51,7 +62,7 @@ class Store:
         normalized_qris = qris_image_url.strip() if qris_image_url is not None else None
         return cls(
             name=normalized_name,
-            owner_id=owner_id,
+            owner=owner,
             description=normalized_desc,
             address=normalized_address,
             photo_url=normalized_photo,
@@ -59,7 +70,7 @@ class Store:
             maps_link=normalized_maps,
         )
 
-    def change_info(
+    def change_information(
         self,
         name: str | TUnset = UNSET,
         description: str | TUnset = UNSET,
@@ -118,7 +129,7 @@ class Store:
             self._touch()
 
     def open(self) -> None:
-        if self.approval_status != ApprovalStatus.APPROVED:
+        if self.approval_status != StoreApprovalStatus.APPROVED:
             raise DomainException(
                 "Toko harus disetujui terlebih dahulu sebelum dapat mengubah status operasional"
             )
@@ -126,35 +137,45 @@ class Store:
         self._touch()
 
     def close(self) -> None:
-        if self.approval_status != ApprovalStatus.APPROVED:
+        if self.approval_status != StoreApprovalStatus.APPROVED:
             raise DomainException(
                 "Toko harus disetujui terlebih dahulu sebelum dapat mengubah status operasional"
             )
         self.is_open = False
         self._touch()
 
-    def approve(self) -> None:
+    def create_product(
+        self,
+        name: str,
+        price: int,
+        category: ProductCategory,
+        description: str | None = None,
+        photo_url: str | None = None,
+    ) -> Product:
+        return Product.create(self, name, price, category, description, photo_url)
+
+    def _approve(self) -> None:
         if self.approval_status not in (
-            ApprovalStatus.PENDING,
-            ApprovalStatus.REJECTED,
+            StoreApprovalStatus.PENDING,
+            StoreApprovalStatus.REJECTED,
         ):
             raise DomainException(
                 "Hanya toko dengan status pending atau ditolak yang bisa disetujui"
             )
-        self.approval_status = ApprovalStatus.APPROVED
+        self.approval_status = StoreApprovalStatus.APPROVED
         self._touch()
 
-    def reject(self, notes: str | None) -> None:
-        if self.approval_status != ApprovalStatus.PENDING:
+    def _reject(self, notes: str | None) -> None:
+        if self.approval_status != StoreApprovalStatus.PENDING:
             raise DomainException("Hanya toko dengan status pending yang bisa ditolak")
-        self.approval_status = ApprovalStatus.REJECTED
+        self.approval_status = StoreApprovalStatus.REJECTED
         self.approval_notes = notes
         self._touch()
 
     def resubmit(self) -> None:
-        if self.approval_status != ApprovalStatus.REJECTED:
+        if self.approval_status != StoreApprovalStatus.REJECTED:
             raise DomainException("Hanya toko yang ditolak yang bisa mengajukan ulang")
-        self.approval_status = ApprovalStatus.PENDING
+        self.approval_status = StoreApprovalStatus.PENDING
         self.approval_notes = None
         self._touch()
 
