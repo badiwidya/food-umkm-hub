@@ -1,10 +1,10 @@
 from typing import Any
 from uuid import UUID
 
+from app.domains.product import Product, ProductCategory
+from app.domains.store import Store
 from app.exception import NotFoundException
 from app.products.dto import CreateProductDTO
-from app.products.entity import Product
-from app.products.enum import ProductCategory
 from app.products.repository import ProductRepository
 from app.sentinel import UNSET
 
@@ -67,15 +67,9 @@ class ProductService:
             raise NotFoundException("Produk tidak ada")
         return product
 
-    async def create(self, dto: CreateProductDTO) -> Product:
-        product = Product.create(
-            store_id=dto.store.id,
-            store_name=dto.store.name,
-            name=dto.name,
-            price=dto.price,
-            category=dto.category,
-            photo_url=dto.photo_url,
-            description=dto.description,
+    async def create(self, store: Store, dto: CreateProductDTO) -> Product:
+        product = store.create_product(
+            dto.name, dto.price, dto.category, dto.description, dto.photo_url
         )
         await self._product_repo.save(product)
         return product
@@ -83,7 +77,7 @@ class ProductService:
     async def update_information(
         self, product: Product, updates: dict[str, Any]
     ) -> Product:
-        product.change_info(
+        product.change_information(
             name=updates.get("name", UNSET),
             price=updates.get("price", UNSET),
             category=updates.get("category", UNSET),

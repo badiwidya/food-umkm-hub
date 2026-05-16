@@ -1,12 +1,16 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlalchemy import BigInteger, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
-from app.products.enum import ProductCategory
+from app.domains.product import ProductCategory
 from app.stores.model import StoreModel
+
+if TYPE_CHECKING:
+    from app.stores.model import StoreModel
 
 
 class ProductModel(Base):

@@ -5,9 +5,9 @@ from fastapi import APIRouter, Query, status
 
 from app.auth.dependency import CurrentStoreDep
 from app.dependency import PaginationQueryDep
+from app.domains.product import ProductCategory
 from app.products.dependency import AuthorizedProductTargetDep, ProductServiceDep
 from app.products.dto import CreateProductDTO
-from app.products.enum import ProductCategory
 from app.products.schema import (
     CreateProductRequest,
     ProductDetailResponse,
@@ -54,14 +54,13 @@ async def create_product(
     payload: CreateProductRequest,
 ) -> ProductDetailResponse:
     dto = CreateProductDTO(
-        store=store,
         name=payload.name,
         price=payload.price,
         category=payload.category,
         description=payload.description,
         photo_url=payload.photo_url,
     )
-    product = await product_service.create(dto)
+    product = await product_service.create(store, dto)
 
     return ProductDetailResponse.model_validate(product)
 

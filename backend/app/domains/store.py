@@ -4,6 +4,7 @@ from enum import StrEnum
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid7
 
+from app.domains.product import Product, ProductCategory
 from app.exception import DomainException
 from app.sentinel import UNSET, TUnset
 
@@ -142,6 +143,16 @@ class Store:
             )
         self.is_open = False
         self._touch()
+
+    def create_product(
+        self,
+        name: str,
+        price: int,
+        category: ProductCategory,
+        description: str | None = None,
+        photo_url: str | None = None,
+    ) -> Product:
+        return Product.create(self, name, price, category, description, photo_url)
 
     def _approve(self) -> None:
         if self.approval_status not in (

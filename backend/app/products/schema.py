@@ -3,15 +3,20 @@ from uuid import UUID
 
 from pydantic import NonNegativeInt, field_validator
 
-from app.products.enum import ProductCategory
+from app.domains.store import ProductCategory
 from app.schema import BaseSchema, PaginatedResponse
+
+
+class StoreSummaryResponse(BaseSchema):
+    id: UUID
+    name: str
+    photo_url: str | None
 
 
 # TODO: rating
 class ProductSummaryResponse(BaseSchema):
     id: UUID
-    store_id: UUID
-    store_name: str
+    store: StoreSummaryResponse
     name: str
     price: NonNegativeInt
 
