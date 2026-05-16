@@ -20,7 +20,7 @@ class UserRepository:
         if model is None:
             return None
 
-        return self.to_entity(model)
+        return self._to_entity(model)
 
     async def get_by_email(self, email: str) -> User | None:
         model = await self._session.scalar(
@@ -32,7 +32,7 @@ class UserRepository:
         if model is None:
             return None
 
-        return self.to_entity(model)
+        return self._to_entity(model)
 
     async def get_by_phone_number(self, phone_number: str) -> User | None:
         model = await self._session.scalar(
@@ -44,7 +44,7 @@ class UserRepository:
         if model is None:
             return None
 
-        return self.to_entity(model)
+        return self._to_entity(model)
 
     async def get_by_email_or_phone(self, email: str, phone_number: str) -> User | None:
         model = await self._session.scalar(
@@ -57,7 +57,7 @@ class UserRepository:
         if model is None:
             return None
 
-        return self.to_entity(model)
+        return self._to_entity(model)
 
     async def get_all(
         self,
@@ -85,7 +85,7 @@ class UserRepository:
         models = (await self._session.scalars(stmt)).all()
         count = await self._session.scalar(count_stmt)
 
-        return [self.to_entity(model) for model in models], (count or 0)
+        return [self._to_entity(model) for model in models], (count or 0)
 
     async def save(self, user: User) -> None:
         model = self._to_model(user)
@@ -96,7 +96,7 @@ class UserRepository:
         await self._session.merge(model)
 
     @staticmethod
-    def to_entity(model: UserModel) -> User:
+    def _to_entity(model: UserModel) -> User:
         return User(
             id=model.id,
             full_name=model.full_name,

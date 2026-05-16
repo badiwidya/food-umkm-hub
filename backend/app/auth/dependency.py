@@ -61,7 +61,8 @@ async def get_current_user(
     user = await user_service.get_details(payload.sub)
     if user is None:
         raise AuthenticationException("Autentikasi gagal")
-    _ensure_user_active(user)
+    if user.is_suspended:
+        raise NotAllowedException("Akun Anda telah ditangguhkan", "account_suspended")
     return user
 
 
@@ -74,10 +75,11 @@ async def get_current_student(
 ) -> Student:
     if UserRole(payload.role) != UserRole.STUDENT:
         raise NotAllowedException("Aksi dilarang")
-    student = await student_service.get_by_user_id(payload.sub)
+    student = await student_service.get_details(payload.sub)
     if student is None:
         raise AuthenticationException("Autentikasi gagal")
-    _ensure_user_active(student.user)
+    if student.is_suspended:
+        raise NotAllowedException("Akun Anda telah ditangguhkan", "account_suspended")
     return student
 
 
