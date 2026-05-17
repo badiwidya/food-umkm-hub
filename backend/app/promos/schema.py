@@ -2,7 +2,7 @@ from datetime import datetime
 from uuid import UUID
 
 from app.domains.promo import PromoType
-from app.schema import BaseSchema
+from app.schema import BaseSchema, PaginatedResponse
 
 
 class CreatePromoRequest(BaseSchema):
@@ -16,7 +16,7 @@ class CreatePromoRequest(BaseSchema):
     min_order_amount: int | None = None
 
 
-class PromoDetailResponse(BaseSchema):
+class PromoSummaryResponse(BaseSchema):
     id: UUID
     store_id: UUID
     code: str
@@ -24,9 +24,15 @@ class PromoDetailResponse(BaseSchema):
     value: int
     max_discount_amount: int | None
     min_order_amount: int | None
-    max_usage: int | None
-    usage_count: int
     start_date: datetime
     end_date: datetime
+
+
+PromoListResponse = PaginatedResponse[list[PromoSummaryResponse]]
+
+
+class PromoDetailResponse(PromoSummaryResponse):
+    max_usage: int | None
+    usage_count: int
     updated_at: datetime
     created_at: datetime

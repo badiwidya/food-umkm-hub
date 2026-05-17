@@ -1,6 +1,8 @@
+from datetime import UTC, datetime
+from typing import Any
 from uuid import UUID
 
-from sqlalchemy import select, update
+from sqlalchemy import func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domains.promo import Promo
@@ -10,6 +12,41 @@ from app.promos.model import PromoModel
 class PromoRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
+
+    async def get_all_by_store(
+        self, store_id: UUID, only_active: bool, offset: int, limit: int
+    ) -> tuple[list[Promo], int]:
+        filters: list[Any] = [
+            PromoModel.store_id == store_id,
+            PromoModel.deleted_at.is_(None),
+        ]
+        orders: list[Any] = []
+
+        if only_active:
+            filters.extend(
+                [
+                    PromoModel.start_date <= datetime.now(UTC),
+                    PromoModel.end_date >= datetime.now(UTC),
+                    or_(
+                        PromoModel.max_usage.is_(None),
+                        PromoModel.usage_count < PromoModel.max_usage,
+                    ),
+                ]
+            )
+            orders.append(PromoModel.start_date.desc())
+
+        stmt = (
+            select(PromoModel)
+            .where(*filters)
+            .order_by(*orders, PromoModel.created_at.desc())
+            .offset(offset)
+            .limit(limit)
+        )
+        count_stmt = select(func.count()).select_from(PromoModel).where(*filters)
+
+        models = (await self._session.scalars(stmt)).all()
+        count = await self._session.scalar(count_stmt)
+        return [self._to_entity(model) for model in models], count or 0
 
     async def get_by_code_and_store(self, code: str, store_id: UUID) -> Promo | None:
         model = await self._session.scalar(

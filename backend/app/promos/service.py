@@ -1,4 +1,4 @@
-import logging
+from uuid import UUID
 
 from app.domains.promo import Promo
 from app.domains.store import Store
@@ -10,6 +10,28 @@ from app.promos.repository import PromoRepository
 class PromoService:
     def __init__(self, promo_repo: PromoRepository) -> None:
         self._promo_repo = promo_repo
+
+    async def list_for_seller(
+        self, store_id: UUID, page: int, page_size: int
+    ) -> tuple[list[Promo], int]:
+        limit = page_size
+        offset = (page - 1) * page_size
+
+        promos, total_count = await self._promo_repo.get_all_by_store(
+            store_id=store_id, only_active=False, limit=limit, offset=offset
+        )
+        return promos, total_count
+
+    async def list_for_public(
+        self, store_id: UUID, page: int, page_size: int
+    ) -> tuple[list[Promo], int]:
+        limit = page_size
+        offset = (page - 1) * page_size
+
+        promos, total_count = await self._promo_repo.get_all_by_store(
+            store_id=store_id, only_active=True, limit=limit, offset=offset
+        )
+        return promos, total_count
 
     async def create(self, store: Store, dto: CreatePromoDTO) -> Promo:
         print(f"code: {dto.code}")
