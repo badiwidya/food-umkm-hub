@@ -46,6 +46,13 @@ class Promo:
             raise DomainException(
                 "Total maksimal untuk diskon hanya bisa diset apabila tipe promo adalah persen"
             )
+
+        if type == PromoType.PERCENTAGE:
+            if not (1 <= value <= 100):
+                raise DomainException("Nilai promo harus berada dalam rentang 1-100%")
+        elif value <= 0:
+            raise DomainException("Nilai promo tidak boleh 0 atau negatif")
+
         return cls(
             store_id=store_id,
             type=type,
@@ -84,11 +91,17 @@ class Promo:
             if isinstance(max_discount_amount, TUnset)
             else max_discount_amount
         )
+        new_value = self.value if isinstance(value, TUnset) else value
 
         if new_type != PromoType.PERCENTAGE and new_max_discount_amount is not None:
             raise DomainException(
                 "Total maksimal untuk diskon hanya bisa diset apabila tipe promo adalah persen"
             )
+        if new_type == PromoType.PERCENTAGE:
+            if not (1 <= new_value <= 100):
+                raise DomainException("Nilai promo harus berada dalam rentang 1-100%")
+        elif new_value <= 0:
+            raise DomainException("Nilai promo tidak boleh 0 atau negatif")
 
         has_changed = False
 
