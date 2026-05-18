@@ -1,6 +1,9 @@
 from datetime import datetime
 from uuid import UUID
 
+from pydantic import NonNegativeInt
+from pydantic.functional_validators import field_validator
+
 from app.domains.promo import PromoType
 from app.schema import BaseSchema, PaginatedResponse
 
@@ -11,9 +14,27 @@ class CreatePromoRequest(BaseSchema):
     value: int
     start_date: datetime
     end_date: datetime
-    max_usage: int | None = None
-    max_discount_amount: int | None = None
-    min_order_amount: int | None = None
+    max_usage: NonNegativeInt | None = None
+    max_discount_amount: NonNegativeInt | None = None
+    min_order_amount: NonNegativeInt | None = None
+
+
+class UpdatePromoRequest(BaseSchema):
+    code: str | None = None
+    type: PromoType | None = None
+    value: int | None = None
+    start_date: datetime | None = None
+    end_date: datetime | None = None
+    max_usage: NonNegativeInt | None = None
+    max_discount_amount: NonNegativeInt | None = None
+    min_order_amount: NonNegativeInt | None = None
+
+    @field_validator("code", mode="after")
+    @classmethod
+    def is_null(cls, v: str | None) -> str | None:
+        if not v:
+            raise ValueError("kode promo tidak boleh kosong")
+        return v
 
 
 class PromoSummaryResponse(BaseSchema):

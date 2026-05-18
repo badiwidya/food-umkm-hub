@@ -1,3 +1,4 @@
+from typing import Any
 from uuid import UUID
 
 from app.domains.promo import Promo
@@ -5,6 +6,7 @@ from app.domains.store import Store
 from app.exception import DomainException, NotFoundException
 from app.promos.dto import CreatePromoDTO
 from app.promos.repository import PromoRepository
+from app.sentinel import UNSET
 
 
 class PromoService:
@@ -60,6 +62,21 @@ class PromoService:
             dto.min_order_amount,
         )
         await self._promo_repo.save(promo)
+        return promo
+
+    async def update_information(self, promo: Promo, updates: dict[str, Any]) -> Promo:
+        print(updates)
+        promo.change_information(
+            code=updates.get("code", UNSET),
+            type=updates.get("type", UNSET),
+            value=updates.get("value", UNSET),
+            max_usage=updates.get("max_usage", UNSET),
+            start_date=updates.get("start_date", UNSET),
+            end_date=updates.get("end_date", UNSET),
+            max_discount_amount=updates.get("max_discount_amount", UNSET),
+            min_order_amount=updates.get("min_order_amount", UNSET),
+        )
+        await self._promo_repo.update(promo)
         return promo
 
     async def delete(self, promo: Promo) -> None:

@@ -12,6 +12,7 @@ from app.promos.schema import (
     PromoDetailResponse,
     PromoListResponse,
     PromoSummaryResponse,
+    UpdatePromoRequest,
 )
 
 promo_router = APIRouter(prefix="/promos", tags=["Promo"])
@@ -49,6 +50,18 @@ async def delete_promo(
     promo_service: PromoServiceDep, promo: AuthorizedPromoTargetDep
 ) -> None:
     await promo_service.delete(promo)
+
+
+@promo_router.patch("/{id}", status_code=HTTP_200_OK)
+async def update_promo_information(
+    promo_service: PromoServiceDep,
+    promo: AuthorizedPromoTargetDep,
+    payload: UpdatePromoRequest,
+) -> PromoDetailResponse:
+    promo = await promo_service.update_information(
+        promo, payload.model_dump(exclude_unset=True)
+    )
+    return PromoDetailResponse.model_validate(promo)
 
 
 @store_promo_router.get("/me/promos", status_code=HTTP_200_OK)
