@@ -1,9 +1,18 @@
-from fastapi import APIRouter, status
+from typing import Annotated
+
+from fastapi import APIRouter, Query, status
 
 from app.auth.dependency import CurrentStudentDep
+from app.dependency import PaginationQueryDep
+from app.domains.order import OrderStatus
 from app.orders.dependency import OrderServiceDep
 from app.orders.dto import CreateOrderDTO, OrderItemDTO
-from app.orders.schema import CreateOrderRequest, OrderDetailResponse
+from app.orders.schema import (
+    CreateOrderRequest,
+    OrderDetailResponse,
+    OrderListResponse,
+    OrderSummaryResponse,
+)
 
 order_router = APIRouter(prefix="/orders", tags=["Order"])
 
@@ -28,3 +37,24 @@ async def create_order(
 
     order = await order_service.create(student, dto)
     return OrderDetailResponse.model_validate(order)
+
+
+@order_router.get("/", status_code=status.HTTP_200_OK)
+async def get_orders_by_student(
+    order_service: OrderServiceDep,
+    student: CurrentStudentDep,
+    pagination: PaginationQueryDep,
+    status: Annotated[OrderStatus | None, Query()] = None,
+) -> OrderListResponse:
+    orders, total_count = await order_service.list_by_student(
+        student=student,
+        status=status,
+        page=pagination.page,
+        page_size=pagination.page_size,
+    )
+    return OrderListResponse(
+        page=pagination.page,
+        page_size=pagination.page_size,
+        total=total_count,
+        data=[OrderSummaryResponse.model_validate(order) for order in orders],
+    )

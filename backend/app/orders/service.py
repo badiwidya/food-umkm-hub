@@ -1,7 +1,7 @@
 from datetime import UTC, datetime, timedelta
 
 from app.config import settings
-from app.domains.order import Order, PaymentMethod
+from app.domains.order import Order, OrderStatus, PaymentMethod
 from app.domains.student import Student
 from app.exception import DomainException, NotFoundException
 from app.orders.dto import CreateOrderDTO
@@ -20,6 +20,17 @@ class OrderService:
         self._order_repo = order_repo
         self._product_repo = product_repo
         self._promo_repo = promo_repo
+
+    async def list_by_student(
+        self, student: Student, status: OrderStatus | None, page: int, page_size: int
+    ) -> tuple[list[Order], int]:
+        limit = page_size
+        offset = (page - 1) * page_size
+
+        orders, total_count = await self._order_repo.get_all_by_student(
+            student_id=student.id, status=status, offset=offset, limit=limit
+        )
+        return orders, total_count
 
     async def create(self, student: Student, dto: CreateOrderDTO) -> Order:
         now = datetime.now(UTC)

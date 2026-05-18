@@ -1,12 +1,38 @@
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Any
+from uuid import UUID
 
-from app.domains.order import Order, OrderItem
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
+
+from app.domains.order import Order, OrderItem, OrderStatus
 from app.orders.model import OrderItemModel, OrderModel
 
 
 class OrderRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
+
+    async def get_all_by_student(
+        self, student_id: UUID, status: OrderStatus | None, offset: int, limit: int
+    ) -> tuple[list[Order], int]:
+        filters: list[Any] = [OrderModel.student_id == student_id]
+        if status is not None:
+            filters.append(OrderModel.status == status)
+
+        stmt = (
+            select(OrderModel)
+            .options(selectinload(OrderModel.order_items))
+            .where(*filters)
+            .order_by(OrderModel.created_at.desc())
+            .offset(offset)
+            .limit(limit)
+        )
+        count_stmt = select(func.count()).select_from(OrderModel).where(*filters)
+
+        models = (await self._session.scalars(stmt)).all()
+        count = await self._session.scalar(count_stmt)
+        return [self._to_entity(model) for model in models], count or 0
 
     async def save(self, order: Order) -> None:
         model = self._to_model(order)

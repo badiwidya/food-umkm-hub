@@ -5,7 +5,7 @@ from uuid import UUID
 from pydantic import Field
 
 from app.domains.order import OrderStatus, PaymentMethod
-from app.schema import BaseSchema
+from app.schema import BaseSchema, PaginatedResponse
 
 
 class OrderItemRequest(BaseSchema):
@@ -29,7 +29,8 @@ class OrderItemResponse(BaseSchema):
     subtotal: int
 
 
-class OrderDetailResponse(BaseSchema):
+# TODO: add store_name and store_image_url
+class OrderSummaryResponse(BaseSchema):
     id: UUID
     student_id: UUID
     store_id: UUID
@@ -37,6 +38,12 @@ class OrderDetailResponse(BaseSchema):
     status: OrderStatus
     order_items: list[OrderItemResponse]
     total_price: int
+
+
+OrderListResponse = PaginatedResponse[list[OrderSummaryResponse]]
+
+
+class OrderDetailResponse(OrderSummaryResponse):
     discount_amount: int
     promo_code: str | None
     notes: str | None
