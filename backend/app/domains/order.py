@@ -146,6 +146,12 @@ class Order:
         self.status = OrderStatus.COMPLETED
         self._touch()
 
+    def cancel(self) -> None:
+        if self.status != OrderStatus.PENDING:
+            raise DomainException("Hanya pesanan berstatus pending yang bisa dicancel")
+        self.status = OrderStatus.FAILED
+        self._touch()
+
     def seller_accept(self) -> None:
         if self.status != OrderStatus.WAITING_FOR_CONFIRMATION:
             raise DomainException("Pesanan tidak dalam status menunggu konfirmasi")

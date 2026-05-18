@@ -111,3 +111,8 @@ class OrderService:
         order.submit_payment_proof(payment_proof_url)
         await self._order_repo.update(order)
         return order
+
+    async def cancel(self, order: Order) -> Order:
+        order.cancel()
+        await self._order_repo.update(order)
+        return order

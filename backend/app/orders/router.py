@@ -20,6 +20,7 @@ from app.orders.schema import (
 )
 
 order_router = APIRouter(prefix="/orders", tags=["Order"])
+store_order_router = APIRouter(prefix="/stores", tags=["Order"])
 
 
 @order_router.post("/", status_code=status.HTTP_201_CREATED)
@@ -77,4 +78,12 @@ async def update_payment_proof(
     payload: UpdatePaymentProofRequest,
 ) -> OrderDetailResponse:
     order = await order_service.update_payment_proof(order, payload.payment_proof_url)
+    return OrderDetailResponse.model_validate(order)
+
+
+@order_router.post("/{id}/cancel", status_code=status.HTTP_200_OK)
+async def cancel_order(
+    order_service: OrderServiceDep, order: AuthorizedStudentOrderTargetDep
+) -> OrderDetailResponse:
+    order = await order_service.cancel(order)
     return OrderDetailResponse.model_validate(order)
