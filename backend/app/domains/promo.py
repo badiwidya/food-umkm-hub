@@ -140,7 +140,7 @@ class Promo:
                 has_changed = True
 
         if has_changed:
-            self.updated_at = datetime.now(UTC)
+            self._touch()
 
     def calculate_discount(self, order_amount: int) -> int:
         if self.type == PromoType.PERCENTAGE:
@@ -160,6 +160,13 @@ class Promo:
     def meets_minimum_order(self, order_amount: int) -> bool:
         return self.min_order_amount is None or order_amount >= self.min_order_amount
 
+    def use(self) -> None:
+        self.usage_count += 1
+        self._touch()
+
     def delete(self) -> None:
         self.deleted_at = datetime.now(UTC)
+        self._touch()
+
+    def _touch(self) -> None:
         self.updated_at = datetime.now(UTC)
