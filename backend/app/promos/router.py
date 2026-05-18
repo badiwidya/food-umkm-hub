@@ -1,7 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter
-from starlette.status import HTTP_200_OK, HTTP_204_NO_CONTENT
+from fastapi import APIRouter, status
 
 from app.auth.dependency import CurrentStoreDep
 from app.dependency import PaginationQueryDep
@@ -21,7 +20,7 @@ promo_router = APIRouter(prefix="/promos", tags=["Promo"])
 store_promo_router = APIRouter(prefix="/stores", tags=["Promo"])
 
 
-@promo_router.post("/", status_code=HTTP_200_OK)
+@promo_router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_promo(
     promo_service: PromoServiceDep, store: CurrentStoreDep, payload: CreatePromoRequest
 ) -> PromoDetailResponse:
@@ -39,7 +38,7 @@ async def create_promo(
     return PromoDetailResponse.model_validate(promo)
 
 
-@promo_router.post("/validate", status_code=HTTP_200_OK)
+@promo_router.post("/validate", status_code=status.HTTP_200_OK)
 async def validate_promo(
     promo_service: PromoServiceDep, payload: ValidatePromoRequest
 ) -> ValidatePromoResponse:
@@ -55,7 +54,7 @@ async def validate_promo(
     )
 
 
-@promo_router.get("/{id}", status_code=HTTP_200_OK)
+@promo_router.get("/{id}", status_code=status.HTTP_200_OK)
 async def get_promo_details(
     promo_service: PromoServiceDep, id: UUID
 ) -> PromoDetailResponse:
@@ -63,14 +62,14 @@ async def get_promo_details(
     return PromoDetailResponse.model_validate(promo)
 
 
-@promo_router.delete("/{id}", status_code=HTTP_204_NO_CONTENT)
+@promo_router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_promo(
     promo_service: PromoServiceDep, promo: AuthorizedPromoTargetDep
 ) -> None:
     await promo_service.delete(promo)
 
 
-@promo_router.patch("/{id}", status_code=HTTP_200_OK)
+@promo_router.patch("/{id}", status_code=status.HTTP_200_OK)
 async def update_promo_information(
     promo_service: PromoServiceDep,
     promo: AuthorizedPromoTargetDep,
@@ -82,7 +81,7 @@ async def update_promo_information(
     return PromoDetailResponse.model_validate(promo)
 
 
-@store_promo_router.get("/me/promos", status_code=HTTP_200_OK)
+@store_promo_router.get("/me/promos", status_code=status.HTTP_200_OK)
 async def get_all_me(
     promo_service: PromoServiceDep,
     store: CurrentStoreDep,
@@ -100,7 +99,7 @@ async def get_all_me(
     )
 
 
-@store_promo_router.get("/{store_id}/promos", status_code=HTTP_200_OK)
+@store_promo_router.get("/{store_id}/promos", status_code=status.HTTP_200_OK)
 async def get_all_promo(
     promo_service: PromoServiceDep,
     store_id: UUID,

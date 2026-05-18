@@ -81,7 +81,9 @@ class PromoService:
     async def validate_promo(
         self, code: str, store_id: UUID, order_amount: int
     ) -> tuple[UUID, int, int]:
-        promo = await self._promo_repo.get_by_code_and_store(code, store_id)
+        promo = await self._promo_repo.get_by_code_and_store(
+            code.strip().upper(), store_id
+        )
         if promo is None:
             raise NotFoundException("Promo tidak ada")
         if not promo.is_valid_at(datetime.now(UTC)):

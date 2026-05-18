@@ -87,8 +87,9 @@ class PromoRepository:
                 PromoModel.usage_count == old_usage_count,
             )
             .values(usage_count=promo.usage_count, updated_at=promo.updated_at)
+            .returning(PromoModel.id)
         )
-        return result.rowcount > 0
+        return result is not None
 
     @staticmethod
     def _to_entity(model: PromoModel) -> Promo:
