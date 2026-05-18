@@ -1,11 +1,11 @@
 from uuid import UUID
 
 from fastapi import APIRouter
-from starlette.status import HTTP_200_OK
+from starlette.status import HTTP_200_OK, HTTP_204_NO_CONTENT
 
 from app.auth.dependency import CurrentStoreDep
 from app.dependency import PaginationQueryDep
-from app.promos.dependency import PromoServiceDep
+from app.promos.dependency import AuthorizedPromoTargetDep, PromoServiceDep
 from app.promos.dto import CreatePromoDTO
 from app.promos.schema import (
     CreatePromoRequest,
@@ -42,6 +42,13 @@ async def get_promo_details(
 ) -> PromoDetailResponse:
     promo = await promo_service.get_details(id)
     return PromoDetailResponse.model_validate(promo)
+
+
+@promo_router.delete("/{id}", status_code=HTTP_204_NO_CONTENT)
+async def delete_promo(
+    promo_service: PromoServiceDep, promo: AuthorizedPromoTargetDep
+) -> None:
+    await promo_service.delete(promo)
 
 
 @store_promo_router.get("/me/promos", status_code=HTTP_200_OK)

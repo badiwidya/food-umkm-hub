@@ -61,3 +61,7 @@ class PromoService:
         )
         await self._promo_repo.save(promo)
         return promo
+
+    async def delete(self, promo: Promo) -> None:
+        promo.delete()
+        await self._promo_repo.update(promo)
