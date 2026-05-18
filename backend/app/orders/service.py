@@ -3,6 +3,7 @@ from uuid import UUID
 
 from app.config import settings
 from app.domains.order import Order, OrderStatus, PaymentMethod
+from app.domains.store import Store
 from app.domains.student import Student
 from app.domains.user import User, UserRole
 from app.exception import DomainException, NotAllowedException, NotFoundException
@@ -52,6 +53,47 @@ class OrderService:
             student_id=student.id, status=status, offset=offset, limit=limit
         )
         return orders, total_count
+
+    async def list_active_for_seller(
+        self, store: Store
+    ) -> tuple[list[Order], list[Order], list[Order]]:
+        orders, _ = await self._order_repo.get_all_by_store(
+            store_id=store.id,
+            statuses=[
+                OrderStatus.WAITING_FOR_CONFIRMATION,
+                OrderStatus.IN_PROCESS,
+                OrderStatus.READY_TO_PICKUP,
+            ],
+            limit=None,
+            offset=None,
+        )
+
+        waiting_for_confirmation = [
+            order
+            for order in orders
+            if order.status == OrderStatus.WAITING_FOR_CONFIRMATION
+        ]
+        in_process = [
+            order for order in orders if order.status == OrderStatus.IN_PROCESS
+        ]
+        ready_to_pickup = [
+            order for order in orders if order.status == OrderStatus.READY_TO_PICKUP
+        ]
+
+        return waiting_for_confirmation, in_process, ready_to_pickup
+
+    async def list_for_seller(
+        self, store: Store, status: OrderStatus | None, page: int, page_size: int
+    ) -> tuple[list[Order], int]:
+        limit = page_size
+        offset = (page - 1) * page_size
+
+        status_filter = [status] if status is not None else None
+
+        orders, count = await self._order_repo.get_all_by_store(
+            store_id=store.id, statuses=status_filter, limit=limit, offset=offset
+        )
+        return orders, count
 
     async def create(self, student: Student, dto: CreateOrderDTO) -> Order:
         now = datetime.now(UTC)

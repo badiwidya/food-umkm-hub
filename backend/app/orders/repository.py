@@ -23,6 +23,38 @@ class OrderRepository:
             return None
         return self._to_entity(model)
 
+    # TODO: dynamic order
+    async def get_all_by_store(
+        self,
+        store_id: UUID,
+        statuses: list[OrderStatus] | None,
+        limit: int | None,
+        offset: int | None,
+    ) -> tuple[list[Order], int]:
+        stmt = (
+            select(OrderModel)
+            .options(selectinload(OrderModel.order_items))
+            .where(OrderModel.store_id == store_id)
+        )
+        count_stmt = (
+            select(func.count())
+            .select_from(OrderModel)
+            .where(OrderModel.store_id == store_id)
+        )
+
+        if statuses is not None:
+            stmt = stmt.where(OrderModel.status.in_(statuses))
+            count_stmt = count_stmt.where(OrderModel.status.in_(statuses))
+        stmt = stmt.order_by(OrderModel.created_at.asc(), OrderModel.id.asc())
+        if offset is not None:
+            stmt = stmt.offset(offset)
+        if limit is not None:
+            stmt = stmt.limit(limit)
+
+        models = (await self._session.scalars(stmt)).all()
+        count = await self._session.scalar(count_stmt)
+        return [self._to_entity(model) for model in models], count or 0
+
     async def get_all_by_student(
         self, student_id: UUID, status: OrderStatus | None, offset: int, limit: int
     ) -> tuple[list[Order], int]:

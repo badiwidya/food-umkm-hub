@@ -57,3 +57,9 @@ class OrderDetailResponse(OrderSummaryResponse):
     expires_at: datetime
     created_at: datetime
     updated_at: datetime
+
+
+class ActiveOrderListResponse(BaseSchema):
+    waiting_for_confirmation: list[OrderDetailResponse]
+    in_process: list[OrderDetailResponse]
+    ready_to_pickup: list[OrderDetailResponse]

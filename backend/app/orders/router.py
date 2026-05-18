@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Query, status
 
-from app.auth.dependency import CurrentStudentDep
+from app.auth.dependency import CurrentStoreDep, CurrentStudentDep
 from app.dependency import PaginationQueryDep
 from app.domains.order import OrderStatus
 from app.orders.dependency import (
@@ -12,6 +12,7 @@ from app.orders.dependency import (
 )
 from app.orders.dto import CreateOrderDTO, OrderItemDTO
 from app.orders.schema import (
+    ActiveOrderListResponse,
     CreateOrderRequest,
     OrderDetailResponse,
     OrderListResponse,
@@ -87,3 +88,35 @@ async def cancel_order(
 ) -> OrderDetailResponse:
     order = await order_service.cancel(order)
     return OrderDetailResponse.model_validate(order)
+
+
+@store_order_router.get("/me/orders/active", status_code=status.HTTP_200_OK)
+async def get_all_active(
+    order_service: OrderServiceDep, store: CurrentStoreDep
+) -> ActiveOrderListResponse:
+    w, i, r = await order_service.list_active_for_seller(store)
+    return ActiveOrderListResponse(
+        waiting_for_confirmation=[
+            OrderDetailResponse.model_validate(order) for order in w
+        ],
+        in_process=[OrderDetailResponse.model_validate(order) for order in i],
+        ready_to_pickup=[OrderDetailResponse.model_validate(order) for order in r],
+    )
+
+
+@store_order_router.get("/me/orders", status_code=status.HTTP_200_OK)
+async def get_all_seller(
+    order_service: OrderServiceDep,
+    store: CurrentStoreDep,
+    pagination: PaginationQueryDep,
+    status: Annotated[OrderStatus | None, Query()] = None,
+) -> OrderListResponse:
+    orders, count = await order_service.list_for_seller(
+        store=store, status=status, page=pagination.page, page_size=pagination.page_size
+    )
+    return OrderListResponse(
+        total=count,
+        page=pagination.page,
+        page_size=pagination.page_size,
+        data=[OrderSummaryResponse.model_validate(order) for order in orders],
+    )
