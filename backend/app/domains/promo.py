@@ -53,6 +53,9 @@ class Promo:
         elif value <= 0:
             raise DomainException("Nilai promo tidak boleh 0 atau negatif")
 
+        if start_date >= end_date:
+            raise DomainException("Tanggal mulai harus sebelum tanggal berakhir")
+
         return cls(
             store_id=store_id,
             type=type,
@@ -102,6 +105,14 @@ class Promo:
                 raise DomainException("Nilai promo harus berada dalam rentang 1-100%")
         elif new_value <= 0:
             raise DomainException("Nilai promo tidak boleh 0 atau negatif")
+
+        new_start_date = (
+            self.start_date if isinstance(start_date, TUnset) else start_date
+        )
+        new_end_date = self.end_date if isinstance(end_date, TUnset) else end_date
+
+        if new_start_date >= new_end_date:
+            raise DomainException("Tanggal mulai harus sebelum tanggal berakhir")
 
         has_changed = False
 
