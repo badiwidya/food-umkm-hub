@@ -106,3 +106,8 @@ class OrderService:
 
         await self._order_repo.save(order)
         return order
+
+    async def update_payment_proof(self, order: Order, payment_proof_url: str) -> Order:
+        order.submit_payment_proof(payment_proof_url)
+        await self._order_repo.update(order)
+        return order

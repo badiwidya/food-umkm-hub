@@ -21,6 +21,10 @@ class CreateOrderRequest(BaseSchema):
     notes: Annotated[str | None, Field(max_length=500)] = None
 
 
+class UpdatePaymentProofRequest(BaseSchema):
+    payment_proof_url: str
+
+
 class OrderItemResponse(BaseSchema):
     product_id: UUID
     product_name: str

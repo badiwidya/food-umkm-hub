@@ -6,13 +6,14 @@ from fastapi import APIRouter, Query, status
 from app.auth.dependency import CurrentStudentDep, CurrentUserDep
 from app.dependency import PaginationQueryDep
 from app.domains.order import OrderStatus
-from app.orders.dependency import OrderServiceDep
+from app.orders.dependency import AuthorizedOrderTargetDep, OrderServiceDep
 from app.orders.dto import CreateOrderDTO, OrderItemDTO
 from app.orders.schema import (
     CreateOrderRequest,
     OrderDetailResponse,
     OrderListResponse,
     OrderSummaryResponse,
+    UpdatePaymentProofRequest,
 )
 
 order_router = APIRouter(prefix="/orders", tags=["Order"])
@@ -62,8 +63,15 @@ async def get_orders_by_student(
 
 
 @order_router.get("/{id}", status_code=status.HTTP_200_OK)
-async def get_order_details(
-    order_service: OrderServiceDep, user: CurrentUserDep, id: UUID
+async def get_order_details(order: AuthorizedOrderTargetDep) -> OrderDetailResponse:
+    return OrderDetailResponse.model_validate(order)
+
+
+@order_router.post("/{id}/payment/proof", status_code=status.HTTP_200_OK)
+async def update_payment_proof(
+    order_service: OrderServiceDep,
+    order: AuthorizedOrderTargetDep,
+    payload: UpdatePaymentProofRequest,
 ) -> OrderDetailResponse:
-    order = await order_service.get_details(user, id)
+    order = await order_service.update_payment_proof(order, payload.payment_proof_url)
     return OrderDetailResponse.model_validate(order)
