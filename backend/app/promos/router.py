@@ -36,6 +36,14 @@ async def create_promo(
     return PromoDetailResponse.model_validate(promo)
 
 
+@promo_router.get("/{id}", status_code=HTTP_200_OK)
+async def get_promo_details(
+    promo_service: PromoServiceDep, id: UUID
+) -> PromoDetailResponse:
+    promo = await promo_service.get_details(id)
+    return PromoDetailResponse.model_validate(promo)
+
+
 @store_promo_router.get("/me/promos", status_code=HTTP_200_OK)
 async def get_all_me(
     promo_service: PromoServiceDep,

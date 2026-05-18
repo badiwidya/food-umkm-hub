@@ -2,7 +2,7 @@ from uuid import UUID
 
 from app.domains.promo import Promo
 from app.domains.store import Store
-from app.exception import DomainException
+from app.exception import DomainException, NotFoundException
 from app.promos.dto import CreatePromoDTO
 from app.promos.repository import PromoRepository
 
@@ -10,6 +10,12 @@ from app.promos.repository import PromoRepository
 class PromoService:
     def __init__(self, promo_repo: PromoRepository) -> None:
         self._promo_repo = promo_repo
+
+    async def get_details(self, id: UUID) -> Promo:
+        promo = await self._promo_repo.get_by_id(id)
+        if promo is None:
+            raise NotFoundException("Promo tidak ada")
+        return promo
 
     async def list_for_seller(
         self, store_id: UUID, page: int, page_size: int

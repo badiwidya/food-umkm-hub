@@ -48,6 +48,16 @@ class PromoRepository:
         count = await self._session.scalar(count_stmt)
         return [self._to_entity(model) for model in models], count or 0
 
+    async def get_by_id(self, id: UUID) -> Promo | None:
+        model = await self._session.scalar(
+            select(PromoModel).where(
+                PromoModel.id == id, PromoModel.deleted_at.is_(None)
+            )
+        )
+        if model is None:
+            return None
+        return self._to_entity(model)
+
     async def get_by_code_and_store(self, code: str, store_id: UUID) -> Promo | None:
         model = await self._session.scalar(
             select(PromoModel).where(
