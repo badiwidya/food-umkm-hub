@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from uuid import UUID, uuid7
 
 from app.domains.product import Product, ProductCategory
+from app.domains.promo import Promo, PromoType
 from app.exception import DomainException
 from app.sentinel import UNSET, TUnset
 
@@ -153,6 +154,29 @@ class Store:
         photo_url: str | None = None,
     ) -> Product:
         return Product.create(self, name, price, category, description, photo_url)
+
+    def create_promo(
+        self,
+        code: str,
+        type: PromoType,
+        value: int,
+        start_date: datetime,
+        end_date: datetime,
+        max_usage: int | None,
+        max_discount_amount: int | None,
+        min_order_amount: int | None,
+    ) -> Promo:
+        return Promo.create(
+            self.id,
+            type,
+            code,
+            value,
+            start_date,
+            end_date,
+            max_usage,
+            max_discount_amount,
+            min_order_amount,
+        )
 
     def _approve(self) -> None:
         if self.approval_status not in (
