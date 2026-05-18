@@ -2,7 +2,7 @@ from datetime import datetime
 from uuid import UUID
 
 from sqlalchemy import BigInteger, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 from app.domains.order import OrderStatus, PaymentMethod
@@ -26,6 +26,8 @@ class OrderModel(Base):
     expires_at: Mapped[datetime]
     created_at: Mapped[datetime]
     updated_at: Mapped[datetime]
+
+    order_items: Mapped[list[OrderItemModel]] = relationship(lazy="raise")
 
 
 class OrderItemModel(Base):

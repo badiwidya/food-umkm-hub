@@ -67,6 +67,7 @@ class Order:
     discount_amount: int = 0
     notes: str | None = None
     promo_id: UUID | None = None
+    promo_code: str | None = None
     payment_proof_url: str | None = None
     rejection_reason: str | None = None
     rejected_at: datetime | None = None
@@ -112,8 +113,10 @@ class Order:
 
     def apply_promo(self, promo: Promo) -> None:
         self.promo_id = promo.id
+        self.promo_code = promo.code
         self.discount_amount = promo.calculate_discount(self.total_price)
         self.total_price -= self.discount_amount
+        promo.use()
         self._touch()
 
     def submit_payment_proof(self, proof_url: str) -> None:

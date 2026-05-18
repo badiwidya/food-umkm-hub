@@ -1,0 +1,76 @@
+from datetime import UTC, datetime, timedelta
+
+from app.config import settings
+from app.domains.order import Order, PaymentMethod
+from app.domains.student import Student
+from app.exception import DomainException, NotFoundException
+from app.orders.dto import CreateOrderDTO
+from app.orders.repository import OrderRepository
+from app.products.repository import ProductRepository
+from app.promos.repository import PromoRepository
+
+
+class OrderService:
+    def __init__(
+        self,
+        order_repo: OrderRepository,
+        product_repo: ProductRepository,
+        promo_repo: PromoRepository,
+    ) -> None:
+        self._order_repo = order_repo
+        self._product_repo = product_repo
+        self._promo_repo = promo_repo
+
+    async def create(self, student: Student, dto: CreateOrderDTO) -> Order:
+        now = datetime.now(UTC)
+        order = Order.create(
+            student_id=student.id,
+            store_id=dto.store_id,
+            payment_method=dto.payment_method,
+            expires_at=now + timedelta(minutes=settings.ORDER_EXPIRY_MINUTES),
+            notes=dto.notes,
+        )
+
+        for item in dto.order_items:
+            product = await self._product_repo.get_by_id(item.product_id)
+            if product is None:
+                raise NotFoundException(f"Produk dengan id {item.product_id} tidak ada")
+            order.create_order_item(
+                product_id=product.id,
+                product_name=product.name,
+                product_price=product.price,
+                quantity=item.quantity,
+            )
+
+        order_amount = order.calculate_total()
+
+        promo_code = (
+            dto.promo_code.strip().upper() if dto.promo_code is not None else None
+        )
+        if promo_code is not None:
+            promo = await self._promo_repo.get_by_code_and_store(
+                promo_code, dto.store_id
+            )
+            if promo is None:
+                raise NotFoundException(f"Kode promo {promo_code} tidak ada")
+            if not promo.is_valid_at(now):
+                raise DomainException("Promo tidak aktif atau sudah kadaluwarsa")
+            if not promo.has_quota():
+                raise DomainException("Kuota promo sudah habis")
+            if not promo.meets_minimum_order(order_amount):
+                raise DomainException(
+                    f"Minimum pembelian untuk promo ini adalah Rp{promo.min_order_amount}"
+                )
+
+            old_usage_count = promo.usage_count
+            order.apply_promo(promo)
+
+            is_promo_valid = await self._promo_repo.update_usage(promo, old_usage_count)
+            if not is_promo_valid:
+                raise DomainException("Kuota promo sudah habis")
+
+        if dto.payment_method == PaymentMethod.CASH:
+            order.confirm_cash_payment()
+
+        await self._order_repo.save(order)
+        return order
