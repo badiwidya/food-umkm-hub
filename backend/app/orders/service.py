@@ -1,13 +1,16 @@
 from datetime import UTC, datetime, timedelta
+from uuid import UUID
 
 from app.config import settings
 from app.domains.order import Order, OrderStatus, PaymentMethod
 from app.domains.student import Student
-from app.exception import DomainException, NotFoundException
+from app.domains.user import User, UserRole
+from app.exception import DomainException, NotAllowedException, NotFoundException
 from app.orders.dto import CreateOrderDTO
 from app.orders.repository import OrderRepository
 from app.products.repository import ProductRepository
 from app.promos.repository import PromoRepository
+from app.stores.repository import StoreRepository
 
 
 class OrderService:
@@ -16,10 +19,28 @@ class OrderService:
         order_repo: OrderRepository,
         product_repo: ProductRepository,
         promo_repo: PromoRepository,
+        store_repo: StoreRepository,
     ) -> None:
         self._order_repo = order_repo
         self._product_repo = product_repo
         self._promo_repo = promo_repo
+        self._store_repo = store_repo
+
+    async def get_details(self, user: User, id: UUID) -> Order:
+        order = await self._order_repo.get_by_id(id)
+        if order is None:
+            raise NotFoundException("Pesanan tidak ada")
+        if user.role == UserRole.STUDENT:
+            if user.id != order.student_id:
+                raise NotAllowedException("Aksi dilarang")
+        if user.role == UserRole.SELLER:
+            store = await self._store_repo.get_by_owner_id(user.id)
+            if store is None:
+                raise NotAllowedException("Aksi dilarang")
+            if store.id != order.store_id:
+                raise NotAllowedException("Aksi dilarang")
+
+        return order
 
     async def list_by_student(
         self, student: Student, status: OrderStatus | None, page: int, page_size: int

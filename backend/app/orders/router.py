@@ -1,8 +1,9 @@
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import APIRouter, Query, status
 
-from app.auth.dependency import CurrentStudentDep
+from app.auth.dependency import CurrentStudentDep, CurrentUserDep
 from app.dependency import PaginationQueryDep
 from app.domains.order import OrderStatus
 from app.orders.dependency import OrderServiceDep
@@ -58,3 +59,11 @@ async def get_orders_by_student(
         total=total_count,
         data=[OrderSummaryResponse.model_validate(order) for order in orders],
     )
+
+
+@order_router.get("/{id}", status_code=status.HTTP_200_OK)
+async def get_order_details(
+    order_service: OrderServiceDep, user: CurrentUserDep, id: UUID
+) -> OrderDetailResponse:
+    order = await order_service.get_details(user, id)
+    return OrderDetailResponse.model_validate(order)

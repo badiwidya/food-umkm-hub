@@ -13,6 +13,16 @@ class OrderRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
+    async def get_by_id(self, id: UUID) -> Order | None:
+        model = await self._session.scalar(
+            select(OrderModel)
+            .options(selectinload(OrderModel.order_items))
+            .where(OrderModel.id == id)
+        )
+        if model is None:
+            return None
+        return self._to_entity(model)
+
     async def get_all_by_student(
         self, student_id: UUID, status: OrderStatus | None, offset: int, limit: int
     ) -> tuple[list[Order], int]:
