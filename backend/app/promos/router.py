@@ -14,10 +14,11 @@ from app.promos.schema import (
     PromoSummaryResponse,
 )
 
-promo_router = APIRouter(tags=["Promo"])
+promo_router = APIRouter(prefix="/promos", tags=["Promo"])
+store_promo_router = APIRouter(prefix="/stores", tags=["Promo"])
 
 
-@promo_router.post("/stores/me/promos", status_code=HTTP_200_OK)
+@promo_router.post("/", status_code=HTTP_200_OK)
 async def create_promo(
     promo_service: PromoServiceDep, store: CurrentStoreDep, payload: CreatePromoRequest
 ) -> PromoDetailResponse:
@@ -35,7 +36,7 @@ async def create_promo(
     return PromoDetailResponse.model_validate(promo)
 
 
-@promo_router.get("/stores/me/promos", status_code=HTTP_200_OK)
+@store_promo_router.get("/me/promos", status_code=HTTP_200_OK)
 async def get_all_me(
     promo_service: PromoServiceDep,
     store: CurrentStoreDep,
@@ -53,7 +54,7 @@ async def get_all_me(
     )
 
 
-@promo_router.get("/stores/{store_id}/promos", status_code=HTTP_200_OK)
+@store_promo_router.get("/{store_id}/promos", status_code=HTTP_200_OK)
 async def get_all_promo(
     promo_service: PromoServiceDep,
     store_id: UUID,
