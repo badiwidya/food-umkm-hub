@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from typing import Any
 from uuid import UUID
 
@@ -78,6 +79,25 @@ class PromoService:
         )
         await self._promo_repo.update(promo)
         return promo
+
+    async def validate_promo(
+        self, code: str, store_id: UUID, order_amount: int
+    ) -> tuple[UUID, int, int]:
+        promo = await self._promo_repo.get_by_code_and_store(code, store_id)
+        if promo is None:
+            raise NotFoundException("Promo tidak ada")
+        if not promo.is_valid_at(datetime.now(UTC)):
+            raise DomainException("Promo tidak aktif atau sudah kadaluwarsa")
+        if not promo.has_quota():
+            raise DomainException("Kuota promo sudah habis")
+        if not promo.meets_minimum_order(order_amount):
+            raise DomainException(
+                f"Minimum pembelian untuk promo ini adalah Rp{promo.min_order_amount}"
+            )
+
+        discount_amount = promo.calculate_discount(order_amount)
+        final_amount = order_amount - discount_amount
+        return promo.id, discount_amount, final_amount
 
     async def delete(self, promo: Promo) -> None:
         promo.delete()

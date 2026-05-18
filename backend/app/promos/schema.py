@@ -37,6 +37,12 @@ class UpdatePromoRequest(BaseSchema):
         return v
 
 
+class ValidatePromoRequest(BaseSchema):
+    code: str
+    store_id: UUID
+    order_amount: NonNegativeInt
+
+
 class PromoSummaryResponse(BaseSchema):
     id: UUID
     store_id: UUID
@@ -57,3 +63,10 @@ class PromoDetailResponse(PromoSummaryResponse):
     usage_count: int
     updated_at: datetime
     created_at: datetime
+
+
+class ValidatePromoResponse(BaseSchema):
+    promo_id: UUID
+    promo_code: str
+    discount_amount: int
+    final_amount: int

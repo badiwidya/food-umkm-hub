@@ -13,6 +13,8 @@ from app.promos.schema import (
     PromoListResponse,
     PromoSummaryResponse,
     UpdatePromoRequest,
+    ValidatePromoRequest,
+    ValidatePromoResponse,
 )
 
 promo_router = APIRouter(prefix="/promos", tags=["Promo"])
@@ -35,6 +37,22 @@ async def create_promo(
     )
     promo = await promo_service.create(store, dto)
     return PromoDetailResponse.model_validate(promo)
+
+
+@promo_router.post("/validate", status_code=HTTP_200_OK)
+async def validate_promo(
+    promo_service: PromoServiceDep, payload: ValidatePromoRequest
+) -> ValidatePromoResponse:
+    promo_id, discount_amount, final_amount = await promo_service.validate_promo(
+        payload.code, payload.store_id, payload.order_amount
+    )
+
+    return ValidatePromoResponse(
+        promo_id=promo_id,
+        promo_code=payload.code,
+        discount_amount=discount_amount,
+        final_amount=final_amount,
+    )
 
 
 @promo_router.get("/{id}", status_code=HTTP_200_OK)
