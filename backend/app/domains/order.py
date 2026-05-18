@@ -171,7 +171,7 @@ class Order:
             raise DomainException("Pesanan tidak dalam status ditolak")
         self.status = OrderStatus.IN_PROCESS
         self.rejected_at = None
-        self.rejection_status = None
+        self.rejection_reason = None
         self._touch()
 
     def seller_mark_as_ready_to_pickup(self) -> None:

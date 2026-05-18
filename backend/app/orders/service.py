@@ -109,6 +109,10 @@ class OrderService:
             product = await self._product_repo.get_by_id(item.product_id)
             if product is None:
                 raise NotFoundException(f"Produk dengan id {item.product_id} tidak ada")
+            if product.store.id != dto.store_id:
+                raise DomainException("Produk ini bukan milik toko yang diminta")
+            if not product.is_available:
+                raise DomainException("Produk tidak tersedia untuk dibeli")
             order.create_order_item(
                 product_id=product.id,
                 product_name=product.name,

@@ -15,6 +15,7 @@ class OrderModel(Base):
     student_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
     store_id: Mapped[UUID] = mapped_column(ForeignKey("stores.id"))
     promo_id: Mapped[UUID | None] = mapped_column(ForeignKey("promos.id"))
+    promo_code: Mapped[str | None]
     status: Mapped[OrderStatus]
     payment_method: Mapped[PaymentMethod]
     total_price: Mapped[int] = mapped_column(BigInteger)
