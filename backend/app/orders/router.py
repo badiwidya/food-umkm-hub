@@ -18,6 +18,7 @@ from app.orders.schema import (
     OrderDetailResponse,
     OrderListResponse,
     OrderSummaryResponse,
+    RejectOrderRequest,
     UpdatePaymentProofRequest,
 )
 
@@ -144,4 +145,23 @@ async def complete_order(
     order_service: OrderServiceDep, order: AuthorizedSellerOrderTargetDep
 ) -> OrderDetailResponse:
     order = await order_service.complete(order)
+    return OrderDetailResponse.model_validate(order)
+
+
+@store_order_router.post("/me/orders/{id}/reject", status_code=status.HTTP_200_OK)
+async def reject_order(
+    order_service: OrderServiceDep,
+    order: AuthorizedSellerOrderTargetDep,
+    payload: RejectOrderRequest,
+) -> OrderDetailResponse:
+    order = await order_service.reject(order, payload.reason)
+    return OrderDetailResponse.model_validate(order)
+
+
+@store_order_router.post("/me/orders/{id}/reconsider", status_code=status.HTTP_200_OK)
+async def reconsider_order_rejection(
+    order_service: OrderServiceDep,
+    order: AuthorizedSellerOrderTargetDep,
+) -> OrderDetailResponse:
+    order = await order_service.reconsider_rejection(order)
     return OrderDetailResponse.model_validate(order)

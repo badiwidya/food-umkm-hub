@@ -25,6 +25,10 @@ class UpdatePaymentProofRequest(BaseSchema):
     payment_proof_url: str
 
 
+class RejectOrderRequest(BaseSchema):
+    reason: str
+
+
 class OrderItemResponse(BaseSchema):
     product_id: UUID
     product_name: str

@@ -173,3 +173,13 @@ class OrderService:
         order.complete()
         await self._order_repo.update(order)
         return order
+
+    async def reject(self, order: Order, reason: str) -> Order:
+        order.seller_reject(reason)
+        await self._order_repo.update(order)
+        return order
+
+    async def reconsider_rejection(self, order: Order) -> Order:
+        order.seller_reconsider()
+        await self._order_repo.update(order)
+        return order
