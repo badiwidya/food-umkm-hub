@@ -15,10 +15,10 @@ def get_promo_repo(session: SessionDep) -> PromoRepository:
     return PromoRepository(session=session)
 
 
-PromoRepositoryDep = Annotated[PromoRepository, Depends(get_promo_repo)]
+PromoRepoDep = Annotated[PromoRepository, Depends(get_promo_repo)]
 
 
-def get_promo_service(promo_repo: PromoRepositoryDep) -> PromoService:
+def get_promo_service(promo_repo: PromoRepoDep) -> PromoService:
     return PromoService(promo_repo=promo_repo)
 
 

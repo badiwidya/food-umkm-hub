@@ -33,6 +33,9 @@ class Settings(BaseSettings):
     JWT_TTL_MINUTES: int
     JWT_ALGORITHM: str = "HS256"
 
+    ORDER_EXPIRY_MINUTES: int
+    REJECTION_GRACE_PERIOD_MINUTES: int
+
     @computed_field
     @property
     def DB_ECHO(self) -> bool:
