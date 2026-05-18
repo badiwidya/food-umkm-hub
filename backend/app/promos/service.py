@@ -43,7 +43,6 @@ class PromoService:
         return promos, total_count
 
     async def create(self, store: Store, dto: CreatePromoDTO) -> Promo:
-        print(f"code: {dto.code}")
         existing = await self._promo_repo.get_by_code_and_store(
             dto.code.strip().upper(), store.id
         )
@@ -66,7 +65,6 @@ class PromoService:
         return promo
 
     async def update_information(self, promo: Promo, updates: dict[str, Any]) -> Promo:
-        print(updates)
         promo.change_information(
             code=updates.get("code", UNSET),
             type=updates.get("type", UNSET),
