@@ -7,6 +7,7 @@ from app.dependency import PaginationQueryDep
 from app.domains.order import OrderStatus
 from app.orders.dependency import (
     AuthorizedOrderTargetDep,
+    AuthorizedSellerOrderTargetDep,
     AuthorizedStudentOrderTargetDep,
     OrderServiceDep,
 )
@@ -120,3 +121,27 @@ async def get_all_seller(
         page_size=pagination.page_size,
         data=[OrderSummaryResponse.model_validate(order) for order in orders],
     )
+
+
+@store_order_router.post("/me/orders/{id}/accept", status_code=status.HTTP_200_OK)
+async def accept_order(
+    order_service: OrderServiceDep, order: AuthorizedSellerOrderTargetDep
+) -> OrderDetailResponse:
+    order = await order_service.accept(order)
+    return OrderDetailResponse.model_validate(order)
+
+
+@store_order_router.post("/me/orders/{id}/ready", status_code=status.HTTP_200_OK)
+async def mark_order_as_ready_to_pickup(
+    order_service: OrderServiceDep, order: AuthorizedSellerOrderTargetDep
+) -> OrderDetailResponse:
+    order = await order_service.mark_ready_to_pickup(order)
+    return OrderDetailResponse.model_validate(order)
+
+
+@store_order_router.post("/me/orders/{id}/complete", status_code=status.HTTP_200_OK)
+async def complete_order(
+    order_service: OrderServiceDep, order: AuthorizedSellerOrderTargetDep
+) -> OrderDetailResponse:
+    order = await order_service.complete(order)
+    return OrderDetailResponse.model_validate(order)

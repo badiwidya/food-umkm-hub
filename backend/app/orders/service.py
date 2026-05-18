@@ -158,3 +158,18 @@ class OrderService:
         order.cancel()
         await self._order_repo.update(order)
         return order
+
+    async def accept(self, order: Order) -> Order:
+        order.seller_accept()
+        await self._order_repo.update(order)
+        return order
+
+    async def mark_ready_to_pickup(self, order: Order) -> Order:
+        order.seller_mark_as_ready_to_pickup()
+        await self._order_repo.update(order)
+        return order
+
+    async def complete(self, order: Order) -> Order:
+        order.complete()
+        await self._order_repo.update(order)
+        return order
