@@ -36,6 +36,15 @@ class Settings(BaseSettings):
     ORDER_EXPIRY_MINUTES: int
     REJECTION_GRACE_PERIOD_MINUTES: int
 
+    R2_ACCOUNT_ID: str = ""
+    R2_ACCESS_KEY_ID: str = ""
+    R2_SECRET_ACCESS_KEY: str = ""
+    R2_BUCKET_NAME: str = ""
+    R2_PUBLIC_BASE_URL: Annotated[str, AfterValidator(lambda v: str(v).rstrip("/"))] = (
+        ""
+    )
+    R2_PRESIGNED_EXPIRY: int = 300
+
     @computed_field
     @property
     def DB_ECHO(self) -> bool:
