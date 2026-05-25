@@ -17,6 +17,7 @@ from app.products.model import ProductModel
 from app.promos.model import PromoModel
 from app.orders.model import OrderModel, OrderItemModel
 from app.reviews.model import ReviewModel
+from app.favorites.model import StoreFavoriteModel, ProductFavoriteModel
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
