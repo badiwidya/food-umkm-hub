@@ -113,6 +113,7 @@ class OrderRepository:
             rejection_reason=model.rejection_reason,
             rejected_at=model.rejected_at,
             expires_at=model.expires_at,
+            is_reviewed=False,
             created_at=model.created_at,
             updated_at=model.updated_at,
             order_items=order_items,

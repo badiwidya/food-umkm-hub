@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import BigInteger, ForeignKey
+from sqlalchemy import BigInteger, ForeignKey, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -24,6 +24,8 @@ class ProductModel(Base):
     photo_url: Mapped[str | None]
     category: Mapped[ProductCategory]
     is_available: Mapped[bool]
+    rating: Mapped[float | None] = mapped_column(Numeric(2, 1), nullable=True)
+    total_reviews: Mapped[int] = mapped_column(default=0)
     created_at: Mapped[datetime]
     updated_at: Mapped[datetime]
     deleted_at: Mapped[datetime | None]

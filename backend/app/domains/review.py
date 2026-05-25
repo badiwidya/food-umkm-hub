@@ -9,6 +9,7 @@ from app.exception import DomainException
 class Review:
     id: UUID = field(default_factory=uuid7)
     order_id: UUID
+    student_id: UUID
     store_id: UUID
     product_id: UUID
     rating: int
@@ -20,6 +21,7 @@ class Review:
     def create(
         cls,
         order_id: UUID,
+        student_id: UUID,
         store_id: UUID,
         product_id: UUID,
         rating: int,
@@ -30,6 +32,7 @@ class Review:
             raise DomainException("Rating harus berupa angka 1-5")
         return cls(
             order_id=order_id,
+            student_id=student_id,
             store_id=store_id,
             product_id=product_id,
             rating=rating,

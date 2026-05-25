@@ -144,6 +144,8 @@ class StoreRepository:
             approval_status=model.approval_status,
             approval_notes=model.approval_notes,
             is_open=model.is_open,
+            rating=float(model.rating) if model.rating else None,
+            total_reviews=model.total_reviews,
             updated_at=model.updated_at,
             created_at=model.created_at,
         )
@@ -165,6 +167,8 @@ class StoreRepository:
             approval_status=store.approval_status,
             approval_notes=store.approval_notes,
             is_open=store.is_open,
+            rating=store.rating,
+            total_reviews=store.total_reviews,
             updated_at=store.updated_at,
             created_at=store.created_at,
         )

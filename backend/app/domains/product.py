@@ -25,6 +25,8 @@ class StoreSummary:
     id: UUID
     name: str
     photo_url: str | None
+    rating: float | None = None
+    total_reviews: int = 0
 
 
 @dataclass(kw_only=True)
@@ -37,6 +39,8 @@ class Product:
     photo_url: str | None = None
     category: ProductCategory
     is_available: bool = False
+    rating: float | None = None
+    total_reviews: int = 0
     created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     deleted_at: datetime | None = None

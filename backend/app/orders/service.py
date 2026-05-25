@@ -11,6 +11,7 @@ from app.orders.dto import CreateOrderDTO
 from app.orders.repository import OrderRepository
 from app.products.repository import ProductRepository
 from app.promos.repository import PromoRepository
+from app.reviews.repository import ReviewRepository
 from app.stores.repository import StoreRepository
 
 
@@ -21,11 +22,13 @@ class OrderService:
         product_repo: ProductRepository,
         promo_repo: PromoRepository,
         store_repo: StoreRepository,
+        review_repo: ReviewRepository,
     ) -> None:
         self._order_repo = order_repo
         self._product_repo = product_repo
         self._promo_repo = promo_repo
         self._store_repo = store_repo
+        self._review_repo = review_repo
 
     async def get_details(self, user: User, id: UUID) -> Order:
         order = await self._order_repo.get_by_id(id)
@@ -40,6 +43,14 @@ class OrderService:
                 raise NotAllowedException("Aksi dilarang")
             if store.id != order.store_id:
                 raise NotAllowedException("Aksi dilarang")
+
+        order_product_ids = {item.product_id for item in order.order_items}
+        reviewed_product_ids = await self._review_repo.get_reviewed_product_ids(
+            order.id
+        )
+        order.is_reviewed = bool(order_product_ids) and (
+            order_product_ids <= reviewed_product_ids
+        )
 
         return order
 
