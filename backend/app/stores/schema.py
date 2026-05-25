@@ -13,6 +13,8 @@ class StoreSummaryResponse(BaseSchema):
     name: str
     photo_url: str | None
     is_open: bool
+    rating: float | None
+    total_reviews: int
 
 
 class StoreDetailResponse(StoreSummaryResponse):
@@ -47,6 +49,8 @@ class StoreWithOwnerSummaryResponse(BaseSchema):
     id: UUID
     name: str
     photo_url: str | None
+    rating: float | None
+    total_reviews: int
     approval_status: StoreApprovalStatus
     owner: UserResponse
 

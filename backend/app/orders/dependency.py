@@ -12,6 +12,7 @@ from app.orders.repository import OrderRepository
 from app.orders.service import OrderService
 from app.products.dependency import ProductRepoDep
 from app.promos.dependency import PromoRepoDep
+from app.reviews.repository import ReviewRepository
 from app.stores.dependency import StoreRepoDep
 
 
@@ -27,12 +28,14 @@ def get_order_service(
     product_repo: ProductRepoDep,
     promo_repo: PromoRepoDep,
     store_repo: StoreRepoDep,
+    session: SessionDep,
 ) -> OrderService:
     return OrderService(
         order_repo=order_repo,
         product_repo=product_repo,
         promo_repo=promo_repo,
         store_repo=store_repo,
+        review_repo=ReviewRepository(session=session),
     )
 
 

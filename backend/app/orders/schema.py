@@ -54,6 +54,7 @@ OrderListResponse = PaginatedResponse[list[OrderSummaryResponse]]
 class OrderDetailResponse(OrderSummaryResponse):
     discount_amount: int
     promo_code: str | None
+    is_reviewed: bool
     notes: str | None
     payment_proof_url: str | None
     rejection_reason: str | None

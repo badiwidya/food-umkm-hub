@@ -72,6 +72,7 @@ class Order:
     rejection_reason: str | None = None
     rejected_at: datetime | None = None
     expires_at: datetime
+    is_reviewed: bool = False
     created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 

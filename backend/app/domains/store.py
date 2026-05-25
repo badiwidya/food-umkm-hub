@@ -32,6 +32,8 @@ class Store:
     approval_status: StoreApprovalStatus = StoreApprovalStatus.PENDING
     approval_notes: str | None = None
     is_open: bool = False
+    rating: float | None = None
+    total_reviews: int = 0
     updated_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 

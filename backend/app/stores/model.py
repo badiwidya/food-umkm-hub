@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -26,6 +26,8 @@ class StoreModel(Base):
     approval_status: Mapped[StoreApprovalStatus]
     approval_notes: Mapped[str | None]
     is_open: Mapped[bool]
+    rating: Mapped[float | None] = mapped_column(Numeric(2, 1), nullable=True)
+    total_reviews: Mapped[int] = mapped_column(default=0)
     updated_at: Mapped[datetime]
     created_at: Mapped[datetime]
 

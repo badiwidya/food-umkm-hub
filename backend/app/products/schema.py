@@ -11,9 +11,10 @@ class StoreSummaryResponse(BaseSchema):
     id: UUID
     name: str
     photo_url: str | None
+    rating: float | None
+    total_reviews: int
 
 
-# TODO: rating
 class ProductSummaryResponse(BaseSchema):
     id: UUID
     store: StoreSummaryResponse
@@ -23,6 +24,8 @@ class ProductSummaryResponse(BaseSchema):
     photo_url: str | None
     category: ProductCategory
     is_available: bool
+    rating: float | None
+    total_reviews: int
 
 
 ProductListResponse = PaginatedResponse[list[ProductSummaryResponse]]

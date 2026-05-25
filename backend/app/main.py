@@ -6,6 +6,7 @@ from app.exception_handler import register_exception_handlers
 from app.orders.router import order_router, store_order_router
 from app.products.router import product_router, store_product_router
 from app.promos.router import promo_router, store_promo_router
+from app.reviews.router import review_router
 from app.stores.router import store_router
 from app.students.router import student_router
 from app.users.router import user_router
@@ -24,6 +25,7 @@ app.include_router(promo_router)
 app.include_router(store_promo_router)
 app.include_router(order_router)
 app.include_router(store_order_router)
+app.include_router(review_router)
 
 app.include_router(admin_router)
 
