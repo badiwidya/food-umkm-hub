@@ -95,12 +95,6 @@ class StorageService:
             expires_in=self.expires_in,
         )
 
-    def delete_object(self, file_key: str) -> None:
-        try:
-            self.client.delete_object(Bucket=self.bucket_name, Key=file_key)
-        except (BotoCoreError, ClientError) as exc:
-            raise StorageException("Gagal menghapus file") from exc
-
     def _get_upload_rule(self, context: UploadContext, role: UserRole) -> UploadRule:
         rule = UPLOAD_RULES[context]
         if not rule.allows_role(role):
