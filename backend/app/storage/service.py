@@ -48,6 +48,11 @@ UPLOAD_RULES = {
         prefix="users/avatars/",
         content_types={"image/jpeg", "image/png", "image/webp"},
     ),
+    UploadContext.PAYMENT_PROOF: UploadRule(
+        prefix="orders/payment_proof/",
+        content_types={"image/jpeg", "image/png", "image/webp"},
+        roles={UserRole.STUDENT},
+    ),
 }
 
 

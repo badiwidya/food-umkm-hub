@@ -6,3 +6,4 @@ class UploadContext(StrEnum):
     QRIS_IMAGE = "qris_image"
     PRODUCT_PHOTO = "product_photo"
     AVATAR = "avatar"
+    PAYMENT_PROOF = "payment_proof"
