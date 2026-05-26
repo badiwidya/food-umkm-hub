@@ -1,7 +1,9 @@
+import resend
 from fastapi import FastAPI
 
 from app.admin_router import admin_router
 from app.auth.router import auth_router
+from app.config import settings
 from app.exception_handler import register_exception_handlers
 from app.favorites.router import favorite_router
 from app.orders.router import order_router, store_order_router
@@ -12,6 +14,8 @@ from app.storage.router import storage_router
 from app.stores.router import store_router
 from app.students.router import student_router
 from app.users.router import user_router
+
+resend.api_key = settings.RESEND_API_KEY
 
 app = FastAPI(title="IPB Food & UMKM Hub API", version="0.1.0")
 
