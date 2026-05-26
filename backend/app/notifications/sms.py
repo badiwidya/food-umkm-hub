@@ -1,3 +1,5 @@
+import resend
+
 from app.config import Environment, settings
 
 
@@ -9,4 +11,11 @@ async def send_otp(to: str, otp: str) -> None:
         print("=======================")
         return
 
-    raise NotImplementedError
+    await resend.Emails.send_async(
+        {
+            "from": settings.RESEND_SENDER_EMAIL,
+            "to": to,
+            "subject": "Verify your phone number",
+            "html": f"Your OTP: {otp}",
+        }
+    )

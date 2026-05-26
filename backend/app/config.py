@@ -45,6 +45,9 @@ class Settings(BaseSettings):
     )
     R2_PRESIGNED_EXPIRY: int = 300
 
+    RESEND_API_KEY: str = ""
+    RESEND_SENDER_EMAIL: str = ""
+
     @computed_field
     @property
     def DB_ECHO(self) -> bool:
