@@ -48,6 +48,9 @@ class Settings(BaseSettings):
     RESEND_API_KEY: str = ""
     RESEND_SENDER_EMAIL: str = ""
 
+    CELERY_BROKER_URL: str = ""
+    CELERY_RESULT_BACKEND: str = ""
+
     @computed_field
     @property
     def DB_ECHO(self) -> bool:
@@ -55,9 +58,21 @@ class Settings(BaseSettings):
 
     @computed_field
     @property
-    def DB_URI(self) -> str:
+    def ASYNC_DB_URI(self) -> str:
         return MultiHostUrl.build(
             scheme="postgresql+asyncpg",
+            username=self.POSTGRES_USER,
+            password=self.POSTGRES_PASSWORD,
+            host=self.POSTGRES_HOST,
+            port=self.POSTGRES_PORT,
+            path=self.POSTGRES_DB,
+        ).unicode_string()
+
+    @computed_field
+    @property
+    def SYNC_DB_URI(self) -> str:
+        return MultiHostUrl.build(
+            scheme="postgresql+psycopg",
             username=self.POSTGRES_USER,
             password=self.POSTGRES_PASSWORD,
             host=self.POSTGRES_HOST,

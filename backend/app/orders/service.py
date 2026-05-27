@@ -7,12 +7,14 @@ from app.domains.store import Store
 from app.domains.student import Student
 from app.domains.user import User, UserRole
 from app.exception import DomainException, NotAllowedException, NotFoundException
+from app.notifications.task import send_notification_task
 from app.orders.dto import CreateOrderDTO
 from app.orders.repository import OrderRepository
 from app.products.repository import ProductRepository
 from app.promos.repository import PromoRepository
 from app.reviews.repository import ReviewRepository
 from app.stores.repository import StoreRepository
+from app.users.repository import UserRepository
 
 
 class OrderService:
@@ -23,12 +25,14 @@ class OrderService:
         promo_repo: PromoRepository,
         store_repo: StoreRepository,
         review_repo: ReviewRepository,
+        user_repo: UserRepository,
     ) -> None:
         self._order_repo = order_repo
         self._product_repo = product_repo
         self._promo_repo = promo_repo
         self._store_repo = store_repo
         self._review_repo = review_repo
+        self._user_repo = user_repo
 
     async def get_details(self, user: User, id: UUID) -> Order:
         order = await self._order_repo.get_by_id(id)
@@ -180,8 +184,13 @@ class OrderService:
         return order
 
     async def mark_ready_to_pickup(self, order: Order) -> Order:
+        user = await self._user_repo.get_by_id(order.student_id)
+        assert user is not None
         order.seller_mark_as_ready_to_pickup()
         await self._order_repo.update(order)
+        send_notification_task.delay(  # pyright: ignore[reportCallIssue]
+            to=user.email, subject="Pesanan Anda siap diambil", body=""
+        )
         return order
 
     async def complete(self, order: Order) -> Order:

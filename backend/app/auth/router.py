@@ -1,4 +1,4 @@
-from fastapi import APIRouter, BackgroundTasks, status
+from fastapi import APIRouter, status
 
 from app.auth.dependency import AuthServiceDep
 from app.auth.dto import RegisterSellerDTO, RegisterStoreDTO, RegisterStudentDTO
@@ -12,7 +12,6 @@ from app.auth.schema import (
     ResetPasswordRequest,
     VerifyTokenRequest,
 )
-from app.notifications.email import send_email
 
 auth_router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -25,7 +24,6 @@ auth_router = APIRouter(prefix="/auth", tags=["Authentication"])
 async def register_student(
     payload: RegisterStudentRequest,
     auth_service: AuthServiceDep,
-    background_tasks: BackgroundTasks,
 ) -> None:
     dto = RegisterStudentDTO(
         full_name=payload.full_name,
@@ -37,8 +35,7 @@ async def register_student(
         department=payload.department,
     )
 
-    link = await auth_service.register_student(dto)
-    background_tasks.add_task(send_email, payload.email, "Aktivasi Akun", link)
+    await auth_service.register_student(dto)
 
 
 @auth_router.post(
@@ -49,7 +46,6 @@ async def register_student(
 async def register_umkm(
     payload: RegisterSellerRequest,
     auth_service: AuthServiceDep,
-    background_tasks: BackgroundTasks,
 ) -> None:
     dto = RegisterSellerDTO(
         full_name=payload.full_name,
@@ -59,8 +55,7 @@ async def register_umkm(
         store=RegisterStoreDTO(**payload.store.model_dump()),
     )
 
-    link = await auth_service.register_seller(dto)
-    background_tasks.add_task(send_email, payload.email, "Aktivasi Akun", link)
+    await auth_service.register_seller(dto)
 
 
 @auth_router.post(
@@ -93,12 +88,9 @@ async def verify_email(
 async def resend_email_verification(
     payload: ResendEmailVerificationRequest,
     auth_service: AuthServiceDep,
-    background_tasks: BackgroundTasks,
 ) -> None:
     """Selalu mengembalikan 204 meski email tidak terdaftar atau sudah terverifikasi"""
-    link = await auth_service.issue_email_verification_token(payload.email)
-    if link:
-        background_tasks.add_task(send_email, payload.email, "Aktivasi Akun", link)
+    await auth_service.issue_email_verification_token(payload.email)
 
 
 @auth_router.post(
@@ -121,14 +113,9 @@ async def verify_email_change(
 async def request_reset_password(
     payload: ResetPasswordRequest,
     auth_service: AuthServiceDep,
-    background_tasks: BackgroundTasks,
 ) -> None:
     """Selalu mengembalikan 204 meski email tidak terdaftar."""
-    link = await auth_service.request_reset_password(payload.email)
-    if link:
-        background_tasks.add_task(
-            send_email, payload.email, "Permintaan Reset Password", link
-        )
+    await auth_service.request_reset_password(payload.email)
 
 
 @auth_router.post(
