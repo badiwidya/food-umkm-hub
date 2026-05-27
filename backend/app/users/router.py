@@ -1,8 +1,6 @@
-from fastapi import APIRouter, BackgroundTasks, status
+from fastapi import APIRouter, status
 
 from app.auth.dependency import CurrentUserDep
-from app.notifications.email import send_email
-from app.notifications.sms import send_otp
 from app.users.dependency import (
     UserServiceDep,
 )
@@ -58,14 +56,10 @@ async def delete_current_user(
 )
 async def request_email_change(
     user_service: UserServiceDep,
-    background_tasks: BackgroundTasks,
     user: CurrentUserDep,
     payload: EmailChangeRequest,
 ) -> None:
-    url = await user_service.request_email_change(user, payload.email)
-    background_tasks.add_task(
-        send_email, payload.email, "Verifikasi Perubahan Email", url
-    )
+    await user_service.request_email_change(user, payload.email)
 
 
 @user_router.post(
@@ -76,12 +70,8 @@ async def request_email_change(
 async def resend_email_change_verification(
     user_service: UserServiceDep,
     user: CurrentUserDep,
-    background_tasks: BackgroundTasks,
 ) -> None:
-    url = await user_service.issue_email_change_verification_token(user)
-    background_tasks.add_task(
-        send_email, str(user.pending_email), "Verifikasi Perubahan Email", url
-    )
+    await user_service.issue_email_change_verification_link(user)
 
 
 @user_router.post(
@@ -91,14 +81,12 @@ async def resend_email_change_verification(
 )
 async def change_phone_number(
     user_service: UserServiceDep,
-    background_tasks: BackgroundTasks,
     user: CurrentUserDep,
     payload: NumberChangeRequest,
 ) -> UserResponse:
-    otp, updated_user = await user_service.change_phone_number(
+    updated_user = await user_service.change_phone_number(
         user, str(payload.phone_number)
     )
-    background_tasks.add_task(send_otp, str(payload.phone_number), otp)
     return UserResponse.model_validate(updated_user)
 
 
@@ -120,11 +108,9 @@ async def verify_phone(
 )
 async def resend_phone_otp(
     user_service: UserServiceDep,
-    background_tasks: BackgroundTasks,
     user: CurrentUserDep,
 ) -> None:
-    otp = await user_service.issue_phone_verification_otp(user)
-    background_tasks.add_task(send_otp, user.phone_number, otp)
+    await user_service.issue_phone_verification_otp(user)
 
 
 @user_router.post(

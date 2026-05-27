@@ -6,6 +6,10 @@ from app.domains.seller import Seller
 from app.domains.student import Student, User
 from app.domains.verification_token import VerificationToken, VerificationTokenType
 from app.exception import AuthenticationException, DomainException, NotAllowedException
+from app.notifications.task import (
+    send_password_reset_link_task,
+    send_verification_email_task,
+)
 from app.security import create_access_token, hash_password, verify_password
 from app.stores.repository import StoreRepository
 from app.students.repository import StudentRepository
@@ -25,7 +29,7 @@ class AuthService:
         self._student_repo = student_repo
         self._store_repo = store_repo
 
-    async def register_student(self, dto: RegisterStudentDTO) -> str:
+    async def register_student(self, dto: RegisterStudentDTO) -> None:
         await self._ensure_email_and_phone_not_taken(dto.email, dto.phone_number)
 
         student = Student.register(
@@ -40,9 +44,12 @@ class AuthService:
 
         await self._student_repo.save(student)
 
-        return await self._build_email_verification_link(student)
+        verification_link = await self._build_email_verification_link(student)
+        send_verification_email_task.delay(  # pyright: ignore[reportCallIssue]
+            to=student.email, verification_link=verification_link
+        )
 
-    async def register_seller(self, dto: RegisterSellerDTO) -> str:
+    async def register_seller(self, dto: RegisterSellerDTO) -> None:
         await self._ensure_email_and_phone_not_taken(dto.email, dto.phone_number)
 
         seller = Seller.register(
@@ -64,7 +71,10 @@ class AuthService:
         await self._user_repo.save(seller)
         await self._store_repo.save(store)
 
-        return await self._build_email_verification_link(seller)
+        verification_link = await self._build_email_verification_link(seller)
+        send_verification_email_task.delay(  # pyright: ignore[reportCallIssue]
+            to=seller.email, verification_link=verification_link
+        )
 
     async def login(self, email: str, password: str) -> str:
         user = await self._user_repo.get_by_email(email.strip().lower())
@@ -117,16 +127,20 @@ class AuthService:
         await self._user_repo.update(user)
         await self._token_repo.delete_by_id(token.id)
 
-    async def issue_email_verification_token(self, email: str) -> str | None:
+    async def issue_email_verification_token(self, email: str) -> None:
+        email = email.strip().lower()
         user = await self._user_repo.get_by_email(email.strip().lower())
         if user is None or user.is_email_verified:
             return None
-        return await self._build_email_verification_link(user)
+        verification_link = await self._build_email_verification_link(user)
+        send_verification_email_task.delay(  # pyright: ignore[reportCallIssue]
+            to=email, verification_link=verification_link
+        )
 
-    async def request_reset_password(self, email: str) -> str | None:
+    async def request_reset_password(self, email: str) -> None:
         user = await self._user_repo.get_by_email(email.strip().lower())
         if user is None:
-            return None
+            return
 
         token, raw_token = await self._issue_verification_token(
             user, VerificationTokenType.PASSWORD_RESET
@@ -134,7 +148,9 @@ class AuthService:
 
         reset_password_link = f"{settings.FRONTEND_URL}/click/reset-password?token={raw_token}&id={token.id}"
 
-        return reset_password_link
+        send_password_reset_link_task.delay(
+            to=user.email, reset_password_link=reset_password_link
+        )  # pyright: ignore[reportCallIssue]
 
     async def confirm_reset_password(
         self, token_id: UUID, raw_token: str, new_password: str

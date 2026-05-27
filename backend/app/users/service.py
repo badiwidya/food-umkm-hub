@@ -6,6 +6,7 @@ from app.domains.admin import Admin
 from app.domains.user import User, UserRole, UserStatus
 from app.domains.verification_token import VerificationToken, VerificationTokenType
 from app.exception import DomainException
+from app.notifications.task import send_otp_task, send_verification_email_task
 from app.security import hash_password, verify_password
 from app.sentinel import UNSET
 from app.users.repository import UserRepository, VerificationTokenRepository
@@ -45,7 +46,7 @@ class UserService:
         await self._user_repo.update(user)
         return user
 
-    async def request_email_change(self, user: User, new_email: str) -> str:
+    async def request_email_change(self, user: User, new_email: str) -> None:
         existing = await self._user_repo.get_by_email(new_email.strip().lower())
         if existing is not None and existing.id != user.id:
             raise DomainException("Email sudah digunakan oleh akun lain")
@@ -53,9 +54,9 @@ class UserService:
         user.request_email_change(new_email)
         await self._user_repo.update(user)
 
-        return await self.issue_email_change_verification_token(user)
+        await self.issue_email_change_verification_link(user)
 
-    async def issue_email_change_verification_token(self, user: User) -> str:
+    async def issue_email_change_verification_link(self, user: User) -> None:
         if not user.pending_email:
             raise DomainException("Tidak ada email yang perlu diverifikasi")
 
@@ -64,8 +65,9 @@ class UserService:
         )
 
         verification_link = f"{settings.FRONTEND_URL}/click/change-email?token={raw_token}&id={token.id}"
-
-        return verification_link
+        send_verification_email_task.delay(
+            to=user.pending_email, verification_link=verification_link
+        )  # pyright: ignore[reportCallIssue]
 
     async def verify_phone(self, user: User, raw_otp: str) -> None:
         token = await self._token_repo.get_by_user_and_type(
@@ -81,9 +83,7 @@ class UserService:
         await self._user_repo.update(user)
         await self._token_repo.delete_by_id(token.id)
 
-    async def change_phone_number(
-        self, user: User, new_number: str
-    ) -> tuple[str, User]:
+    async def change_phone_number(self, user: User, new_number: str) -> User:
         existing = await self._user_repo.get_by_phone_number(new_number.strip())
         if existing is not None and existing.id != user.id:
             raise DomainException("Nomor telepon sudah digunakan oleh akun lain")
@@ -91,17 +91,16 @@ class UserService:
         user.change_phone_number(new_number)
         await self._user_repo.update(user)
 
-        return await self.issue_phone_verification_otp(user), user
+        return user
 
-    async def issue_phone_verification_otp(self, user: User) -> str:
+    async def issue_phone_verification_otp(self, user: User) -> None:
         if user.is_phone_verified:
             raise DomainException("Tidak ada nomor telepon yang perlu diverifikasi")
 
         _, raw_otp = await self._issue_verification_token(
             user, VerificationTokenType.PHONE_OTP
         )
-
-        return raw_otp
+        send_otp_task.delay(to=user.email, otp=raw_otp)  # pyright: ignore[reportCallIssue]
 
     async def change_password(
         self, user: User, old_password: str, new_password: str

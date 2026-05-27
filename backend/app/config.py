@@ -48,6 +48,9 @@ class Settings(BaseSettings):
     RESEND_API_KEY: str = ""
     RESEND_SENDER_EMAIL: str = ""
 
+    CELERY_BROKER_URL: str = ""
+    CELERY_RESULT_BACKEND: str = ""
+
     @computed_field
     @property
     def DB_ECHO(self) -> bool:
