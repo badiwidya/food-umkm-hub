@@ -51,5 +51,5 @@ def send_password_reset_link_task(to: str, reset_password_link: str) -> None:
     retry_jitter=True,
     retry_kwargs={"max_retries": 3},
 )
-def send_notification(to: str, subject: str, body: str) -> None:
+def send_notification_task(to: str, subject: str, body: str) -> None:
     send_email(to, subject, html_body=body)

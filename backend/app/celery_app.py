@@ -8,6 +8,7 @@ celery_app = Celery(
     backend=settings.CELERY_RESULT_BACKEND,
     include=[
         "app.notifications.task",
+        "app.orders.task",
     ],
 )
 
@@ -19,5 +20,11 @@ celery_app.conf.update(
     accept_content=["json"],
     task_track_started=True,
     worker_prefetch_multiplier=1,
-    task_routes={"email.*": {"queue": "email"}},
+    task_routes={"email.*": {"queue": "email"}, "orders.*": {"queue": "orders"}},
+    beat_schedule={
+        "expire-unpaid-orders-every-minute": {
+            "task": "orders.expire_unpaid_orders",
+            "schedule": 60.0,
+        }
+    },
 )
