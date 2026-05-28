@@ -5,7 +5,7 @@ from pydantic import field_validator
 
 from app.schema import BaseSchema, PaginatedResponse
 from app.stores.store import StoreApprovalStatus
-from app.users.schema import UserResponse
+from app.users.schema import UserDetailResponse
 
 
 class StoreSummaryResponse(BaseSchema):
@@ -52,7 +52,7 @@ class StoreWithOwnerSummaryResponse(BaseSchema):
     rating: float | None
     total_reviews: int
     approval_status: StoreApprovalStatus
-    owner: UserResponse
+    owner: UserDetailResponse
 
 
 class StoreWithOwnerDetailResponse(StoreWithOwnerSummaryResponse):

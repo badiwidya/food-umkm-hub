@@ -9,7 +9,7 @@ from app.users.schema import (
     EmailChangeRequest,
     NumberChangeRequest,
     UpdateProfileRequest,
-    UserResponse,
+    UserDetailResponse,
     VerifyPhoneRequest,
 )
 
@@ -21,8 +21,8 @@ user_router = APIRouter(prefix="/users", tags=["Users"])
     summary="Mendapatkan informasi pengguna yang sedang login.",
     status_code=status.HTTP_200_OK,
 )
-async def get_me(user: CurrentUserDep) -> UserResponse:
-    return UserResponse.model_validate(user)
+async def get_me(user: CurrentUserDep) -> UserDetailResponse:
+    return UserDetailResponse.model_validate(user)
 
 
 @user_router.patch(
@@ -32,10 +32,10 @@ async def get_me(user: CurrentUserDep) -> UserResponse:
 )
 async def update_current_profile(
     user_service: UserServiceDep, user: CurrentUserDep, payload: UpdateProfileRequest
-) -> UserResponse:
+) -> UserDetailResponse:
     data = payload.model_dump(exclude_unset=True)
     updated_user = await user_service.update_profile(user, data)
-    return UserResponse.model_validate(updated_user)
+    return UserDetailResponse.model_validate(updated_user)
 
 
 @user_router.delete(
@@ -83,11 +83,11 @@ async def change_phone_number(
     user_service: UserServiceDep,
     user: CurrentUserDep,
     payload: NumberChangeRequest,
-) -> UserResponse:
+) -> UserDetailResponse:
     updated_user = await user_service.change_phone_number(
         user, str(payload.phone_number)
     )
-    return UserResponse.model_validate(updated_user)
+    return UserDetailResponse.model_validate(updated_user)
 
 
 @user_router.post(

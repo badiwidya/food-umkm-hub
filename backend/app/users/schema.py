@@ -17,19 +17,22 @@ IDPhoneNumber = Annotated[
 ]
 
 
-class UserResponse(BaseSchema):
+class UserSummaryResponse(BaseSchema):
     id: UUID
     full_name: str
     avatar_url: str | None
+    status: UserStatus
+    role: UserRole
+
+
+class UserDetailResponse(UserSummaryResponse):
     email: str
     phone_number: IDPhoneNumber
-    role: UserRole
-    status: UserStatus
     email_verified_at: datetime | None
     phone_verified_at: datetime | None
 
 
-UserListResponse = PaginatedResponse[list[UserResponse]]
+UserListResponse = PaginatedResponse[list[UserSummaryResponse]]
 
 
 class UpdateProfileRequest(BaseSchema):
