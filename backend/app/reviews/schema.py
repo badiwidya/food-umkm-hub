@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Annotated
 from uuid import UUID
 
@@ -20,13 +19,9 @@ class CreateReviewRequest(BaseSchema):
 class ReviewResponse(BaseSchema):
     id: UUID
     order_id: UUID
-    student_id: UUID
-    store_id: UUID
     product_id: UUID
     rating: int
     comment: str | None
-    created_at: datetime
-    updated_at: datetime
 
 
 ReviewListResponse = PaginatedResponse[list[ReviewResponse]]

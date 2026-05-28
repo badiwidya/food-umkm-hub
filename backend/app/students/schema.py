@@ -1,10 +1,10 @@
 from pydantic import field_validator
 
 from app.schema import BaseSchema
-from app.users.schema import UserResponse
+from app.users.schema import UserDetailResponse
 
 
-class StudentResponse(UserResponse):
+class StudentResponse(UserDetailResponse):
     nim: str
     faculty: str
     department: str

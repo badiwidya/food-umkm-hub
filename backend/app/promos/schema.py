@@ -61,8 +61,6 @@ PromoListResponse = PaginatedResponse[list[PromoSummaryResponse]]
 class PromoDetailResponse(PromoSummaryResponse):
     max_usage: int | None
     usage_count: int
-    updated_at: datetime
-    created_at: datetime
 
 
 class ValidatePromoResponse(BaseSchema):

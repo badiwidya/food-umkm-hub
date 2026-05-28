@@ -60,8 +60,6 @@ class OrderDetailResponse(OrderSummaryResponse):
     rejection_reason: str | None
     rejected_at: datetime | None
     expires_at: datetime
-    created_at: datetime
-    updated_at: datetime
 
 
 class ActiveOrderListResponse(BaseSchema):

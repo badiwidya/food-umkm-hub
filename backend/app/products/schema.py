@@ -1,4 +1,3 @@
-from datetime import datetime
 from uuid import UUID
 
 from pydantic import NonNegativeInt, field_validator
@@ -25,7 +24,6 @@ class ProductSummaryResponse(BaseSchema):
     category: ProductCategory
     is_available: bool
     rating: float | None
-    total_reviews: int
 
 
 ProductListResponse = PaginatedResponse[list[ProductSummaryResponse]]
@@ -33,8 +31,7 @@ ProductListResponse = PaginatedResponse[list[ProductSummaryResponse]]
 
 class ProductDetailResponse(ProductSummaryResponse):
     description: str | None
-    updated_at: datetime
-    created_at: datetime
+    total_reviews: int
 
 
 class CreateProductRequest(BaseSchema):
