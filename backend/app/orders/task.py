@@ -3,7 +3,7 @@ from sqlalchemy import create_engine, func, select, update
 from sqlalchemy.orm import sessionmaker
 
 from app.config import settings
-from app.domains.order import OrderStatus
+from app.orders.order import OrderStatus
 from app.orders.model import OrderModel
 
 engine = create_engine(

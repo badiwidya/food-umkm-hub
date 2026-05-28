@@ -4,7 +4,7 @@ from uuid import UUID
 from pydantic import NonNegativeInt
 from pydantic.functional_validators import field_validator
 
-from app.domains.promo import PromoType
+from app.promos.promo import PromoType
 from app.schema import BaseSchema, PaginatedResponse
 
 

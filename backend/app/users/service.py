@@ -2,14 +2,14 @@ from typing import Any
 from uuid import UUID
 
 from app.config import settings
-from app.domains.admin import Admin
-from app.domains.user import User, UserRole, UserStatus
-from app.domains.verification_token import VerificationToken, VerificationTokenType
 from app.exception import DomainException
 from app.notifications.task import send_otp_task, send_verification_email_task
 from app.security import hash_password, verify_password
 from app.sentinel import UNSET
+from app.users.admin import Admin
 from app.users.repository import UserRepository, VerificationTokenRepository
+from app.users.user import User, UserRole, UserStatus
+from app.users.verification_token import VerificationToken, VerificationTokenType
 
 
 class UserService:

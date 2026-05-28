@@ -6,7 +6,7 @@ from sqlalchemy import ForeignKey, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
-from app.domains.store import StoreApprovalStatus
+from app.stores.store import StoreApprovalStatus
 
 if TYPE_CHECKING:
     from app.users.model import UserModel

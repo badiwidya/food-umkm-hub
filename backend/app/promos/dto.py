@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from app.domains.promo import PromoType
+from app.promos.promo import PromoType
 
 
 @dataclass

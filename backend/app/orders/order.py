@@ -3,7 +3,7 @@ from datetime import UTC, datetime
 from enum import StrEnum
 from uuid import UUID, uuid7
 
-from app.domains.promo import Promo
+from app.promos.promo import Promo
 from app.exception import DomainException
 
 

@@ -5,7 +5,7 @@ from sqlalchemy import BigInteger, ForeignKey, Index, text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
-from app.domains.promo import PromoType
+from app.promos.promo import PromoType
 
 
 class PromoModel(Base):

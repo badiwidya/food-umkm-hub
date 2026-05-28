@@ -5,7 +5,7 @@ from fastapi import APIRouter, Query, status
 
 from app.auth.dependency import CurrentStoreDep
 from app.dependency import PaginationQueryDep
-from app.domains.product import ProductCategory
+from app.products.product import ProductCategory
 from app.products.dependency import AuthorizedProductTargetDep, ProductServiceDep
 from app.products.dto import CreateProductDTO
 from app.products.schema import (

@@ -5,7 +5,7 @@ from sqlalchemy import BigInteger, ForeignKey, Index, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
-from app.domains.order import OrderStatus, PaymentMethod
+from app.orders.order import OrderStatus, PaymentMethod
 
 
 class OrderModel(Base):

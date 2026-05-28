@@ -3,9 +3,9 @@ from uuid import UUID
 from sqlalchemy import delete, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domains.user import User, UserRole, UserStatus
-from app.domains.verification_token import VerificationToken, VerificationTokenType
 from app.users.model import UserModel, VerificationTokenModel
+from app.users.user import User, UserRole, UserStatus
+from app.users.verification_token import VerificationToken, VerificationTokenType
 
 
 class UserRepository:

@@ -9,7 +9,7 @@ from fastapi import APIRouter, Body, Query, status
 
 from app.auth.dependency import CurrentAdminDep
 from app.dependency import PaginationQueryDep
-from app.domains.store import StoreApprovalStatus
+from app.stores.store import StoreApprovalStatus
 from app.exception import NotFoundException
 from app.stores.dependency import StoreServiceDep, StoreTargetDep
 from app.stores.schema import (

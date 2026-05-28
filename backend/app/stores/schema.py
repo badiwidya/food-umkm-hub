@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import field_validator
 
-from app.domains.store import StoreApprovalStatus
+from app.stores.store import StoreApprovalStatus
 from app.schema import BaseSchema, PaginatedResponse
 from app.users.schema import UserResponse
 

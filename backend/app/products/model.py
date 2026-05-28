@@ -6,7 +6,7 @@ from sqlalchemy import BigInteger, ForeignKey, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
-from app.domains.product import ProductCategory
+from app.products.product import ProductCategory
 from app.stores.model import StoreModel
 
 if TYPE_CHECKING:

@@ -5,7 +5,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.domains.order import Order, OrderItem, OrderStatus
+from app.orders.order import Order, OrderItem, OrderStatus
 from app.orders.model import OrderItemModel, OrderModel
 
 

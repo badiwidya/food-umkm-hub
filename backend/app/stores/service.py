@@ -1,10 +1,10 @@
 from typing import Any
 from uuid import UUID
 
-from app.domains.admin import Admin
-from app.domains.store import Store, StoreApprovalStatus
+from app.stores.store import Store, StoreApprovalStatus
 from app.sentinel import UNSET
 from app.stores.repository import StoreRepository
+from app.users.admin import Admin
 
 
 class StoreService:

@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import NonNegativeInt, field_validator
 
-from app.domains.store import ProductCategory
+from app.stores.store import ProductCategory
 from app.schema import BaseSchema, PaginatedResponse
 
 

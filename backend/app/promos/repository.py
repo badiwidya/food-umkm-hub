@@ -5,7 +5,7 @@ from uuid import UUID
 from sqlalchemy import func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domains.promo import Promo
+from app.promos.promo import Promo
 from app.promos.model import PromoModel
 
 

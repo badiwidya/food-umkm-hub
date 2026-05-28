@@ -6,8 +6,8 @@ from sqlalchemy import ForeignKey, Index, String, UniqueConstraint, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
-from app.domains.user import UserRole, UserStatus
-from app.domains.verification_token import VerificationTokenType
+from app.users.user import UserRole, UserStatus
+from app.users.verification_token import VerificationTokenType
 
 if TYPE_CHECKING:
     from app.stores.model import StoreModel

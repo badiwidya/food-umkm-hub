@@ -4,13 +4,13 @@ from enum import StrEnum
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid7
 
-from app.domains.product import Product, ProductCategory
-from app.domains.promo import Promo, PromoType
+from app.products.product import Product, ProductCategory
+from app.promos.promo import Promo, PromoType
 from app.exception import DomainException
 from app.sentinel import UNSET, TUnset
 
 if TYPE_CHECKING:
-    from app.domains.seller import Seller
+    from app.users.seller import Seller
 
 
 class StoreApprovalStatus(StrEnum):

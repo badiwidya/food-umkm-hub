@@ -4,7 +4,7 @@ from fastapi import APIRouter, Query, status
 
 from app.auth.dependency import CurrentStoreDep, CurrentStudentDep
 from app.dependency import PaginationQueryDep
-from app.domains.order import OrderStatus
+from app.orders.order import OrderStatus
 from app.orders.dependency import (
     AuthorizedOrderTargetDep,
     AuthorizedSellerOrderTargetDep,

@@ -4,10 +4,10 @@ from uuid import UUID
 from fastapi import Depends
 
 from app.dependency import SessionDep
-from app.domains.user import User
 from app.exception import NotFoundException
 from app.users.repository import UserRepository, VerificationTokenRepository
 from app.users.service import UserService
+from app.users.user import User
 
 
 def get_user_repo(
