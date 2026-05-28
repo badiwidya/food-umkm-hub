@@ -1,11 +1,11 @@
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import BigInteger, ForeignKey
+from sqlalchemy import BigInteger, ForeignKey, Index, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
-from app.domains.order import OrderStatus, PaymentMethod
+from app.orders.order import OrderStatus, PaymentMethod
 
 
 class OrderModel(Base):
@@ -29,6 +29,14 @@ class OrderModel(Base):
     updated_at: Mapped[datetime]
 
     order_items: Mapped[list[OrderItemModel]] = relationship(lazy="raise")
+
+    __table_args__ = (
+        Index(
+            "ix_orders_expires_at",
+            "expires_at",
+            postgresql_where=text("status = 'PENDING'"),
+        ),
+    )
 
 
 class OrderItemModel(Base):

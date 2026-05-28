@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from app.domains.store import Store
-from app.domains.user import User, UserRole
+from app.stores.store import Store
+from app.users.user import User, UserRole
 
 
 @dataclass(kw_only=True)

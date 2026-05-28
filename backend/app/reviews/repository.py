@@ -3,9 +3,9 @@ from uuid import UUID
 from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domains.review import Review
 from app.products.model import ProductModel
 from app.reviews.model import ReviewModel
+from app.reviews.review import Review
 from app.stores.model import StoreModel
 
 

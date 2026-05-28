@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from uuid import UUID
 
-from app.domains.order import PaymentMethod
+from app.orders.order import PaymentMethod
 
 
 @dataclass

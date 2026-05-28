@@ -5,15 +5,15 @@ from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 
 from app.auth.service import AuthService
-from app.domains.admin import Admin
-from app.domains.store import Store
-from app.domains.student import Student
-from app.domains.user import User, UserRole
 from app.exception import AuthenticationException, NotAllowedException
 from app.security import JWTPayload, verify_access_token
 from app.stores.dependency import StoreRepoDep, StoreServiceDep
+from app.stores.store import Store
 from app.students.dependency import StudentRepoDep, StudentServiceDep
+from app.students.student import Student
+from app.users.admin import Admin
 from app.users.dependency import UserRepoDep, UserServiceDep, VerificationTokenRepoDep
+from app.users.user import User, UserRole
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login", auto_error=False)
 

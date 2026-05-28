@@ -8,7 +8,7 @@ from app.exception import DomainException
 from app.sentinel import UNSET, TUnset
 
 if TYPE_CHECKING:
-    from app.domains.store import Store
+    from app.stores.store import Store
 
 
 class ProductCategory(StrEnum):

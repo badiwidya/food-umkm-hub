@@ -5,8 +5,8 @@ from fastapi import Depends
 
 from app.auth.dependency import CurrentStoreDep
 from app.dependency import SessionDep
-from app.domains.promo import Promo
 from app.exception import NotAllowedException
+from app.promos.promo import Promo
 from app.promos.repository import PromoRepository
 from app.promos.service import PromoService
 

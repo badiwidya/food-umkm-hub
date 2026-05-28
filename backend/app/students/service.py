@@ -1,9 +1,9 @@
 from typing import Any
 from uuid import UUID
 
-from app.domains.student import Student
 from app.sentinel import UNSET
 from app.students.repository import StudentRepository
+from app.students.student import Student
 
 
 class StudentService:

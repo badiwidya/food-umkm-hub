@@ -1,11 +1,11 @@
 from uuid import UUID
 
-from app.domains.favorite import ProductFavorite, StoreFavorite
-from app.domains.product import Product
-from app.domains.store import Store
-from app.domains.student import Student
 from app.exception import NotFoundException
+from app.favorites.favorite import ProductFavorite, StoreFavorite
 from app.favorites.repository import FavoriteRepository
+from app.products.product import Product
+from app.stores.store import Store
+from app.students.student import Student
 
 
 class FavoriteService:

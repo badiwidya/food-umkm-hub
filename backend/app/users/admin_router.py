@@ -8,9 +8,9 @@ from fastapi import APIRouter, Query, status
 
 from app.auth.dependency import CurrentAdminDep
 from app.dependency import PaginationQueryDep
-from app.domains.user import UserRole, UserStatus
 from app.users.dependency import UserServiceDep, UserTargetDep
 from app.users.schema import UserListResponse, UserResponse
+from app.users.user import UserRole, UserStatus
 
 user_admin_router = APIRouter()
 

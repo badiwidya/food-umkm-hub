@@ -5,11 +5,11 @@ from uuid import uuid4
 from botocore.exceptions import BotoCoreError, ClientError
 
 from app.config import settings
-from app.domains.user import User, UserRole
 from app.exception import DomainException, NotAllowedException
 from app.storage.enum import UploadContext
 from app.storage.exceptions import StorageException
 from app.storage.schema import SignUploadResponse
+from app.users.user import User, UserRole
 
 CONTENT_TYPE_EXTENSIONS = {
     "image/jpeg": ".jpg",

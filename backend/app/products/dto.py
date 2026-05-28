@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from app.domains.product import ProductCategory
+from app.products.product import ProductCategory
 
 
 @dataclass(kw_only=True)

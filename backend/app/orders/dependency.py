@@ -5,15 +5,15 @@ from fastapi import Depends
 
 from app.auth.dependency import CurrentUserDep
 from app.dependency import SessionDep
-from app.domains.order import Order
-from app.domains.user import User, UserRole
 from app.exception import NotAllowedException
+from app.orders.order import Order
 from app.orders.repository import OrderRepository
 from app.orders.service import OrderService
 from app.products.dependency import ProductRepoDep
 from app.promos.dependency import PromoRepoDep
 from app.reviews.repository import ReviewRepository
 from app.stores.dependency import StoreRepoDep
+from app.users.user import User, UserRole
 
 
 def get_order_repo(session: SessionDep) -> OrderRepository:

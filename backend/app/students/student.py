@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from datetime import UTC, datetime
 
-from app.domains.user import User, UserRole
 from app.exception import DomainException
 from app.sentinel import UNSET, TUnset
+from app.users.user import User, UserRole
 
 
 @dataclass(kw_only=True)

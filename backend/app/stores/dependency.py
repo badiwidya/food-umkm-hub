@@ -4,10 +4,10 @@ from uuid import UUID
 from fastapi import Depends
 
 from app.dependency import SessionDep
-from app.domains.store import Store
 from app.exception import NotFoundException
 from app.stores.repository import StoreRepository
 from app.stores.service import StoreService
+from app.stores.store import Store
 
 
 def get_store_repo(session: SessionDep) -> StoreRepository:

@@ -2,9 +2,6 @@ from uuid import UUID
 
 from app.auth.dto import RegisterSellerDTO, RegisterStudentDTO
 from app.config import settings
-from app.domains.seller import Seller
-from app.domains.student import Student, User
-from app.domains.verification_token import VerificationToken, VerificationTokenType
 from app.exception import AuthenticationException, DomainException, NotAllowedException
 from app.notifications.task import (
     send_password_reset_link_task,
@@ -13,7 +10,10 @@ from app.notifications.task import (
 from app.security import create_access_token, hash_password, verify_password
 from app.stores.repository import StoreRepository
 from app.students.repository import StudentRepository
+from app.students.student import Student, User
 from app.users.repository import UserRepository, VerificationTokenRepository
+from app.users.seller import Seller
+from app.users.verification_token import VerificationToken, VerificationTokenType
 
 
 class AuthService:

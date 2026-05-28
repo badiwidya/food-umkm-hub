@@ -4,7 +4,7 @@ from uuid import UUID
 
 from pydantic import Field
 
-from app.domains.order import OrderStatus, PaymentMethod
+from app.orders.order import OrderStatus, PaymentMethod
 from app.schema import BaseSchema, PaginatedResponse
 
 

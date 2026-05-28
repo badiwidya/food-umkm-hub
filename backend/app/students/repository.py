@@ -4,8 +4,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import contains_eager
 
-from app.domains.student import Student
 from app.students.model import StudentModel
+from app.students.student import Student
 from app.users.model import UserModel
 from app.users.repository import UserRepository
 
