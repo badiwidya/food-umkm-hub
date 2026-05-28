@@ -20,8 +20,6 @@ class CreateReviewRequest(BaseSchema):
 class ReviewResponse(BaseSchema):
     id: UUID
     order_id: UUID
-    student_id: UUID
-    store_id: UUID
     product_id: UUID
     rating: int
     comment: str | None
