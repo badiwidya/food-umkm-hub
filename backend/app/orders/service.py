@@ -2,18 +2,18 @@ from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
 from app.config import settings
-from app.orders.order import Order, OrderStatus, PaymentMethod
-from app.stores.store import Store
 from app.exception import DomainException, NotAllowedException, NotFoundException
 from app.notifications.task import send_notification_task
 from app.orders.dto import CreateOrderDTO
+from app.orders.order import Order, OrderStatus, PaymentMethod
 from app.orders.repository import OrderRepository
 from app.products.repository import ProductRepository
 from app.promos.repository import PromoRepository
 from app.reviews.repository import ReviewRepository
 from app.stores.repository import StoreRepository
-from app.users.repository import UserRepository
+from app.stores.store import Store
 from app.students.student import Student
+from app.users.repository import UserRepository
 from app.users.user import User, UserRole
 
 

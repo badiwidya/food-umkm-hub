@@ -1,9 +1,9 @@
 from typing import Any
 from uuid import UUID
 
-from app.stores.store import Store, StoreApprovalStatus
 from app.sentinel import UNSET
 from app.stores.repository import StoreRepository
+from app.stores.store import Store, StoreApprovalStatus
 from app.users.admin import Admin
 
 

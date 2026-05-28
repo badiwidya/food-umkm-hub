@@ -5,8 +5,8 @@ from sqlalchemy import case, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import contains_eager
 
-from app.products.product import Product, ProductCategory, StoreSummary
 from app.products.model import ProductModel
+from app.products.product import Product, ProductCategory, StoreSummary
 from app.stores.model import StoreModel
 from app.users.model import UserModel
 

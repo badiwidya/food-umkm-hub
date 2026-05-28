@@ -10,9 +10,9 @@ from app.notifications.task import (
 from app.security import create_access_token, hash_password, verify_password
 from app.stores.repository import StoreRepository
 from app.students.repository import StudentRepository
+from app.students.student import Student, User
 from app.users.repository import UserRepository, VerificationTokenRepository
 from app.users.seller import Seller
-from app.students.student import Student, User
 from app.users.verification_token import VerificationToken, VerificationTokenType
 
 

@@ -2,12 +2,12 @@ from uuid import UUID
 
 from sqlalchemy.exc import IntegrityError
 
-from app.orders.order import Order, OrderStatus
-from app.reviews.review import Review
 from app.exception import DomainException, NotAllowedException, NotFoundException
+from app.orders.order import Order, OrderStatus
 from app.orders.repository import OrderRepository
 from app.products.repository import ProductRepository
 from app.reviews.repository import ReviewRepository
+from app.reviews.review import Review
 from app.stores.repository import StoreRepository
 from app.students.student import Student
 

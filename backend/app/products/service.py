@@ -1,12 +1,12 @@
 from typing import Any
 from uuid import UUID
 
-from app.products.product import Product, ProductCategory
-from app.stores.store import Store
 from app.exception import NotFoundException
 from app.products.dto import CreateProductDTO
+from app.products.product import Product, ProductCategory
 from app.products.repository import ProductRepository
 from app.sentinel import UNSET
+from app.stores.store import Store
 
 
 class ProductService:

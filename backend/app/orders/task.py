@@ -3,8 +3,8 @@ from sqlalchemy import create_engine, func, select, update
 from sqlalchemy.orm import sessionmaker
 
 from app.config import settings
-from app.orders.order import OrderStatus
 from app.orders.model import OrderModel
+from app.orders.order import OrderStatus
 
 engine = create_engine(
     settings.SYNC_DB_URI,

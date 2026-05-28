@@ -7,13 +7,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import contains_eager
 
 from app.favorites.favorite import ProductFavorite, StoreFavorite
-from app.products.product import Product
-from app.stores.store import Store, StoreApprovalStatus
 from app.favorites.model import ProductFavoriteModel, StoreFavoriteModel
 from app.products.model import ProductModel
+from app.products.product import Product
 from app.products.repository import ProductRepository
 from app.stores.model import StoreModel
 from app.stores.repository import StoreRepository
+from app.stores.store import Store, StoreApprovalStatus
 from app.users.model import UserModel
 from app.users.user import UserStatus
 

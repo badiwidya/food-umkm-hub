@@ -4,7 +4,6 @@ from fastapi import APIRouter, Query, status
 
 from app.auth.dependency import CurrentStoreDep, CurrentStudentDep
 from app.dependency import PaginationQueryDep
-from app.orders.order import OrderStatus
 from app.orders.dependency import (
     AuthorizedOrderTargetDep,
     AuthorizedSellerOrderTargetDep,
@@ -12,6 +11,7 @@ from app.orders.dependency import (
     OrderServiceDep,
 )
 from app.orders.dto import CreateOrderDTO, OrderItemDTO
+from app.orders.order import OrderStatus
 from app.orders.schema import (
     ActiveOrderListResponse,
     CreateOrderRequest,

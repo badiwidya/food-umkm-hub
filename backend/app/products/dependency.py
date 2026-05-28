@@ -5,8 +5,8 @@ from fastapi import Depends
 
 from app.auth.dependency import CurrentStoreDep
 from app.dependency import SessionDep
-from app.products.product import Product
 from app.exception import NotAllowedException
+from app.products.product import Product
 from app.products.repository import ProductRepository
 from app.products.service import ProductService
 

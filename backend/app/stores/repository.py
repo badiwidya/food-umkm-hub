@@ -7,8 +7,8 @@ from sqlalchemy.orm import contains_eager
 from sqlalchemy.sql import func
 from sqlalchemy.sql.operators import or_
 
-from app.stores.store import Store, StoreApprovalStatus
 from app.stores.model import StoreModel
+from app.stores.store import Store, StoreApprovalStatus
 from app.users.model import UserModel
 from app.users.seller import Seller
 

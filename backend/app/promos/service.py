@@ -2,12 +2,12 @@ from datetime import UTC, datetime
 from typing import Any
 from uuid import UUID
 
-from app.promos.promo import Promo
-from app.stores.store import Store
 from app.exception import DomainException, NotFoundException
 from app.promos.dto import CreatePromoDTO
+from app.promos.promo import Promo
 from app.promos.repository import PromoRepository
 from app.sentinel import UNSET
+from app.stores.store import Store
 
 
 class PromoService:

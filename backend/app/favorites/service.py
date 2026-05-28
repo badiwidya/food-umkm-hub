@@ -1,10 +1,10 @@
 from uuid import UUID
 
+from app.exception import NotFoundException
 from app.favorites.favorite import ProductFavorite, StoreFavorite
+from app.favorites.repository import FavoriteRepository
 from app.products.product import Product
 from app.stores.store import Store
-from app.exception import NotFoundException
-from app.favorites.repository import FavoriteRepository
 from app.students.student import Student
 
 

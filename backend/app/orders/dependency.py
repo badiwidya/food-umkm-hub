@@ -5,8 +5,8 @@ from fastapi import Depends
 
 from app.auth.dependency import CurrentUserDep
 from app.dependency import SessionDep
-from app.orders.order import Order
 from app.exception import NotAllowedException
+from app.orders.order import Order
 from app.orders.repository import OrderRepository
 from app.orders.service import OrderService
 from app.products.dependency import ProductRepoDep
