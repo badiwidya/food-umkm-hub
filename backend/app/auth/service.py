@@ -146,7 +146,7 @@ class AuthService:
             user, VerificationTokenType.PASSWORD_RESET
         )
 
-        reset_password_link = f"{settings.FRONTEND_URL}/click/reset-password?token={raw_token}&id={token.id}"
+        reset_password_link = f"{settings.FRONTEND_URL}/reset-password?token={raw_token}&tokenId={token.id}"
 
         send_password_reset_link_task.delay(
             to=user.email, reset_password_link=reset_password_link
@@ -184,7 +184,9 @@ class AuthService:
             user, VerificationTokenType.EMAIL_VERIFICATION
         )
 
-        verification_link = f"{settings.FRONTEND_URL}/click/verify-email?token={raw_token}&id={token.id}"
+        verification_link = (
+            f"{settings.FRONTEND_URL}/verify-email?token={raw_token}&tokenId={token.id}"
+        )
 
         return verification_link
 
