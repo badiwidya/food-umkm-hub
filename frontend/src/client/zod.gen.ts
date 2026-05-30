@@ -27,6 +27,14 @@ export const zEmailChangeRequest = z.object({
 });
 
 /**
+ * ErrorResponse
+ */
+export const zErrorResponse = z.object({
+    message: z.string(),
+    type: z.string().nullable()
+});
+
+/**
  * FavoriteStatusResponse
  */
 export const zFavoriteStatusResponse = z.object({
@@ -600,21 +608,20 @@ export const zValidatePromoResponse = z.object({
 });
 
 /**
- * ValidationError
+ * ValidationErrorItem
  */
-export const zValidationError = z.object({
-    loc: z.array(z.union([z.string(), z.int()])),
-    msg: z.string(),
-    type: z.string(),
-    input: z.unknown().optional(),
-    ctx: z.record(z.string(), z.unknown()).optional()
+export const zValidationErrorItem = z.object({
+    field: z.string(),
+    message: z.string()
 });
 
 /**
- * HTTPValidationError
+ * ValidationErrorResponse
  */
-export const zHttpValidationError = z.object({
-    detail: z.array(zValidationError).optional()
+export const zValidationErrorResponse = z.object({
+    message: z.string(),
+    type: z.literal('validation_error').optional().default('validation_error'),
+    errors: z.array(zValidationErrorItem)
 });
 
 /**

@@ -156,6 +156,20 @@ export type EmailChangeRequest = {
 };
 
 /**
+ * ErrorResponse
+ */
+export type ErrorResponse = {
+    /**
+     * Message
+     */
+    message: string;
+    /**
+     * Type
+     */
+    type: string | null;
+};
+
+/**
  * FavoriteStatusResponse
  */
 export type FavoriteStatusResponse = {
@@ -163,16 +177,6 @@ export type FavoriteStatusResponse = {
      * Isfavorited
      */
     isFavorited: boolean;
-};
-
-/**
- * HTTPValidationError
- */
-export type HttpValidationError = {
-    /**
-     * Detail
-     */
-    detail?: Array<ValidationError>;
 };
 
 /**
@@ -1324,31 +1328,35 @@ export type ValidatePromoResponse = {
 };
 
 /**
- * ValidationError
+ * ValidationErrorItem
  */
-export type ValidationError = {
+export type ValidationErrorItem = {
     /**
-     * Location
+     * Field
      */
-    loc: Array<string | number>;
+    field: string;
     /**
      * Message
      */
-    msg: string;
+    message: string;
+};
+
+/**
+ * ValidationErrorResponse
+ */
+export type ValidationErrorResponse = {
     /**
-     * Error Type
+     * Message
      */
-    type: string;
+    message: string;
     /**
-     * Input
+     * Type
      */
-    input?: unknown;
+    type?: 'validation_error';
     /**
-     * Context
+     * Errors
      */
-    ctx?: {
-        [key: string]: unknown;
-    };
+    errors: Array<ValidationErrorItem>;
 };
 
 /**
@@ -1438,6 +1446,35 @@ export type DeleteCurrentUserUsersMeDeleteData = {
     url: '/users/me';
 };
 
+export type DeleteCurrentUserUsersMeDeleteErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
+};
+
+export type DeleteCurrentUserUsersMeDeleteError = DeleteCurrentUserUsersMeDeleteErrors[keyof DeleteCurrentUserUsersMeDeleteErrors];
+
 export type DeleteCurrentUserUsersMeDeleteResponses = {
     /**
      * Successful Response
@@ -1453,6 +1490,35 @@ export type GetMeUsersMeGetData = {
     query?: never;
     url: '/users/me';
 };
+
+export type GetMeUsersMeGetErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
+};
+
+export type GetMeUsersMeGetError = GetMeUsersMeGetErrors[keyof GetMeUsersMeGetErrors];
 
 export type GetMeUsersMeGetResponses = {
     /**
@@ -1472,9 +1538,29 @@ export type UpdateCurrentProfileUsersMePatchData = {
 
 export type UpdateCurrentProfileUsersMePatchErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type UpdateCurrentProfileUsersMePatchError = UpdateCurrentProfileUsersMePatchErrors[keyof UpdateCurrentProfileUsersMePatchErrors];
@@ -1497,9 +1583,29 @@ export type RequestEmailChangeUsersMeEmailPostData = {
 
 export type RequestEmailChangeUsersMeEmailPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type RequestEmailChangeUsersMeEmailPostError = RequestEmailChangeUsersMeEmailPostErrors[keyof RequestEmailChangeUsersMeEmailPostErrors];
@@ -1520,6 +1626,35 @@ export type ResendEmailChangeVerificationUsersMeEmailResendPostData = {
     url: '/users/me/email/resend';
 };
 
+export type ResendEmailChangeVerificationUsersMeEmailResendPostErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
+};
+
+export type ResendEmailChangeVerificationUsersMeEmailResendPostError = ResendEmailChangeVerificationUsersMeEmailResendPostErrors[keyof ResendEmailChangeVerificationUsersMeEmailResendPostErrors];
+
 export type ResendEmailChangeVerificationUsersMeEmailResendPostResponses = {
     /**
      * Successful Response
@@ -1538,9 +1673,29 @@ export type ChangePhoneNumberUsersMePhonePostData = {
 
 export type ChangePhoneNumberUsersMePhonePostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type ChangePhoneNumberUsersMePhonePostError = ChangePhoneNumberUsersMePhonePostErrors[keyof ChangePhoneNumberUsersMePhonePostErrors];
@@ -1563,9 +1718,29 @@ export type VerifyPhoneUsersMePhoneVerifyPostData = {
 
 export type VerifyPhoneUsersMePhoneVerifyPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type VerifyPhoneUsersMePhoneVerifyPostError = VerifyPhoneUsersMePhoneVerifyPostErrors[keyof VerifyPhoneUsersMePhoneVerifyPostErrors];
@@ -1586,6 +1761,35 @@ export type ResendPhoneOtpUsersMePhoneResendPostData = {
     url: '/users/me/phone/resend';
 };
 
+export type ResendPhoneOtpUsersMePhoneResendPostErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
+};
+
+export type ResendPhoneOtpUsersMePhoneResendPostError = ResendPhoneOtpUsersMePhoneResendPostErrors[keyof ResendPhoneOtpUsersMePhoneResendPostErrors];
+
 export type ResendPhoneOtpUsersMePhoneResendPostResponses = {
     /**
      * Successful Response
@@ -1604,9 +1808,29 @@ export type ChangePasswordUsersMePasswordPostData = {
 
 export type ChangePasswordUsersMePasswordPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type ChangePasswordUsersMePasswordPostError = ChangePasswordUsersMePasswordPostErrors[keyof ChangePasswordUsersMePasswordPostErrors];
@@ -1629,9 +1853,29 @@ export type RegisterStudentAuthStudentRegisterPostData = {
 
 export type RegisterStudentAuthStudentRegisterPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type RegisterStudentAuthStudentRegisterPostError = RegisterStudentAuthStudentRegisterPostErrors[keyof RegisterStudentAuthStudentRegisterPostErrors];
@@ -1652,9 +1896,29 @@ export type RegisterUmkmAuthSellerRegisterPostData = {
 
 export type RegisterUmkmAuthSellerRegisterPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type RegisterUmkmAuthSellerRegisterPostError = RegisterUmkmAuthSellerRegisterPostErrors[keyof RegisterUmkmAuthSellerRegisterPostErrors];
@@ -1675,9 +1939,29 @@ export type LoginAuthLoginPostData = {
 
 export type LoginAuthLoginPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type LoginAuthLoginPostError = LoginAuthLoginPostErrors[keyof LoginAuthLoginPostErrors];
@@ -1700,9 +1984,29 @@ export type VerifyEmailAuthEmailVerifyPostData = {
 
 export type VerifyEmailAuthEmailVerifyPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type VerifyEmailAuthEmailVerifyPostError = VerifyEmailAuthEmailVerifyPostErrors[keyof VerifyEmailAuthEmailVerifyPostErrors];
@@ -1725,9 +2029,29 @@ export type ResendEmailVerificationAuthEmailResendPostData = {
 
 export type ResendEmailVerificationAuthEmailResendPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type ResendEmailVerificationAuthEmailResendPostError = ResendEmailVerificationAuthEmailResendPostErrors[keyof ResendEmailVerificationAuthEmailResendPostErrors];
@@ -1750,9 +2074,29 @@ export type VerifyEmailChangeAuthEmailChangeVerifyPostData = {
 
 export type VerifyEmailChangeAuthEmailChangeVerifyPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type VerifyEmailChangeAuthEmailChangeVerifyPostError = VerifyEmailChangeAuthEmailChangeVerifyPostErrors[keyof VerifyEmailChangeAuthEmailChangeVerifyPostErrors];
@@ -1775,9 +2119,29 @@ export type RequestResetPasswordAuthPasswordResetPostData = {
 
 export type RequestResetPasswordAuthPasswordResetPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type RequestResetPasswordAuthPasswordResetPostError = RequestResetPasswordAuthPasswordResetPostErrors[keyof RequestResetPasswordAuthPasswordResetPostErrors];
@@ -1800,9 +2164,29 @@ export type ConfirmResetPasswordAuthPasswordResetConfirmPostData = {
 
 export type ConfirmResetPasswordAuthPasswordResetConfirmPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type ConfirmResetPasswordAuthPasswordResetConfirmPostError = ConfirmResetPasswordAuthPasswordResetConfirmPostErrors[keyof ConfirmResetPasswordAuthPasswordResetConfirmPostErrors];
@@ -1823,6 +2207,35 @@ export type GetMeStudentsMeGetData = {
     url: '/students/me';
 };
 
+export type GetMeStudentsMeGetErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
+};
+
+export type GetMeStudentsMeGetError = GetMeStudentsMeGetErrors[keyof GetMeStudentsMeGetErrors];
+
 export type GetMeStudentsMeGetResponses = {
     /**
      * Successful Response
@@ -1841,9 +2254,29 @@ export type UpdateStudentsMePatchData = {
 
 export type UpdateStudentsMePatchErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type UpdateStudentsMePatchError = UpdateStudentsMePatchErrors[keyof UpdateStudentsMePatchErrors];
@@ -1883,9 +2316,29 @@ export type ListStoresGetData = {
 
 export type ListStoresGetErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type ListStoresGetError = ListStoresGetErrors[keyof ListStoresGetErrors];
@@ -1906,6 +2359,35 @@ export type GetMeStoresMeGetData = {
     url: '/stores/me';
 };
 
+export type GetMeStoresMeGetErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
+};
+
+export type GetMeStoresMeGetError = GetMeStoresMeGetErrors[keyof GetMeStoresMeGetErrors];
+
 export type GetMeStoresMeGetResponses = {
     /**
      * Successful Response
@@ -1924,9 +2406,29 @@ export type PatchMeStoresMePatchData = {
 
 export type PatchMeStoresMePatchErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type PatchMeStoresMePatchError = PatchMeStoresMePatchErrors[keyof PatchMeStoresMePatchErrors];
@@ -1947,6 +2449,35 @@ export type OpenMeStoresMeOpenPostData = {
     url: '/stores/me/open';
 };
 
+export type OpenMeStoresMeOpenPostErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
+};
+
+export type OpenMeStoresMeOpenPostError = OpenMeStoresMeOpenPostErrors[keyof OpenMeStoresMeOpenPostErrors];
+
 export type OpenMeStoresMeOpenPostResponses = {
     /**
      * Successful Response
@@ -1963,6 +2494,35 @@ export type CloseMeStoresMeClosePostData = {
     url: '/stores/me/close';
 };
 
+export type CloseMeStoresMeClosePostErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
+};
+
+export type CloseMeStoresMeClosePostError = CloseMeStoresMeClosePostErrors[keyof CloseMeStoresMeClosePostErrors];
+
 export type CloseMeStoresMeClosePostResponses = {
     /**
      * Successful Response
@@ -1978,6 +2538,35 @@ export type ResubmitApplicationStoresMeResubmitPostData = {
     query?: never;
     url: '/stores/me/resubmit';
 };
+
+export type ResubmitApplicationStoresMeResubmitPostErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
+};
+
+export type ResubmitApplicationStoresMeResubmitPostError = ResubmitApplicationStoresMeResubmitPostErrors[keyof ResubmitApplicationStoresMeResubmitPostErrors];
 
 export type ResubmitApplicationStoresMeResubmitPostResponses = {
     /**
@@ -2002,9 +2591,29 @@ export type GetDetailStoresIdGetData = {
 
 export type GetDetailStoresIdGetErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type GetDetailStoresIdGetError = GetDetailStoresIdGetErrors[keyof GetDetailStoresIdGetErrors];
@@ -2052,9 +2661,29 @@ export type GetAllProductsProductsGetData = {
 
 export type GetAllProductsProductsGetErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type GetAllProductsProductsGetError = GetAllProductsProductsGetErrors[keyof GetAllProductsProductsGetErrors];
@@ -2077,9 +2706,29 @@ export type CreateProductProductsPostData = {
 
 export type CreateProductProductsPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type CreateProductProductsPostError = CreateProductProductsPostErrors[keyof CreateProductProductsPostErrors];
@@ -2107,9 +2756,29 @@ export type DeleteProductProductsIdDeleteData = {
 
 export type DeleteProductProductsIdDeleteErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type DeleteProductProductsIdDeleteError = DeleteProductProductsIdDeleteErrors[keyof DeleteProductProductsIdDeleteErrors];
@@ -2137,9 +2806,29 @@ export type GetProductDetailsProductsIdGetData = {
 
 export type GetProductDetailsProductsIdGetErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type GetProductDetailsProductsIdGetError = GetProductDetailsProductsIdGetErrors[keyof GetProductDetailsProductsIdGetErrors];
@@ -2167,9 +2856,29 @@ export type UpdateProductInformationProductsIdPatchData = {
 
 export type UpdateProductInformationProductsIdPatchErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type UpdateProductInformationProductsIdPatchError = UpdateProductInformationProductsIdPatchErrors[keyof UpdateProductInformationProductsIdPatchErrors];
@@ -2197,9 +2906,29 @@ export type UpdateProductAvailabilityProductsIdAvailabilityPatchData = {
 
 export type UpdateProductAvailabilityProductsIdAvailabilityPatchErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type UpdateProductAvailabilityProductsIdAvailabilityPatchError = UpdateProductAvailabilityProductsIdAvailabilityPatchErrors[keyof UpdateProductAvailabilityProductsIdAvailabilityPatchErrors];
@@ -2243,9 +2972,29 @@ export type GetMyProductsStoresMeProductsGetData = {
 
 export type GetMyProductsStoresMeProductsGetErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type GetMyProductsStoresMeProductsGetError = GetMyProductsStoresMeProductsGetErrors[keyof GetMyProductsStoresMeProductsGetErrors];
@@ -2294,9 +3043,29 @@ export type GetProductsByStoreStoresStoreIdProductsGetData = {
 
 export type GetProductsByStoreStoresStoreIdProductsGetErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type GetProductsByStoreStoresStoreIdProductsGetError = GetProductsByStoreStoresStoreIdProductsGetErrors[keyof GetProductsByStoreStoresStoreIdProductsGetErrors];
@@ -2319,9 +3088,29 @@ export type CreatePromoPromosPostData = {
 
 export type CreatePromoPromosPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type CreatePromoPromosPostError = CreatePromoPromosPostErrors[keyof CreatePromoPromosPostErrors];
@@ -2344,9 +3133,29 @@ export type ValidatePromoPromosValidatePostData = {
 
 export type ValidatePromoPromosValidatePostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type ValidatePromoPromosValidatePostError = ValidatePromoPromosValidatePostErrors[keyof ValidatePromoPromosValidatePostErrors];
@@ -2374,9 +3183,29 @@ export type DeletePromoPromosIdDeleteData = {
 
 export type DeletePromoPromosIdDeleteErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type DeletePromoPromosIdDeleteError = DeletePromoPromosIdDeleteErrors[keyof DeletePromoPromosIdDeleteErrors];
@@ -2404,9 +3233,29 @@ export type GetPromoDetailsPromosIdGetData = {
 
 export type GetPromoDetailsPromosIdGetErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type GetPromoDetailsPromosIdGetError = GetPromoDetailsPromosIdGetErrors[keyof GetPromoDetailsPromosIdGetErrors];
@@ -2434,9 +3283,29 @@ export type UpdatePromoInformationPromosIdPatchData = {
 
 export type UpdatePromoInformationPromosIdPatchErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type UpdatePromoInformationPromosIdPatchError = UpdatePromoInformationPromosIdPatchErrors[keyof UpdatePromoInformationPromosIdPatchErrors];
@@ -2468,9 +3337,29 @@ export type GetAllMeStoresMePromosGetData = {
 
 export type GetAllMeStoresMePromosGetErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type GetAllMeStoresMePromosGetError = GetAllMeStoresMePromosGetErrors[keyof GetAllMeStoresMePromosGetErrors];
@@ -2507,9 +3396,29 @@ export type GetAllPromoStoresStoreIdPromosGetData = {
 
 export type GetAllPromoStoresStoreIdPromosGetErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type GetAllPromoStoresStoreIdPromosGetError = GetAllPromoStoresStoreIdPromosGetErrors[keyof GetAllPromoStoresStoreIdPromosGetErrors];
@@ -2545,9 +3454,29 @@ export type GetOrdersByStudentOrdersGetData = {
 
 export type GetOrdersByStudentOrdersGetErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type GetOrdersByStudentOrdersGetError = GetOrdersByStudentOrdersGetErrors[keyof GetOrdersByStudentOrdersGetErrors];
@@ -2570,9 +3499,29 @@ export type CreateOrderOrdersPostData = {
 
 export type CreateOrderOrdersPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type CreateOrderOrdersPostError = CreateOrderOrdersPostErrors[keyof CreateOrderOrdersPostErrors];
@@ -2600,9 +3549,29 @@ export type GetOrderDetailsOrdersIdGetData = {
 
 export type GetOrderDetailsOrdersIdGetErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type GetOrderDetailsOrdersIdGetError = GetOrderDetailsOrdersIdGetErrors[keyof GetOrderDetailsOrdersIdGetErrors];
@@ -2630,9 +3599,29 @@ export type UpdatePaymentProofOrdersIdPaymentProofPostData = {
 
 export type UpdatePaymentProofOrdersIdPaymentProofPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type UpdatePaymentProofOrdersIdPaymentProofPostError = UpdatePaymentProofOrdersIdPaymentProofPostErrors[keyof UpdatePaymentProofOrdersIdPaymentProofPostErrors];
@@ -2660,9 +3649,29 @@ export type CancelOrderOrdersIdCancelPostData = {
 
 export type CancelOrderOrdersIdCancelPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type CancelOrderOrdersIdCancelPostError = CancelOrderOrdersIdCancelPostErrors[keyof CancelOrderOrdersIdCancelPostErrors];
@@ -2682,6 +3691,35 @@ export type GetAllActiveStoresMeOrdersActiveGetData = {
     query?: never;
     url: '/stores/me/orders/active';
 };
+
+export type GetAllActiveStoresMeOrdersActiveGetErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
+};
+
+export type GetAllActiveStoresMeOrdersActiveGetError = GetAllActiveStoresMeOrdersActiveGetErrors[keyof GetAllActiveStoresMeOrdersActiveGetErrors];
 
 export type GetAllActiveStoresMeOrdersActiveGetResponses = {
     /**
@@ -2714,9 +3752,29 @@ export type GetAllSellerStoresMeOrdersGetData = {
 
 export type GetAllSellerStoresMeOrdersGetErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type GetAllSellerStoresMeOrdersGetError = GetAllSellerStoresMeOrdersGetErrors[keyof GetAllSellerStoresMeOrdersGetErrors];
@@ -2744,9 +3802,29 @@ export type AcceptOrderStoresMeOrdersIdAcceptPostData = {
 
 export type AcceptOrderStoresMeOrdersIdAcceptPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type AcceptOrderStoresMeOrdersIdAcceptPostError = AcceptOrderStoresMeOrdersIdAcceptPostErrors[keyof AcceptOrderStoresMeOrdersIdAcceptPostErrors];
@@ -2774,9 +3852,29 @@ export type MarkOrderAsReadyToPickupStoresMeOrdersIdReadyPostData = {
 
 export type MarkOrderAsReadyToPickupStoresMeOrdersIdReadyPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type MarkOrderAsReadyToPickupStoresMeOrdersIdReadyPostError = MarkOrderAsReadyToPickupStoresMeOrdersIdReadyPostErrors[keyof MarkOrderAsReadyToPickupStoresMeOrdersIdReadyPostErrors];
@@ -2804,9 +3902,29 @@ export type CompleteOrderStoresMeOrdersIdCompletePostData = {
 
 export type CompleteOrderStoresMeOrdersIdCompletePostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type CompleteOrderStoresMeOrdersIdCompletePostError = CompleteOrderStoresMeOrdersIdCompletePostErrors[keyof CompleteOrderStoresMeOrdersIdCompletePostErrors];
@@ -2834,9 +3952,29 @@ export type RejectOrderStoresMeOrdersIdRejectPostData = {
 
 export type RejectOrderStoresMeOrdersIdRejectPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type RejectOrderStoresMeOrdersIdRejectPostError = RejectOrderStoresMeOrdersIdRejectPostErrors[keyof RejectOrderStoresMeOrdersIdRejectPostErrors];
@@ -2864,9 +4002,29 @@ export type ReconsiderOrderRejectionStoresMeOrdersIdReconsiderPostData = {
 
 export type ReconsiderOrderRejectionStoresMeOrdersIdReconsiderPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type ReconsiderOrderRejectionStoresMeOrdersIdReconsiderPostError = ReconsiderOrderRejectionStoresMeOrdersIdReconsiderPostErrors[keyof ReconsiderOrderRejectionStoresMeOrdersIdReconsiderPostErrors];
@@ -2894,9 +4052,29 @@ export type GetOrderReviewsOrdersIdReviewsGetData = {
 
 export type GetOrderReviewsOrdersIdReviewsGetErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type GetOrderReviewsOrdersIdReviewsGetError = GetOrderReviewsOrdersIdReviewsGetErrors[keyof GetOrderReviewsOrdersIdReviewsGetErrors];
@@ -2926,9 +4104,29 @@ export type CreateOrderReviewsOrdersIdReviewsPostData = {
 
 export type CreateOrderReviewsOrdersIdReviewsPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type CreateOrderReviewsOrdersIdReviewsPostError = CreateOrderReviewsOrdersIdReviewsPostErrors[keyof CreateOrderReviewsOrdersIdReviewsPostErrors];
@@ -2967,9 +4165,29 @@ export type GetProductReviewsProductsIdReviewsGetData = {
 
 export type GetProductReviewsProductsIdReviewsGetErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type GetProductReviewsProductsIdReviewsGetError = GetProductReviewsProductsIdReviewsGetErrors[keyof GetProductReviewsProductsIdReviewsGetErrors];
@@ -3006,9 +4224,29 @@ export type GetStoreReviewsStoresIdReviewsGetData = {
 
 export type GetStoreReviewsStoresIdReviewsGetErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type GetStoreReviewsStoresIdReviewsGetError = GetStoreReviewsStoresIdReviewsGetErrors[keyof GetStoreReviewsStoresIdReviewsGetErrors];
@@ -3040,9 +4278,29 @@ export type ListFavoriteStoresFavoritesStoresGetData = {
 
 export type ListFavoriteStoresFavoritesStoresGetErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type ListFavoriteStoresFavoritesStoresGetError = ListFavoriteStoresFavoritesStoresGetErrors[keyof ListFavoriteStoresFavoritesStoresGetErrors];
@@ -3070,9 +4328,29 @@ export type RemoveStoreFavoriteFavoritesStoresStoreIdDeleteData = {
 
 export type RemoveStoreFavoriteFavoritesStoresStoreIdDeleteErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type RemoveStoreFavoriteFavoritesStoresStoreIdDeleteError = RemoveStoreFavoriteFavoritesStoresStoreIdDeleteErrors[keyof RemoveStoreFavoriteFavoritesStoresStoreIdDeleteErrors];
@@ -3100,9 +4378,29 @@ export type AddStoreFavoriteFavoritesStoresStoreIdPostData = {
 
 export type AddStoreFavoriteFavoritesStoresStoreIdPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type AddStoreFavoriteFavoritesStoresStoreIdPostError = AddStoreFavoriteFavoritesStoresStoreIdPostErrors[keyof AddStoreFavoriteFavoritesStoresStoreIdPostErrors];
@@ -3130,9 +4428,29 @@ export type GetStoreFavoriteStatusFavoritesStoresStoreIdStatusGetData = {
 
 export type GetStoreFavoriteStatusFavoritesStoresStoreIdStatusGetErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type GetStoreFavoriteStatusFavoritesStoresStoreIdStatusGetError = GetStoreFavoriteStatusFavoritesStoresStoreIdStatusGetErrors[keyof GetStoreFavoriteStatusFavoritesStoresStoreIdStatusGetErrors];
@@ -3164,9 +4482,29 @@ export type ListFavoriteProductsFavoritesProductsGetData = {
 
 export type ListFavoriteProductsFavoritesProductsGetErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type ListFavoriteProductsFavoritesProductsGetError = ListFavoriteProductsFavoritesProductsGetErrors[keyof ListFavoriteProductsFavoritesProductsGetErrors];
@@ -3194,9 +4532,29 @@ export type RemoveProductFavoriteFavoritesProductsProductIdDeleteData = {
 
 export type RemoveProductFavoriteFavoritesProductsProductIdDeleteErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type RemoveProductFavoriteFavoritesProductsProductIdDeleteError = RemoveProductFavoriteFavoritesProductsProductIdDeleteErrors[keyof RemoveProductFavoriteFavoritesProductsProductIdDeleteErrors];
@@ -3224,9 +4582,29 @@ export type AddProductFavoriteFavoritesProductsProductIdPostData = {
 
 export type AddProductFavoriteFavoritesProductsProductIdPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type AddProductFavoriteFavoritesProductsProductIdPostError = AddProductFavoriteFavoritesProductsProductIdPostErrors[keyof AddProductFavoriteFavoritesProductsProductIdPostErrors];
@@ -3254,9 +4632,29 @@ export type GetProductFavoriteStatusFavoritesProductsProductIdStatusGetData = {
 
 export type GetProductFavoriteStatusFavoritesProductsProductIdStatusGetErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type GetProductFavoriteStatusFavoritesProductsProductIdStatusGetError = GetProductFavoriteStatusFavoritesProductsProductIdStatusGetErrors[keyof GetProductFavoriteStatusFavoritesProductsProductIdStatusGetErrors];
@@ -3279,9 +4677,29 @@ export type SignUploadUploadSignPostData = {
 
 export type SignUploadUploadSignPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type SignUploadUploadSignPostError = SignUploadUploadSignPostErrors[keyof SignUploadUploadSignPostErrors];
@@ -3321,9 +4739,29 @@ export type ListUsersAdminUsersGetData = {
 
 export type ListUsersAdminUsersGetErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type ListUsersAdminUsersGetError = ListUsersAdminUsersGetErrors[keyof ListUsersAdminUsersGetErrors];
@@ -3351,9 +4789,29 @@ export type DeleteTargetUserAdminUsersIdDeleteData = {
 
 export type DeleteTargetUserAdminUsersIdDeleteErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type DeleteTargetUserAdminUsersIdDeleteError = DeleteTargetUserAdminUsersIdDeleteErrors[keyof DeleteTargetUserAdminUsersIdDeleteErrors];
@@ -3381,9 +4839,29 @@ export type SuspendTargetUserAdminUsersIdSuspendPostData = {
 
 export type SuspendTargetUserAdminUsersIdSuspendPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type SuspendTargetUserAdminUsersIdSuspendPostError = SuspendTargetUserAdminUsersIdSuspendPostErrors[keyof SuspendTargetUserAdminUsersIdSuspendPostErrors];
@@ -3411,9 +4889,29 @@ export type UnsuspendTargetUserAdminUsersIdUnsuspendPostData = {
 
 export type UnsuspendTargetUserAdminUsersIdUnsuspendPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type UnsuspendTargetUserAdminUsersIdUnsuspendPostError = UnsuspendTargetUserAdminUsersIdUnsuspendPostErrors[keyof UnsuspendTargetUserAdminUsersIdUnsuspendPostErrors];
@@ -3453,9 +4951,29 @@ export type ListAllAdminStoresGetData = {
 
 export type ListAllAdminStoresGetErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type ListAllAdminStoresGetError = ListAllAdminStoresGetErrors[keyof ListAllAdminStoresGetErrors];
@@ -3483,9 +5001,29 @@ export type GetStoreWithOwnerDetailsAdminStoresIdGetData = {
 
 export type GetStoreWithOwnerDetailsAdminStoresIdGetErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type GetStoreWithOwnerDetailsAdminStoresIdGetError = GetStoreWithOwnerDetailsAdminStoresIdGetErrors[keyof GetStoreWithOwnerDetailsAdminStoresIdGetErrors];
@@ -3513,9 +5051,29 @@ export type ApproveApplicationAdminStoresIdApprovePostData = {
 
 export type ApproveApplicationAdminStoresIdApprovePostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type ApproveApplicationAdminStoresIdApprovePostError = ApproveApplicationAdminStoresIdApprovePostErrors[keyof ApproveApplicationAdminStoresIdApprovePostErrors];
@@ -3546,9 +5104,29 @@ export type RejectApplicationAdminStoresIdRejectPostData = {
 
 export type RejectApplicationAdminStoresIdRejectPostErrors = {
     /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
      * Validation Error
      */
-    422: HttpValidationError;
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
 };
 
 export type RejectApplicationAdminStoresIdRejectPostError = RejectApplicationAdminStoresIdRejectPostErrors[keyof RejectApplicationAdminStoresIdRejectPostErrors];
@@ -3568,6 +5146,35 @@ export type RootGetData = {
     query?: never;
     url: '/';
 };
+
+export type RootGetErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
+};
+
+export type RootGetError = RootGetErrors[keyof RootGetErrors];
 
 export type RootGetResponses = {
     /**
