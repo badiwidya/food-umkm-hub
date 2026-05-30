@@ -223,6 +223,51 @@ import { CatalogPage } from '@/features/student/catalog'
 import { StoreCard } from '@/features/student/catalog/components/store-card'
 ```
 
+## Responsive Design
+
+- The project is mobile-first.
+- Figma screens may be mobile-only.
+- Mobile fidelity is the primary target.
+- On tablet and desktop, do not invent a completely different layout.
+- For mobile-only designs, center the main mobile container on larger screens.
+- Prefer a responsive wrapper such as:
+  - `min-h-screen`
+  - `mx-auto`
+  - `w-full`
+  - `max-w-sm` or `max-w-md`
+  - responsive padding such as `px-4 sm:px-6`
+- Use simple responsive improvements only:
+  - centered containers
+  - max-width wrappers
+  - obvious grid changes
+  - slightly larger spacing on larger screens
+- Do not leave mobile screens stretched full-width on desktop.
+
+## UI Styling
+
+- Prefer existing `components/ui` primitives such as Button, Input, Card, and Label.
+- Do not hand-roll button styles when a shared Button component exists.
+- Button variants must follow the project design system.
+- Custom Tailwind styling is allowed when needed to match Figma, but it should be applied consistently through reusable components or clear class patterns.
+- Do not introduce inconsistent default browser-style or black-background buttons unless the Figma design explicitly requires it.
+- Match Figma visual intent, but keep styles reusable and consistent.
+
+## Authentication Routing
+
+- Public authentication routes must be guest-only.
+- Authenticated users must not be able to access login or register pages.
+- Redirect authenticated users away from auth routes to their role landing page.
+- Protected routes must use TanStack Router `beforeLoad` guards.
+- Preserve redirect/search params when sending unauthenticated users to login.
+- Keep auth route files thin; auth logic belongs in `features/auth`.
+
+## Role Landing Routes
+
+- Student users land on `/`.
+- Seller users land on `/seller`.
+- Admin users land on `/admin`.
+- Centralize role-to-route mapping in one helper instead of duplicating it across pages.
+
 ## Error Handling
 
 - Use Error Boundaries per section/page.
