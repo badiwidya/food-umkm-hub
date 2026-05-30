@@ -1,6 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
-import { VerifyEmailPage } from '../features/auth'
+import { VerifyEmailPage, getRoleLandingPath } from '../features/auth'
 
 type VerifyEmailSearch = {
   token?: string
@@ -12,6 +12,23 @@ export const Route = createFileRoute('/verify-email')({
     token: typeof search.token === 'string' ? search.token : undefined,
     tokenId: typeof search.tokenId === 'string' ? search.tokenId : undefined,
   }),
+  beforeLoad: ({ context }) => {
+    const { accessToken, user } = context.auth.getState()
+
+    if (user) {
+      throw redirect({
+        href: getRoleLandingPath(user.role),
+        replace: true,
+      })
+    }
+
+    if (accessToken) {
+      throw redirect({
+        to: '/',
+        replace: true,
+      })
+    }
+  },
   component: VerifyEmailRoute,
 })
 

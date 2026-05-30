@@ -17,7 +17,7 @@ export function AuthShell({
   const isStatus = variant === 'status'
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#1e40af] to-[#3154bd] px-4 py-8 text-slate-900">
+    <main className="flex min-h-screen w-full justify-center bg-gradient-to-b from-[#1e40af] to-[#3154bd] px-4 py-8 text-slate-900 sm:px-6">
       <div
         className={
           isStatus

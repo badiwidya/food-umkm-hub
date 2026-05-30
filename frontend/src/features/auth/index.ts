@@ -6,3 +6,4 @@ export { RegisterStudentDetailsPage } from './pages/register-student-details-pag
 export { VerifyEmailPage } from './pages/verify-email-page'
 export { VerifyEmailSuccessPage } from './pages/verify-email-success-page'
 export { isRegisterRole, type RegisterRole } from './lib/register-role'
+export { getRoleLandingPath } from './lib/role-redirect'

@@ -67,7 +67,7 @@ export function AuthPasswordField({
         />
         <button
           aria-label={isVisible ? 'Sembunyikan password' : 'Tampilkan password'}
-          className="absolute right-3 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-md text-slate-500 hover:text-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1e40af]"
+          className="absolute right-3 top-1/2 flex size-8 -translate-y-1/2 appearance-none items-center justify-center rounded-md border-0 bg-transparent p-0 text-slate-500 hover:bg-transparent hover:text-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1e40af]"
           onClick={() => setIsVisible((value) => !value)}
           type="button"
         >

@@ -16,6 +16,7 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated.
 import { Route as VerifyEmailSuccessRouteImport } from './routes/verify-email.success'
 import { Route as RegisterCheckEmailRouteImport } from './routes/register.check-email'
 import { Route as RegisterRoleRouteImport } from './routes/register.$role'
+import { Route as RegisterRoleIndexRouteImport } from './routes/register.$role.index'
 import { Route as RegisterRoleDetailsRouteImport } from './routes/register.$role.details'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
@@ -52,6 +53,11 @@ const RegisterRoleRoute = RegisterRoleRouteImport.update({
   path: '/register/$role',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RegisterRoleIndexRoute = RegisterRoleIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => RegisterRoleRoute,
+} as any)
 const RegisterRoleDetailsRoute = RegisterRoleDetailsRouteImport.update({
   id: '/details',
   path: '/details',
@@ -66,15 +72,16 @@ export interface FileRoutesByFullPath {
   '/register/check-email': typeof RegisterCheckEmailRoute
   '/verify-email/success': typeof VerifyEmailSuccessRoute
   '/register/$role/details': typeof RegisterRoleDetailsRoute
+  '/register/$role/': typeof RegisterRoleIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/verify-email': typeof VerifyEmailRouteWithChildren
-  '/register/$role': typeof RegisterRoleRouteWithChildren
   '/register/check-email': typeof RegisterCheckEmailRoute
   '/verify-email/success': typeof VerifyEmailSuccessRoute
   '/': typeof AuthenticatedIndexRoute
   '/register/$role/details': typeof RegisterRoleDetailsRoute
+  '/register/$role': typeof RegisterRoleIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -86,6 +93,7 @@ export interface FileRoutesById {
   '/verify-email/success': typeof VerifyEmailSuccessRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/register/$role/details': typeof RegisterRoleDetailsRoute
+  '/register/$role/': typeof RegisterRoleIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,15 +105,16 @@ export interface FileRouteTypes {
     | '/register/check-email'
     | '/verify-email/success'
     | '/register/$role/details'
+    | '/register/$role/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
     | '/verify-email'
-    | '/register/$role'
     | '/register/check-email'
     | '/verify-email/success'
     | '/'
     | '/register/$role/details'
+    | '/register/$role'
   id:
     | '__root__'
     | '/_authenticated'
@@ -116,6 +125,7 @@ export interface FileRouteTypes {
     | '/verify-email/success'
     | '/_authenticated/'
     | '/register/$role/details'
+    | '/register/$role/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -177,6 +187,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterRoleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/register/$role/': {
+      id: '/register/$role/'
+      path: '/'
+      fullPath: '/register/$role/'
+      preLoaderRoute: typeof RegisterRoleIndexRouteImport
+      parentRoute: typeof RegisterRoleRoute
+    }
     '/register/$role/details': {
       id: '/register/$role/details'
       path: '/details'
@@ -213,10 +230,12 @@ const VerifyEmailRouteWithChildren = VerifyEmailRoute._addFileChildren(
 
 interface RegisterRoleRouteChildren {
   RegisterRoleDetailsRoute: typeof RegisterRoleDetailsRoute
+  RegisterRoleIndexRoute: typeof RegisterRoleIndexRoute
 }
 
 const RegisterRoleRouteChildren: RegisterRoleRouteChildren = {
   RegisterRoleDetailsRoute: RegisterRoleDetailsRoute,
+  RegisterRoleIndexRoute: RegisterRoleIndexRoute,
 }
 
 const RegisterRoleRouteWithChildren = RegisterRoleRoute._addFileChildren(

@@ -1,9 +1,25 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
 
-import { RegisterAccountPage, isRegisterRole } from '../features/auth'
+import { getRoleLandingPath, isRegisterRole } from '../features/auth'
 
 export const Route = createFileRoute('/register/$role')({
-  beforeLoad: ({ params }) => {
+  beforeLoad: ({ context, params }) => {
+    const { accessToken, user } = context.auth.getState()
+
+    if (user) {
+      throw redirect({
+        href: getRoleLandingPath(user.role),
+        replace: true,
+      })
+    }
+
+    if (accessToken) {
+      throw redirect({
+        to: '/',
+        replace: true,
+      })
+    }
+
     if (!isRegisterRole(params.role)) {
       throw redirect({
         to: '/login',
@@ -14,11 +30,5 @@ export const Route = createFileRoute('/register/$role')({
 })
 
 function RegisterRoute() {
-  const { role } = Route.useParams()
-
-  if (!isRegisterRole(role)) {
-    return null
-  }
-
-  return <RegisterAccountPage role={role} />
+  return <Outlet />
 }
