@@ -87,6 +87,18 @@ React 19:
 - Prefer `ref` as prop for new components.
 - Avoid legacy `forwardRef` unless necessary.
 
+## Reusable Components
+
+When the same UI pattern appears more than once,
+extract it into a reusable component.
+
+Prefer:
+
+- components/common/
+- shadcn/ui primitives
+
+Avoid duplicating UI implementation across features.
+
 ---
 
 ## State Management
