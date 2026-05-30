@@ -1,8 +1,10 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.admin_router import admin_router
 from app.auth.router import auth_router
 from app.celery_app import celery_app  # noqa: F401
+from app.config import settings
 from app.exception_handler import register_exception_handlers
 from app.favorites.router import favorite_router
 from app.orders.router import order_router, store_order_router
@@ -15,6 +17,14 @@ from app.students.router import student_router
 from app.users.router import user_router
 
 app = FastAPI(title="IPB Food & UMKM Hub API", version="0.1.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[str(settings.FRONTEND_URL)],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 register_exception_handlers(app)
 
