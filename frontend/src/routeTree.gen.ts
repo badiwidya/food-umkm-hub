@@ -9,9 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated.index'
+import { Route as VerifyEmailSuccessRouteImport } from './routes/verify-email.success'
+import { Route as RegisterCheckEmailRouteImport } from './routes/register.check-email'
+import { Route as RegisterRoleRouteImport } from './routes/register.$role'
+import { Route as RegisterRoleDetailsRouteImport } from './routes/register.$role.details'
 
+const VerifyEmailRoute = VerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -21,35 +32,109 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const VerifyEmailSuccessRoute = VerifyEmailSuccessRouteImport.update({
+  id: '/success',
+  path: '/success',
+  getParentRoute: () => VerifyEmailRoute,
+} as any)
+const RegisterCheckEmailRoute = RegisterCheckEmailRouteImport.update({
+  id: '/register/check-email',
+  path: '/register/check-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoleRoute = RegisterRoleRouteImport.update({
+  id: '/register/$role',
+  path: '/register/$role',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoleDetailsRoute = RegisterRoleDetailsRouteImport.update({
+  id: '/details',
+  path: '/details',
+  getParentRoute: () => RegisterRoleRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof AuthenticatedRoute
+  '/': typeof AuthenticatedIndexRoute
   '/login': typeof LoginRoute
+  '/verify-email': typeof VerifyEmailRouteWithChildren
+  '/register/$role': typeof RegisterRoleRouteWithChildren
+  '/register/check-email': typeof RegisterCheckEmailRoute
+  '/verify-email/success': typeof VerifyEmailSuccessRoute
+  '/register/$role/details': typeof RegisterRoleDetailsRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof AuthenticatedRoute
   '/login': typeof LoginRoute
+  '/verify-email': typeof VerifyEmailRouteWithChildren
+  '/register/$role': typeof RegisterRoleRouteWithChildren
+  '/register/check-email': typeof RegisterCheckEmailRoute
+  '/verify-email/success': typeof VerifyEmailSuccessRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/register/$role/details': typeof RegisterRoleDetailsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/_authenticated': typeof AuthenticatedRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
+  '/verify-email': typeof VerifyEmailRouteWithChildren
+  '/register/$role': typeof RegisterRoleRouteWithChildren
+  '/register/check-email': typeof RegisterCheckEmailRoute
+  '/verify-email/success': typeof VerifyEmailSuccessRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/register/$role/details': typeof RegisterRoleDetailsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/verify-email'
+    | '/register/$role'
+    | '/register/check-email'
+    | '/verify-email/success'
+    | '/register/$role/details'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login'
-  id: '__root__' | '/_authenticated' | '/login'
+  to:
+    | '/login'
+    | '/verify-email'
+    | '/register/$role'
+    | '/register/check-email'
+    | '/verify-email/success'
+    | '/'
+    | '/register/$role/details'
+  id:
+    | '__root__'
+    | '/_authenticated'
+    | '/login'
+    | '/verify-email'
+    | '/register/$role'
+    | '/register/check-email'
+    | '/verify-email/success'
+    | '/_authenticated/'
+    | '/register/$role/details'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  AuthenticatedRoute: typeof AuthenticatedRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
+  VerifyEmailRoute: typeof VerifyEmailRouteWithChildren
+  RegisterRoleRoute: typeof RegisterRoleRouteWithChildren
+  RegisterCheckEmailRoute: typeof RegisterCheckEmailRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/verify-email': {
+      id: '/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof VerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -64,12 +149,86 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/': {
+      id: '/_authenticated/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/verify-email/success': {
+      id: '/verify-email/success'
+      path: '/success'
+      fullPath: '/verify-email/success'
+      preLoaderRoute: typeof VerifyEmailSuccessRouteImport
+      parentRoute: typeof VerifyEmailRoute
+    }
+    '/register/check-email': {
+      id: '/register/check-email'
+      path: '/register/check-email'
+      fullPath: '/register/check-email'
+      preLoaderRoute: typeof RegisterCheckEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register/$role': {
+      id: '/register/$role'
+      path: '/register/$role'
+      fullPath: '/register/$role'
+      preLoaderRoute: typeof RegisterRoleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register/$role/details': {
+      id: '/register/$role/details'
+      path: '/details'
+      fullPath: '/register/$role/details'
+      preLoaderRoute: typeof RegisterRoleDetailsRouteImport
+      parentRoute: typeof RegisterRoleRoute
+    }
   }
 }
 
+interface AuthenticatedRouteChildren {
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
+interface VerifyEmailRouteChildren {
+  VerifyEmailSuccessRoute: typeof VerifyEmailSuccessRoute
+}
+
+const VerifyEmailRouteChildren: VerifyEmailRouteChildren = {
+  VerifyEmailSuccessRoute: VerifyEmailSuccessRoute,
+}
+
+const VerifyEmailRouteWithChildren = VerifyEmailRoute._addFileChildren(
+  VerifyEmailRouteChildren,
+)
+
+interface RegisterRoleRouteChildren {
+  RegisterRoleDetailsRoute: typeof RegisterRoleDetailsRoute
+}
+
+const RegisterRoleRouteChildren: RegisterRoleRouteChildren = {
+  RegisterRoleDetailsRoute: RegisterRoleDetailsRoute,
+}
+
+const RegisterRoleRouteWithChildren = RegisterRoleRoute._addFileChildren(
+  RegisterRoleRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  AuthenticatedRoute: AuthenticatedRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
+  VerifyEmailRoute: VerifyEmailRouteWithChildren,
+  RegisterRoleRoute: RegisterRoleRouteWithChildren,
+  RegisterCheckEmailRoute: RegisterCheckEmailRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,5 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 
+import { LoginPage } from '../features/auth'
+
 type LoginSearch = {
   redirect?: string
 }
@@ -12,5 +14,7 @@ export const Route = createFileRoute('/login')({
 })
 
 function LoginRoute() {
-  return null
+  const { redirect } = Route.useSearch()
+
+  return <LoginPage redirect={redirect} />
 }
