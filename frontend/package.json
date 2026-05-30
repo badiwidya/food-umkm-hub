@@ -26,6 +26,8 @@
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@hey-api/openapi-ts": "0.97.3",
+    "@tanstack/eslint-plugin-query": "^5.100.14",
+    "@tanstack/eslint-plugin-router": "^1.162.0",
     "@tanstack/router-plugin": "^1.168.11",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
