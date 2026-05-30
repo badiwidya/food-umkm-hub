@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware'
 
 import type { UserDetailResponse } from '../client'
 
-type AuthState = {
+export type AuthState = {
   accessToken: string | null
   user: UserDetailResponse | null
 }
