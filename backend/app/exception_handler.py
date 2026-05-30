@@ -12,6 +12,7 @@ from app.exception import (
     NotAllowedException,
     NotFoundException,
 )
+from app.schema import ErrorResponse, ValidationErrorItem, ValidationErrorResponse
 
 EXCEPTION_STATUS_MAP = {
     DomainException: status.HTTP_400_BAD_REQUEST,
@@ -32,9 +33,10 @@ def register_exception_handlers(app: FastAPI) -> None:
             exc,
             traceback.format_exc(),
         )
+        error_resp = ErrorResponse(message="Terjadi kesalahan pada server", type=None)
         return JSONResponse(
             status_code=500,
-            content={"message": "Terjadi kesalahan pada server."},
+            content=error_resp.model_dump(exclude_none=True),
         )
 
     @app.exception_handler(RequestValidationError)
@@ -48,9 +50,12 @@ def register_exception_handlers(app: FastAPI) -> None:
             }
             for err in exc.errors()
         ]
+        error_resp = ValidationErrorResponse(
+            message="Validasi gagal",
+            errors=[ValidationErrorItem.model_validate(err) for err in errors],
+        )
         return JSONResponse(
-            status_code=422,
-            content={"message": "Validasi gagal.", "errors": errors},
+            status_code=422, content=error_resp.model_dump(exclude_none=True)
         )
 
     @app.exception_handler(AppException)
@@ -58,20 +63,18 @@ def register_exception_handlers(app: FastAPI) -> None:
         status_code = EXCEPTION_STATUS_MAP.get(
             type(exc), status.HTTP_500_INTERNAL_SERVER_ERROR
         )
-        content = {"message": exc.message}
-        if exc.type is not None:
-            content["type"] = exc.type
-        return JSONResponse(status_code=status_code, content=content)
+        error_resp = ErrorResponse(message=exc.message, type=exc.type)
+        return JSONResponse(
+            status_code=status_code, content=error_resp.model_dump(exclude_none=True)
+        )
 
     @app.exception_handler(AuthenticationException)
     async def authentication_exception_handler(
         _request: Request, exc: AuthenticationException
     ):
-        content = {"message": exc.message}
-        if exc.type is not None:
-            content["type"] = exc.type
+        error_resp = ErrorResponse(message=exc.message, type=exc.type)
         return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            content=content,
+            content=error_resp.model_dump(exclude_none=True),
             headers={"WWW-Authenticate": "Bearer"},
         )
