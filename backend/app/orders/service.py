@@ -67,6 +67,15 @@ class OrderService:
         orders, total_count = await self._order_repo.get_all_by_student(
             student_id=student.id, status=status, offset=offset, limit=limit
         )
+        # TODO: N+1 Potential
+        for order in orders:
+            order_product_ids = {item.product_id for item in order.order_items}
+            reviewed_product_ids = await self._review_repo.get_reviewed_product_ids(
+                order.id
+            )
+            order.is_reviewed = bool(order_product_ids) and (
+                order_product_ids <= reviewed_product_ids
+            )
         return orders, total_count
 
     async def list_active_for_seller(
