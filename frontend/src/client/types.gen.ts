@@ -244,6 +244,10 @@ export type OrderDetailResponse = {
      */
     createdAt: string;
     /**
+     * Isreviewed
+     */
+    isReviewed: boolean;
+    /**
      * Discountamount
      */
     discountAmount: number;
@@ -251,10 +255,6 @@ export type OrderDetailResponse = {
      * Promocode
      */
     promoCode: string | null;
-    /**
-     * Isreviewed
-     */
-    isReviewed: boolean;
     /**
      * Notes
      */
@@ -352,6 +352,10 @@ export type OrderSummaryResponse = {
      * Createdat
      */
     createdAt: string;
+    /**
+     * Isreviewed
+     */
+    isReviewed: boolean;
 };
 
 /**
