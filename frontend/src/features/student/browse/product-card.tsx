@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import { Star } from 'lucide-react'
 
 import type { ProductSummaryResponse } from '../../../client'
@@ -6,13 +7,28 @@ import { ProductFavoriteButton } from './product-favorite-button'
 
 type ProductCardProps = {
   product: ProductSummaryResponse
+  storeId?: string
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, storeId }: ProductCardProps) {
+  const params = storeId
+    ? {
+        productId: product.id,
+        storeId,
+      }
+    : {
+        productId: product.id,
+      }
+
   return (
-    <a
+    <Link
       className="group overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md"
-      href={`/products/${product.id}`}
+      params={params}
+      to={
+        storeId
+          ? '/stores/$storeId/products/$productId'
+          : '/products/$productId'
+      }
     >
       <div className="relative aspect-[5/4] bg-slate-100">
         {product.photoUrl ? (
@@ -51,6 +67,6 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
         </div>
       </div>
-    </a>
+    </Link>
   )
 }

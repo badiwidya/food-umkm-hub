@@ -18,12 +18,17 @@ import { Route as RegisterCheckEmailRouteImport } from './routes/register.check-
 import { Route as RegisterRoleRouteImport } from './routes/register.$role'
 import { Route as AuthenticatedStoresRouteImport } from './routes/_authenticated.stores'
 import { Route as AuthenticatedFavoritesRouteImport } from './routes/_authenticated.favorites'
+import { Route as AuthenticatedCheckoutRouteImport } from './routes/_authenticated.checkout'
+import { Route as AuthenticatedCartRouteImport } from './routes/_authenticated.cart'
 import { Route as AuthenticatedActivityRouteImport } from './routes/_authenticated.activity'
 import { Route as RegisterRoleIndexRouteImport } from './routes/register.$role.index'
 import { Route as AuthenticatedStoresIndexRouteImport } from './routes/_authenticated.stores.index'
 import { Route as RegisterRoleDetailsRouteImport } from './routes/register.$role.details'
 import { Route as AuthenticatedStoresStoreIdRouteImport } from './routes/_authenticated.stores.$storeId'
 import { Route as AuthenticatedProductsProductIdRouteImport } from './routes/_authenticated.products.$productId'
+import { Route as AuthenticatedOrdersOrderIdRouteImport } from './routes/_authenticated.orders.$orderId'
+import { Route as AuthenticatedOrdersOrderIdSuccessRouteImport } from './routes/_authenticated.orders.$orderId.success'
+import { Route as AuthenticatedStoresStoreIdProductsProductIdRouteImport } from './routes/_authenticated.stores.$storeId.products.$productId'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
@@ -69,6 +74,16 @@ const AuthenticatedFavoritesRoute = AuthenticatedFavoritesRouteImport.update({
   path: '/favorites',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedCheckoutRoute = AuthenticatedCheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedCartRoute = AuthenticatedCartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedActivityRoute = AuthenticatedActivityRouteImport.update({
   id: '/activity',
   path: '/activity',
@@ -102,36 +117,64 @@ const AuthenticatedProductsProductIdRoute =
     path: '/products/$productId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedOrdersOrderIdRoute =
+  AuthenticatedOrdersOrderIdRouteImport.update({
+    id: '/orders/$orderId',
+    path: '/orders/$orderId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedOrdersOrderIdSuccessRoute =
+  AuthenticatedOrdersOrderIdSuccessRouteImport.update({
+    id: '/success',
+    path: '/success',
+    getParentRoute: () => AuthenticatedOrdersOrderIdRoute,
+  } as any)
+const AuthenticatedStoresStoreIdProductsProductIdRoute =
+  AuthenticatedStoresStoreIdProductsProductIdRouteImport.update({
+    id: '/products/$productId',
+    path: '/products/$productId',
+    getParentRoute: () => AuthenticatedStoresStoreIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/login': typeof LoginRoute
   '/verify-email': typeof VerifyEmailRouteWithChildren
   '/activity': typeof AuthenticatedActivityRoute
+  '/cart': typeof AuthenticatedCartRoute
+  '/checkout': typeof AuthenticatedCheckoutRoute
   '/favorites': typeof AuthenticatedFavoritesRoute
   '/stores': typeof AuthenticatedStoresRouteWithChildren
   '/register/$role': typeof RegisterRoleRouteWithChildren
   '/register/check-email': typeof RegisterCheckEmailRoute
   '/verify-email/success': typeof VerifyEmailSuccessRoute
+  '/orders/$orderId': typeof AuthenticatedOrdersOrderIdRouteWithChildren
   '/products/$productId': typeof AuthenticatedProductsProductIdRoute
-  '/stores/$storeId': typeof AuthenticatedStoresStoreIdRoute
+  '/stores/$storeId': typeof AuthenticatedStoresStoreIdRouteWithChildren
   '/register/$role/details': typeof RegisterRoleDetailsRoute
   '/stores/': typeof AuthenticatedStoresIndexRoute
   '/register/$role/': typeof RegisterRoleIndexRoute
+  '/orders/$orderId/success': typeof AuthenticatedOrdersOrderIdSuccessRoute
+  '/stores/$storeId/products/$productId': typeof AuthenticatedStoresStoreIdProductsProductIdRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/verify-email': typeof VerifyEmailRouteWithChildren
   '/activity': typeof AuthenticatedActivityRoute
+  '/cart': typeof AuthenticatedCartRoute
+  '/checkout': typeof AuthenticatedCheckoutRoute
   '/favorites': typeof AuthenticatedFavoritesRoute
   '/register/check-email': typeof RegisterCheckEmailRoute
   '/verify-email/success': typeof VerifyEmailSuccessRoute
   '/': typeof AuthenticatedIndexRoute
+  '/orders/$orderId': typeof AuthenticatedOrdersOrderIdRouteWithChildren
   '/products/$productId': typeof AuthenticatedProductsProductIdRoute
-  '/stores/$storeId': typeof AuthenticatedStoresStoreIdRoute
+  '/stores/$storeId': typeof AuthenticatedStoresStoreIdRouteWithChildren
   '/register/$role/details': typeof RegisterRoleDetailsRoute
   '/stores': typeof AuthenticatedStoresIndexRoute
   '/register/$role': typeof RegisterRoleIndexRoute
+  '/orders/$orderId/success': typeof AuthenticatedOrdersOrderIdSuccessRoute
+  '/stores/$storeId/products/$productId': typeof AuthenticatedStoresStoreIdProductsProductIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -139,17 +182,22 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/verify-email': typeof VerifyEmailRouteWithChildren
   '/_authenticated/activity': typeof AuthenticatedActivityRoute
+  '/_authenticated/cart': typeof AuthenticatedCartRoute
+  '/_authenticated/checkout': typeof AuthenticatedCheckoutRoute
   '/_authenticated/favorites': typeof AuthenticatedFavoritesRoute
   '/_authenticated/stores': typeof AuthenticatedStoresRouteWithChildren
   '/register/$role': typeof RegisterRoleRouteWithChildren
   '/register/check-email': typeof RegisterCheckEmailRoute
   '/verify-email/success': typeof VerifyEmailSuccessRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/orders/$orderId': typeof AuthenticatedOrdersOrderIdRouteWithChildren
   '/_authenticated/products/$productId': typeof AuthenticatedProductsProductIdRoute
-  '/_authenticated/stores/$storeId': typeof AuthenticatedStoresStoreIdRoute
+  '/_authenticated/stores/$storeId': typeof AuthenticatedStoresStoreIdRouteWithChildren
   '/register/$role/details': typeof RegisterRoleDetailsRoute
   '/_authenticated/stores/': typeof AuthenticatedStoresIndexRoute
   '/register/$role/': typeof RegisterRoleIndexRoute
+  '/_authenticated/orders/$orderId/success': typeof AuthenticatedOrdersOrderIdSuccessRoute
+  '/_authenticated/stores/$storeId/products/$productId': typeof AuthenticatedStoresStoreIdProductsProductIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -158,47 +206,62 @@ export interface FileRouteTypes {
     | '/login'
     | '/verify-email'
     | '/activity'
+    | '/cart'
+    | '/checkout'
     | '/favorites'
     | '/stores'
     | '/register/$role'
     | '/register/check-email'
     | '/verify-email/success'
+    | '/orders/$orderId'
     | '/products/$productId'
     | '/stores/$storeId'
     | '/register/$role/details'
     | '/stores/'
     | '/register/$role/'
+    | '/orders/$orderId/success'
+    | '/stores/$storeId/products/$productId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
     | '/verify-email'
     | '/activity'
+    | '/cart'
+    | '/checkout'
     | '/favorites'
     | '/register/check-email'
     | '/verify-email/success'
     | '/'
+    | '/orders/$orderId'
     | '/products/$productId'
     | '/stores/$storeId'
     | '/register/$role/details'
     | '/stores'
     | '/register/$role'
+    | '/orders/$orderId/success'
+    | '/stores/$storeId/products/$productId'
   id:
     | '__root__'
     | '/_authenticated'
     | '/login'
     | '/verify-email'
     | '/_authenticated/activity'
+    | '/_authenticated/cart'
+    | '/_authenticated/checkout'
     | '/_authenticated/favorites'
     | '/_authenticated/stores'
     | '/register/$role'
     | '/register/check-email'
     | '/verify-email/success'
     | '/_authenticated/'
+    | '/_authenticated/orders/$orderId'
     | '/_authenticated/products/$productId'
     | '/_authenticated/stores/$storeId'
     | '/register/$role/details'
     | '/_authenticated/stores/'
     | '/register/$role/'
+    | '/_authenticated/orders/$orderId/success'
+    | '/_authenticated/stores/$storeId/products/$productId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -274,6 +337,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFavoritesRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/checkout': {
+      id: '/_authenticated/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof AuthenticatedCheckoutRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/cart': {
+      id: '/_authenticated/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof AuthenticatedCartRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/activity': {
       id: '/_authenticated/activity'
       path: '/activity'
@@ -316,35 +393,92 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProductsProductIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/orders/$orderId': {
+      id: '/_authenticated/orders/$orderId'
+      path: '/orders/$orderId'
+      fullPath: '/orders/$orderId'
+      preLoaderRoute: typeof AuthenticatedOrdersOrderIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/orders/$orderId/success': {
+      id: '/_authenticated/orders/$orderId/success'
+      path: '/success'
+      fullPath: '/orders/$orderId/success'
+      preLoaderRoute: typeof AuthenticatedOrdersOrderIdSuccessRouteImport
+      parentRoute: typeof AuthenticatedOrdersOrderIdRoute
+    }
+    '/_authenticated/stores/$storeId/products/$productId': {
+      id: '/_authenticated/stores/$storeId/products/$productId'
+      path: '/products/$productId'
+      fullPath: '/stores/$storeId/products/$productId'
+      preLoaderRoute: typeof AuthenticatedStoresStoreIdProductsProductIdRouteImport
+      parentRoute: typeof AuthenticatedStoresStoreIdRoute
+    }
   }
 }
 
+interface AuthenticatedStoresStoreIdRouteChildren {
+  AuthenticatedStoresStoreIdProductsProductIdRoute: typeof AuthenticatedStoresStoreIdProductsProductIdRoute
+}
+
+const AuthenticatedStoresStoreIdRouteChildren: AuthenticatedStoresStoreIdRouteChildren =
+  {
+    AuthenticatedStoresStoreIdProductsProductIdRoute:
+      AuthenticatedStoresStoreIdProductsProductIdRoute,
+  }
+
+const AuthenticatedStoresStoreIdRouteWithChildren =
+  AuthenticatedStoresStoreIdRoute._addFileChildren(
+    AuthenticatedStoresStoreIdRouteChildren,
+  )
+
 interface AuthenticatedStoresRouteChildren {
-  AuthenticatedStoresStoreIdRoute: typeof AuthenticatedStoresStoreIdRoute
+  AuthenticatedStoresStoreIdRoute: typeof AuthenticatedStoresStoreIdRouteWithChildren
   AuthenticatedStoresIndexRoute: typeof AuthenticatedStoresIndexRoute
 }
 
 const AuthenticatedStoresRouteChildren: AuthenticatedStoresRouteChildren = {
-  AuthenticatedStoresStoreIdRoute: AuthenticatedStoresStoreIdRoute,
+  AuthenticatedStoresStoreIdRoute: AuthenticatedStoresStoreIdRouteWithChildren,
   AuthenticatedStoresIndexRoute: AuthenticatedStoresIndexRoute,
 }
 
 const AuthenticatedStoresRouteWithChildren =
   AuthenticatedStoresRoute._addFileChildren(AuthenticatedStoresRouteChildren)
 
+interface AuthenticatedOrdersOrderIdRouteChildren {
+  AuthenticatedOrdersOrderIdSuccessRoute: typeof AuthenticatedOrdersOrderIdSuccessRoute
+}
+
+const AuthenticatedOrdersOrderIdRouteChildren: AuthenticatedOrdersOrderIdRouteChildren =
+  {
+    AuthenticatedOrdersOrderIdSuccessRoute:
+      AuthenticatedOrdersOrderIdSuccessRoute,
+  }
+
+const AuthenticatedOrdersOrderIdRouteWithChildren =
+  AuthenticatedOrdersOrderIdRoute._addFileChildren(
+    AuthenticatedOrdersOrderIdRouteChildren,
+  )
+
 interface AuthenticatedRouteChildren {
   AuthenticatedActivityRoute: typeof AuthenticatedActivityRoute
+  AuthenticatedCartRoute: typeof AuthenticatedCartRoute
+  AuthenticatedCheckoutRoute: typeof AuthenticatedCheckoutRoute
   AuthenticatedFavoritesRoute: typeof AuthenticatedFavoritesRoute
   AuthenticatedStoresRoute: typeof AuthenticatedStoresRouteWithChildren
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedOrdersOrderIdRoute: typeof AuthenticatedOrdersOrderIdRouteWithChildren
   AuthenticatedProductsProductIdRoute: typeof AuthenticatedProductsProductIdRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedActivityRoute: AuthenticatedActivityRoute,
+  AuthenticatedCartRoute: AuthenticatedCartRoute,
+  AuthenticatedCheckoutRoute: AuthenticatedCheckoutRoute,
   AuthenticatedFavoritesRoute: AuthenticatedFavoritesRoute,
   AuthenticatedStoresRoute: AuthenticatedStoresRouteWithChildren,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedOrdersOrderIdRoute: AuthenticatedOrdersOrderIdRouteWithChildren,
   AuthenticatedProductsProductIdRoute: AuthenticatedProductsProductIdRoute,
 }
 

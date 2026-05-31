@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { Link } from '@tanstack/react-router'
 import { ArrowLeft, Clock, MapPin, ShoppingCart, Star } from 'lucide-react'
 
 import {
@@ -61,13 +62,13 @@ export function StoreDetailPage({
             <h1 className="text-lg font-medium leading-7">Detail UMKM</h1>
             <div className="flex items-center gap-1">
               <StoreFavoriteButton storeId={storeId} />
-              <button
+              <Link
                 aria-label="Keranjang"
                 className="flex size-10 items-center justify-center rounded-full transition hover:bg-white/10"
-                type="button"
+                to="/cart"
               >
                 <ShoppingCart aria-hidden="true" className="size-6" />
-              </button>
+              </Link>
             </div>
           </div>
         </header>
@@ -173,7 +174,11 @@ export function StoreDetailPage({
               {products.length > 0 ? (
                 <div className="grid grid-cols-2 gap-3">
                   {products.map((product) => (
-                    <ProductCard key={product.id} product={product} />
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      storeId={storeId}
+                    />
                   ))}
                 </div>
               ) : null}

@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { Link } from '@tanstack/react-router'
 import { ChevronRight } from 'lucide-react'
 
 import type { OrderStatus, OrderSummaryResponse } from '../../../client'
@@ -141,7 +142,13 @@ function OrderCard({ order }: { order: OrderSummaryResponse }) {
   )
 
   return (
-    <article className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+    <Link
+      className="block rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition hover:border-blue-200 hover:shadow-md"
+      params={{
+        orderId: order.id,
+      }}
+      to="/orders/$orderId"
+    >
       <div className="flex gap-3">
         <div className="flex size-16 shrink-0 items-center justify-center rounded-md bg-slate-100 px-2 text-center text-xs leading-4 text-slate-400">
           Pesanan
@@ -177,7 +184,7 @@ function OrderCard({ order }: { order: OrderSummaryResponse }) {
           <ChevronRight aria-hidden="true" className="size-5 text-slate-400" />
         </div>
       </div>
-    </article>
+    </Link>
   )
 }
 
