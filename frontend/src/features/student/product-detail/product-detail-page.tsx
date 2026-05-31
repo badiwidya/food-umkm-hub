@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { Link } from '@tanstack/react-router'
 import {
   ArrowLeft,
   Clock,
@@ -102,9 +103,13 @@ export function ProductDetailPage({ productId }: ProductDetailPageProps) {
                     productId={product.id}
                   />
                 </div>
-                <p className="mt-2 text-sm leading-5 text-slate-500">
+                <Link
+                  className="mt-2 inline-block text-sm leading-5 text-slate-500 transition hover:text-[#1e40af] hover:underline"
+                  params={{ storeId: product.store.id }}
+                  to="/stores/$storeId"
+                >
                   {product.store.name}
-                </p>
+                </Link>
               </div>
 
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm leading-5 text-slate-500">

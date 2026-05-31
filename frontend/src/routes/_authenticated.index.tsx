@@ -1,5 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
+import { getRoleLandingPath } from '../features/auth/lib/role-redirect'
 import { StudentHomePage } from '../features/student'
 import {
   parseProductCategory,
@@ -20,6 +21,15 @@ export const Route = createFileRoute('/_authenticated/')({
     return {
       category,
       search: parsedSearch || undefined,
+    }
+  },
+  beforeLoad: ({ context }) => {
+    const { user } = context.auth.getState()
+
+    if (user && user.role !== 'student') {
+      throw redirect({
+        to: getRoleLandingPath(user.role),
+      })
     }
   },
   component: StudentHomeRoute,

@@ -20,6 +20,7 @@ import { Route as AuthenticatedStoresRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedFavoritesRouteImport } from './routes/_authenticated.favorites'
 import { Route as AuthenticatedActivityRouteImport } from './routes/_authenticated.activity'
 import { Route as RegisterRoleIndexRouteImport } from './routes/register.$role.index'
+import { Route as AuthenticatedStoresIndexRouteImport } from './routes/_authenticated.stores.index'
 import { Route as RegisterRoleDetailsRouteImport } from './routes/register.$role.details'
 import { Route as AuthenticatedStoresStoreIdRouteImport } from './routes/_authenticated.stores.$storeId'
 import { Route as AuthenticatedProductsProductIdRouteImport } from './routes/_authenticated.products.$productId'
@@ -78,6 +79,12 @@ const RegisterRoleIndexRoute = RegisterRoleIndexRouteImport.update({
   path: '/',
   getParentRoute: () => RegisterRoleRoute,
 } as any)
+const AuthenticatedStoresIndexRoute =
+  AuthenticatedStoresIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedStoresRoute,
+  } as any)
 const RegisterRoleDetailsRoute = RegisterRoleDetailsRouteImport.update({
   id: '/details',
   path: '/details',
@@ -109,6 +116,7 @@ export interface FileRoutesByFullPath {
   '/products/$productId': typeof AuthenticatedProductsProductIdRoute
   '/stores/$storeId': typeof AuthenticatedStoresStoreIdRoute
   '/register/$role/details': typeof RegisterRoleDetailsRoute
+  '/stores/': typeof AuthenticatedStoresIndexRoute
   '/register/$role/': typeof RegisterRoleIndexRoute
 }
 export interface FileRoutesByTo {
@@ -116,13 +124,13 @@ export interface FileRoutesByTo {
   '/verify-email': typeof VerifyEmailRouteWithChildren
   '/activity': typeof AuthenticatedActivityRoute
   '/favorites': typeof AuthenticatedFavoritesRoute
-  '/stores': typeof AuthenticatedStoresRouteWithChildren
   '/register/check-email': typeof RegisterCheckEmailRoute
   '/verify-email/success': typeof VerifyEmailSuccessRoute
   '/': typeof AuthenticatedIndexRoute
   '/products/$productId': typeof AuthenticatedProductsProductIdRoute
   '/stores/$storeId': typeof AuthenticatedStoresStoreIdRoute
   '/register/$role/details': typeof RegisterRoleDetailsRoute
+  '/stores': typeof AuthenticatedStoresIndexRoute
   '/register/$role': typeof RegisterRoleIndexRoute
 }
 export interface FileRoutesById {
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/_authenticated/products/$productId': typeof AuthenticatedProductsProductIdRoute
   '/_authenticated/stores/$storeId': typeof AuthenticatedStoresStoreIdRoute
   '/register/$role/details': typeof RegisterRoleDetailsRoute
+  '/_authenticated/stores/': typeof AuthenticatedStoresIndexRoute
   '/register/$role/': typeof RegisterRoleIndexRoute
 }
 export interface FileRouteTypes {
@@ -157,6 +166,7 @@ export interface FileRouteTypes {
     | '/products/$productId'
     | '/stores/$storeId'
     | '/register/$role/details'
+    | '/stores/'
     | '/register/$role/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -164,13 +174,13 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/activity'
     | '/favorites'
-    | '/stores'
     | '/register/check-email'
     | '/verify-email/success'
     | '/'
     | '/products/$productId'
     | '/stores/$storeId'
     | '/register/$role/details'
+    | '/stores'
     | '/register/$role'
   id:
     | '__root__'
@@ -187,6 +197,7 @@ export interface FileRouteTypes {
     | '/_authenticated/products/$productId'
     | '/_authenticated/stores/$storeId'
     | '/register/$role/details'
+    | '/_authenticated/stores/'
     | '/register/$role/'
   fileRoutesById: FileRoutesById
 }
@@ -277,6 +288,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterRoleIndexRouteImport
       parentRoute: typeof RegisterRoleRoute
     }
+    '/_authenticated/stores/': {
+      id: '/_authenticated/stores/'
+      path: '/'
+      fullPath: '/stores/'
+      preLoaderRoute: typeof AuthenticatedStoresIndexRouteImport
+      parentRoute: typeof AuthenticatedStoresRoute
+    }
     '/register/$role/details': {
       id: '/register/$role/details'
       path: '/details'
@@ -303,10 +321,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedStoresRouteChildren {
   AuthenticatedStoresStoreIdRoute: typeof AuthenticatedStoresStoreIdRoute
+  AuthenticatedStoresIndexRoute: typeof AuthenticatedStoresIndexRoute
 }
 
 const AuthenticatedStoresRouteChildren: AuthenticatedStoresRouteChildren = {
   AuthenticatedStoresStoreIdRoute: AuthenticatedStoresStoreIdRoute,
+  AuthenticatedStoresIndexRoute: AuthenticatedStoresIndexRoute,
 }
 
 const AuthenticatedStoresRouteWithChildren =

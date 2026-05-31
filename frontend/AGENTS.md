@@ -182,6 +182,19 @@ navigate({
 navigate('/student/stores/' + storeId)
 ```
 
+When a route has both a list page and a dynamic detail page, model them as nested routes.
+
+Example:
+
+```
+/stores
+/stores/$storeId
+```
+
+Use a parent route for shared layout/navigation and separate child routes for list and detail pages.
+
+Do not combine list-page and detail-page responsibilities in the same route component.
+
 ## Forms
 
 - Zod schema is the single source of truth.
