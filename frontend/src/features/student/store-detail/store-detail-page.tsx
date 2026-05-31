@@ -298,27 +298,29 @@ function PromoCard({ promo }: { promo: PromoSummaryResponse }) {
   }
 
   return (
-    <article className="h-[156px] w-64 shrink-0 rounded-lg bg-gradient-to-r from-[#1e40af] to-[#4164c6] p-4 text-white shadow-sm">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 pr-2">
-          <h4 className="truncate text-sm font-medium leading-5">
-            {formatPromoValue(promo)}
-          </h4>
-          <p className="mt-1 line-clamp-2 text-xs leading-4 text-white/90">
-            {formatPromoRequirements(promo)}
-          </p>
+    <article className="flex h-[156px] w-64 shrink-0 flex-col justify-between rounded-lg bg-gradient-to-r from-[#1e40af] to-[#4164c6] p-4 text-white shadow-sm">
+      <div>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 pr-2">
+            <h4 className="truncate text-sm font-medium leading-5">
+              {formatPromoValue(promo)}
+            </h4>
+            <p className="mt-1 line-clamp-2 text-xs leading-4 text-white/90">
+              {formatPromoRequirements(promo)}
+            </p>
+          </div>
+          <span className="shrink-0 rounded-full bg-white px-2 py-1 text-xs font-semibold leading-4 text-[#1e40af]">
+            {formatPromoBadge(promo)}
+          </span>
         </div>
-        <span className="shrink-0 rounded-full bg-white px-2 py-1 text-xs font-semibold leading-4 text-[#1e40af]">
-          {formatPromoBadge(promo)}
-        </span>
+
+        <p className="mt-3 truncate text-xs leading-4 text-white/80">
+          {formatPromoDateRange(promo.startDate, promo.endDate)}
+        </p>
       </div>
 
-      <p className="mt-3 truncate text-xs leading-4 text-white/80">
-        {formatPromoDateRange(promo.startDate, promo.endDate)}
-      </p>
-
       <button
-        className="mt-3 flex h-8 w-full items-center justify-center gap-1.5 rounded-lg bg-white px-3 text-xs font-medium leading-4 text-[#1e40af] transition hover:bg-blue-50"
+        className="flex h-8 w-full items-center justify-center gap-1.5 rounded-lg bg-white px-3 text-xs font-medium leading-4 text-[#1e40af] transition hover:bg-blue-50"
         onClick={handleCopyCode}
         type="button"
       >
