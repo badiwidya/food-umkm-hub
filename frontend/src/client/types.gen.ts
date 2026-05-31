@@ -240,6 +240,10 @@ export type OrderDetailResponse = {
      */
     totalPrice: number;
     /**
+     * Createdat
+     */
+    createdAt: string;
+    /**
      * Discountamount
      */
     discountAmount: number;
@@ -344,6 +348,10 @@ export type OrderSummaryResponse = {
      * Totalprice
      */
     totalPrice: number;
+    /**
+     * Createdat
+     */
+    createdAt: string;
 };
 
 /**

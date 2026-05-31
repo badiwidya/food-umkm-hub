@@ -12,8 +12,12 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 
+import type { ReviewResponse } from '../../../client'
 import type { CartItem, CartStoreInfo } from '../../../stores/cart-store'
-import { getProductDetailsProductsIdGetOptions } from '../../../client/@tanstack/react-query.gen'
+import {
+  getProductDetailsProductsIdGetOptions,
+  getProductReviewsProductsIdReviewsGetOptions,
+} from '../../../client/@tanstack/react-query.gen'
 import { useCartStore } from '../../../stores/cart-store'
 import { formatRating, formatRupiah } from '../browse/format'
 import { ProductFavoriteButton } from '../browse/product-favorite-button'
@@ -192,6 +196,12 @@ export function ProductDetailPage({
                 </p>
               </div>
 
+              <ProductReviewsSection
+                productId={product.id}
+                rating={product.rating}
+                totalReviews={product.totalReviews}
+              />
+
               <div className="rounded-lg border border-slate-200 p-4">
                 <div className="flex items-center justify-between gap-4">
                   <div>
@@ -328,6 +338,123 @@ export function ProductDetailPage({
         ) : null}
       </div>
     </main>
+  )
+}
+
+function ProductReviewsSection({
+  productId,
+  rating,
+  totalReviews,
+}: {
+  productId: string
+  rating: number | null
+  totalReviews: number
+}) {
+  const reviewsQuery = useQuery(
+    getProductReviewsProductsIdReviewsGetOptions({
+      path: {
+        id: productId,
+      },
+      query: {
+        page: 1,
+        pageSize: 5,
+      },
+    }),
+  )
+  const reviews = reviewsQuery.data?.data ?? []
+
+  return (
+    <section>
+      <div className="flex items-center justify-between gap-3">
+        <h3 className="text-sm font-medium leading-5 text-slate-800">
+          Ulasan Produk
+        </h3>
+        <p className="flex shrink-0 items-center gap-1 text-xs leading-4 text-slate-500">
+          <Star
+            aria-hidden="true"
+            className="size-4 text-amber-400"
+            fill="currentColor"
+          />
+          {rating === null
+            ? 'Belum ada rating'
+            : `${formatRating(rating)} (${totalReviews} ulasan)`}
+        </p>
+      </div>
+
+      {reviewsQuery.isPending ? <ProductReviewsSkeleton /> : null}
+
+      {reviewsQuery.isError ? (
+        <p className="mt-3 rounded-lg border border-red-100 bg-red-50 px-3 py-3 text-sm leading-5 text-red-700">
+          Ulasan gagal dimuat.
+        </p>
+      ) : null}
+
+      {reviewsQuery.isSuccess && reviews.length === 0 ? (
+        <p className="mt-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-4 text-center text-sm leading-5 text-slate-500">
+          Belum ada ulasan
+        </p>
+      ) : null}
+
+      {reviews.length > 0 ? (
+        <div className="-mx-4 mt-3 overflow-x-auto px-4 pb-1">
+          <div className="flex gap-3">
+            {reviews.map((review) => (
+              <ProductReviewCard key={review.id} review={review} />
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </section>
+  )
+}
+
+function ProductReviewCard({ review }: { review: ReviewResponse }) {
+  return (
+    <article className="min-h-28 w-56 shrink-0 rounded-lg border border-slate-200 bg-white p-3">
+      <RatingStars rating={review.rating} />
+      <p className="mt-3 line-clamp-4 text-sm leading-5 text-slate-600">
+        {review.comment?.trim() || 'Tanpa komentar.'}
+      </p>
+    </article>
+  )
+}
+
+function RatingStars({ rating }: { rating: number }) {
+  return (
+    <div className="flex items-center gap-1">
+      {Array.from({ length: 5 }, (_, index) => {
+        const isSelected = index < rating
+
+        return (
+          <Star
+            aria-hidden="true"
+            className={[
+              'size-4',
+              isSelected ? 'text-amber-400' : 'text-slate-300',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            fill={isSelected ? 'currentColor' : 'none'}
+            key={index}
+          />
+        )
+      })}
+    </div>
+  )
+}
+
+function ProductReviewsSkeleton() {
+  return (
+    <div className="-mx-4 mt-3 overflow-hidden px-4">
+      <div className="flex gap-3">
+        {Array.from({ length: 2 }, (_, index) => (
+          <div
+            className="h-28 w-56 shrink-0 animate-pulse rounded-lg bg-slate-100"
+            key={index}
+          />
+        ))}
+      </div>
+    </div>
   )
 }
 

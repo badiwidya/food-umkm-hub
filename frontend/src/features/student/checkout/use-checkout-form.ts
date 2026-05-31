@@ -13,17 +13,12 @@ import {
   createOrderOrdersPostMutation,
   getOrderDetailsOrdersIdGetQueryKey,
   getOrdersByStudentOrdersGetQueryKey,
-  updatePaymentProofOrdersIdPaymentProofPostMutation,
   validatePromoPromosValidatePostMutation,
 } from '../../../client/@tanstack/react-query.gen'
 import type { CartItem } from '../../../stores/cart-store'
 import { useCartStore } from '../../../stores/cart-store'
 import { getCartSubtotal } from '../cart/cart-selectors'
 import { getCheckoutErrorMessage } from './api-error'
-import {
-  uploadPaymentProof,
-  validatePaymentProofFile,
-} from './payment-proof-upload'
 
 const checkoutFormSchema = z.object({
   notes: z.string().max(500, 'Catatan maksimal 500 karakter.'),
@@ -56,10 +51,6 @@ export function useCheckoutForm({
   const queryClient = useQueryClient()
   const clearCart = useCartStore((state) => state.clearCart)
   const [appliedPromo, setAppliedPromo] = useState<AppliedPromo | null>(null)
-  const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null)
-  const [paymentProofError, setPaymentProofError] = useState<string | null>(
-    null,
-  )
   const [promoError, setPromoError] = useState<string | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const form = useForm<CheckoutFormValues>({
@@ -73,9 +64,6 @@ export function useCheckoutForm({
     validatePromoPromosValidatePostMutation(),
   )
   const createOrderMutation = useMutation(createOrderOrdersPostMutation())
-  const updatePaymentProofMutation = useMutation(
-    updatePaymentProofOrdersIdPaymentProofPostMutation(),
-  )
   const subtotal = getCartSubtotal(items)
   const isPromoStale =
     appliedPromo !== null && appliedPromo.orderAmount !== subtotal
@@ -157,38 +145,11 @@ export function useCheckoutForm({
       shouldValidate: true,
     })
     setSubmitError(null)
-    setPaymentProofError(null)
-
-    if (nextPaymentMethod === 'cash') {
-      setPaymentProofFile(null)
-    }
-  }
-
-  function handlePaymentProofChange(file: File | null) {
-    setSubmitError(null)
-
-    if (!file) {
-      setPaymentProofFile(null)
-      setPaymentProofError(null)
-      return
-    }
-
-    const validationError = validatePaymentProofFile(file)
-
-    if (validationError) {
-      setPaymentProofFile(null)
-      setPaymentProofError(validationError)
-      return
-    }
-
-    setPaymentProofFile(file)
-    setPaymentProofError(null)
   }
 
   const onSubmit = form.handleSubmit(async (values) => {
     setSubmitError(null)
     setPromoError(null)
-    setPaymentProofError(null)
 
     const parsedValues = checkoutFormSchema.safeParse(values)
 
@@ -221,11 +182,6 @@ export function useCheckoutForm({
       return
     }
 
-    if (parsedValues.data.paymentMethod === 'qris' && !paymentProofFile) {
-      setPaymentProofError('Upload bukti pembayaran terlebih dahulu.')
-      return
-    }
-
     const promoCode = parsedValues.data.promoCode.trim()
 
     if (promoCode && (!appliedPromo || isPromoStale)) {
@@ -246,25 +202,14 @@ export function useCheckoutForm({
           storeId,
         } satisfies CreateOrderRequest,
       })
-      const orderWithProof =
-        parsedValues.data.paymentMethod === 'qris' && paymentProofFile
-          ? await updatePaymentProofMutation.mutateAsync({
-              body: {
-                paymentProofUrl: await uploadPaymentProof(paymentProofFile),
-              },
-              path: {
-                id: order.id,
-              },
-            })
-          : order
 
       queryClient.setQueryData(
         getOrderDetailsOrdersIdGetQueryKey({
           path: {
-            id: orderWithProof.id,
+            id: order.id,
           },
         }),
-        orderWithProof,
+        order,
       )
       await queryClient.invalidateQueries({
         queryKey: getOrdersByStudentOrdersGetQueryKey(),
@@ -274,9 +219,12 @@ export function useCheckoutForm({
       }
       await navigate({
         params: {
-          orderId: orderWithProof.id,
+          orderId: order.id,
         },
-        to: '/orders/$orderId/success',
+        to:
+          parsedValues.data.paymentMethod === 'qris'
+            ? '/orders/$orderId/payment'
+            : '/orders/$orderId/success',
       })
     } catch (error) {
       setSubmitError(
@@ -290,16 +238,12 @@ export function useCheckoutForm({
     form,
     handleApplyPromo,
     handlePaymentMethodChange,
-    handlePaymentProofChange,
     handleRemovePromo,
-    isPending:
-      createOrderMutation.isPending || updatePaymentProofMutation.isPending,
+    isPending: createOrderMutation.isPending,
     isPromoPending: validatePromoMutation.isPending,
     isPromoStale,
     onSubmit,
     paymentMethod,
-    paymentProofError,
-    paymentProofFile,
     promoError,
     submitError,
   }

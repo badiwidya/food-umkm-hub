@@ -122,6 +122,7 @@ export const zOrderDetailResponse = z.object({
     status: zOrderStatus,
     orderItems: z.array(zOrderItemResponse),
     totalPrice: z.int(),
+    createdAt: z.iso.datetime(),
     discountAmount: z.int(),
     promoCode: z.string().nullable(),
     isReviewed: z.boolean(),
@@ -151,7 +152,8 @@ export const zOrderSummaryResponse = z.object({
     paymentMethod: zPaymentMethod,
     status: zOrderStatus,
     orderItems: z.array(zOrderItemResponse),
-    totalPrice: z.int()
+    totalPrice: z.int(),
+    createdAt: z.iso.datetime()
 });
 
 /**

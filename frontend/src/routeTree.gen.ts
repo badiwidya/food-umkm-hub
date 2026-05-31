@@ -27,6 +27,7 @@ import { Route as RegisterRoleDetailsRouteImport } from './routes/register.$role
 import { Route as AuthenticatedStoresStoreIdRouteImport } from './routes/_authenticated.stores.$storeId'
 import { Route as AuthenticatedProductsProductIdRouteImport } from './routes/_authenticated.products.$productId'
 import { Route as AuthenticatedOrdersOrderIdRouteImport } from './routes/_authenticated.orders.$orderId'
+import { Route as AuthenticatedOrdersOrderIdPaymentRouteImport } from './routes/_authenticated.orders.$orderId_.payment'
 import { Route as AuthenticatedOrdersOrderIdSuccessRouteImport } from './routes/_authenticated.orders.$orderId.success'
 import { Route as AuthenticatedStoresStoreIdProductsProductIdRouteImport } from './routes/_authenticated.stores.$storeId.products.$productId'
 
@@ -123,6 +124,12 @@ const AuthenticatedOrdersOrderIdRoute =
     path: '/orders/$orderId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedOrdersOrderIdPaymentRoute =
+  AuthenticatedOrdersOrderIdPaymentRouteImport.update({
+    id: '/orders/$orderId_/payment',
+    path: '/orders/$orderId/payment',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedOrdersOrderIdSuccessRoute =
   AuthenticatedOrdersOrderIdSuccessRouteImport.update({
     id: '/success',
@@ -155,6 +162,7 @@ export interface FileRoutesByFullPath {
   '/stores/': typeof AuthenticatedStoresIndexRoute
   '/register/$role/': typeof RegisterRoleIndexRoute
   '/orders/$orderId/success': typeof AuthenticatedOrdersOrderIdSuccessRoute
+  '/orders/$orderId/payment': typeof AuthenticatedOrdersOrderIdPaymentRoute
   '/stores/$storeId/products/$productId': typeof AuthenticatedStoresStoreIdProductsProductIdRoute
 }
 export interface FileRoutesByTo {
@@ -174,6 +182,7 @@ export interface FileRoutesByTo {
   '/stores': typeof AuthenticatedStoresIndexRoute
   '/register/$role': typeof RegisterRoleIndexRoute
   '/orders/$orderId/success': typeof AuthenticatedOrdersOrderIdSuccessRoute
+  '/orders/$orderId/payment': typeof AuthenticatedOrdersOrderIdPaymentRoute
   '/stores/$storeId/products/$productId': typeof AuthenticatedStoresStoreIdProductsProductIdRoute
 }
 export interface FileRoutesById {
@@ -197,6 +206,7 @@ export interface FileRoutesById {
   '/_authenticated/stores/': typeof AuthenticatedStoresIndexRoute
   '/register/$role/': typeof RegisterRoleIndexRoute
   '/_authenticated/orders/$orderId/success': typeof AuthenticatedOrdersOrderIdSuccessRoute
+  '/_authenticated/orders/$orderId_/payment': typeof AuthenticatedOrdersOrderIdPaymentRoute
   '/_authenticated/stores/$storeId/products/$productId': typeof AuthenticatedStoresStoreIdProductsProductIdRoute
 }
 export interface FileRouteTypes {
@@ -220,6 +230,7 @@ export interface FileRouteTypes {
     | '/stores/'
     | '/register/$role/'
     | '/orders/$orderId/success'
+    | '/orders/$orderId/payment'
     | '/stores/$storeId/products/$productId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -239,6 +250,7 @@ export interface FileRouteTypes {
     | '/stores'
     | '/register/$role'
     | '/orders/$orderId/success'
+    | '/orders/$orderId/payment'
     | '/stores/$storeId/products/$productId'
   id:
     | '__root__'
@@ -261,6 +273,7 @@ export interface FileRouteTypes {
     | '/_authenticated/stores/'
     | '/register/$role/'
     | '/_authenticated/orders/$orderId/success'
+    | '/_authenticated/orders/$orderId_/payment'
     | '/_authenticated/stores/$storeId/products/$productId'
   fileRoutesById: FileRoutesById
 }
@@ -400,6 +413,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrdersOrderIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/orders/$orderId_/payment': {
+      id: '/_authenticated/orders/$orderId_/payment'
+      path: '/orders/$orderId/payment'
+      fullPath: '/orders/$orderId/payment'
+      preLoaderRoute: typeof AuthenticatedOrdersOrderIdPaymentRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/orders/$orderId/success': {
       id: '/_authenticated/orders/$orderId/success'
       path: '/success'
@@ -469,6 +489,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedOrdersOrderIdRoute: typeof AuthenticatedOrdersOrderIdRouteWithChildren
   AuthenticatedProductsProductIdRoute: typeof AuthenticatedProductsProductIdRoute
+  AuthenticatedOrdersOrderIdPaymentRoute: typeof AuthenticatedOrdersOrderIdPaymentRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -480,6 +501,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedOrdersOrderIdRoute: AuthenticatedOrdersOrderIdRouteWithChildren,
   AuthenticatedProductsProductIdRoute: AuthenticatedProductsProductIdRoute,
+  AuthenticatedOrdersOrderIdPaymentRoute:
+    AuthenticatedOrdersOrderIdPaymentRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(

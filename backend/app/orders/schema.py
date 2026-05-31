@@ -46,6 +46,7 @@ class OrderSummaryResponse(BaseSchema):
     status: OrderStatus
     order_items: list[OrderItemResponse]
     total_price: int
+    created_at: datetime
 
 
 OrderListResponse = PaginatedResponse[list[OrderSummaryResponse]]

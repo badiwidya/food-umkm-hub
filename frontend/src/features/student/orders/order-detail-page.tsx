@@ -66,6 +66,15 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
                 <p className="mt-1 text-xs leading-4 text-slate-500">
                   Pesanan sedang diproses sesuai status terbaru.
                 </p>
+                {canResumeQrisPayment(order) ? (
+                  <Link
+                    className="mt-3 inline-flex h-10 w-full items-center justify-center rounded-lg bg-[#1e40af] px-4 text-sm font-medium leading-5 text-white transition hover:bg-[#1d3a9c]"
+                    params={{ orderId: order.id }}
+                    to="/orders/$orderId/payment"
+                  >
+                    Lakukan Pembayaran
+                  </Link>
+                ) : null}
               </section>
 
               <section className="rounded-lg border border-slate-200 bg-white p-4">
@@ -176,16 +185,25 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
                     </span>
                   </div>
                   {order.paymentProofUrl ? (
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="text-slate-500">Bukti Pembayaran</span>
-                      <a
-                        className="text-[#1e40af] underline underline-offset-2"
-                        href={order.paymentProofUrl}
-                        rel="noreferrer"
-                        target="_blank"
-                      >
-                        Lihat bukti
-                      </a>
+                    <div className="space-y-2 border-t border-slate-200 pt-3">
+                      <div className="flex items-center justify-between gap-4">
+                        <span className="text-slate-500">Bukti Pembayaran</span>
+                        <a
+                          className="text-xs text-[#1e40af] underline underline-offset-2"
+                          href={order.paymentProofUrl}
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          Buka gambar
+                        </a>
+                      </div>
+                      <div className="overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
+                        <img
+                          alt="Bukti pembayaran"
+                          className="max-h-96 w-full object-contain"
+                          src={order.paymentProofUrl}
+                        />
+                      </div>
                     </div>
                   ) : null}
                   {order.discountAmount > 0 ? (
@@ -255,4 +273,16 @@ function getPaymentMethodLabel(paymentMethod: PaymentMethod) {
     case 'qris':
       return 'QRIS'
   }
+}
+
+function canResumeQrisPayment(order: {
+  paymentMethod: PaymentMethod
+  paymentProofUrl: string | null
+  status: OrderStatus
+}) {
+  return (
+    order.paymentMethod === 'qris' &&
+    order.status === 'pending' &&
+    order.paymentProofUrl === null
+  )
 }
