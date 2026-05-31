@@ -55,9 +55,6 @@ type ActivityPageProps = {
 
 export function ActivityPage({ onStatusChange, status }: ActivityPageProps) {
   const [reviewOrderId, setReviewOrderId] = useState<string | null>(null)
-  const [reviewedOrderIds, setReviewedOrderIds] = useState<ReadonlySet<string>>(
-    () => new Set(),
-  )
   const ordersQuery = useQuery(
     getOrdersByStudentOrdersGetOptions({
       query: {
@@ -117,7 +114,6 @@ export function ActivityPage({ onStatusChange, status }: ActivityPageProps) {
           <div className="space-y-3">
             {orders.map((order) => (
               <OrderCard
-                isReviewActionHidden={reviewedOrderIds.has(order.id)}
                 key={order.id}
                 onReviewClick={() => setReviewOrderId(order.id)}
                 order={order}
@@ -130,12 +126,7 @@ export function ActivityPage({ onStatusChange, status }: ActivityPageProps) {
         <ReviewOrderModal
           key={reviewOrderId}
           onClose={() => setReviewOrderId(null)}
-          onSuccess={(orderId) => {
-            setReviewedOrderIds((currentOrderIds) => {
-              const nextOrderIds = new Set(currentOrderIds)
-              nextOrderIds.add(orderId)
-              return nextOrderIds
-            })
+          onSuccess={() => {
             setReviewOrderId(null)
           }}
           orderId={reviewOrderId}
@@ -173,11 +164,9 @@ function ActivityStatusButton({
 }
 
 function OrderCard({
-  isReviewActionHidden,
   onReviewClick,
   order,
 }: {
-  isReviewActionHidden: boolean
   onReviewClick: () => void
   order: OrderSummaryResponse
 }) {
@@ -186,7 +175,7 @@ function OrderCard({
     (total, item) => total + item.quantity,
     0,
   )
-  const canReview = order.status === 'completed' && !isReviewActionHidden
+  const canReview = order.status === 'completed' && !order.isReviewed
 
   return (
     <article className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition hover:border-blue-200 hover:shadow-md">
