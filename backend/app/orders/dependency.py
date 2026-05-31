@@ -13,6 +13,7 @@ from app.products.dependency import ProductRepoDep
 from app.promos.dependency import PromoRepoDep
 from app.reviews.repository import ReviewRepository
 from app.stores.dependency import StoreRepoDep
+from app.users.dependency import UserRepoDep
 from app.users.user import User, UserRole
 
 
@@ -28,6 +29,7 @@ def get_order_service(
     product_repo: ProductRepoDep,
     promo_repo: PromoRepoDep,
     store_repo: StoreRepoDep,
+    user_repo: UserRepoDep,
     session: SessionDep,
 ) -> OrderService:
     return OrderService(
@@ -35,6 +37,7 @@ def get_order_service(
         product_repo=product_repo,
         promo_repo=promo_repo,
         store_repo=store_repo,
+        user_repo=user_repo,
         review_repo=ReviewRepository(session=session),
     )
 
