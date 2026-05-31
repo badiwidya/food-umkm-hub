@@ -17,6 +17,10 @@ export const Route = createFileRoute('/_authenticated/checkout')({
         : typeof search.quantity === 'string'
           ? Math.max(1, Number.parseInt(search.quantity, 10) || 1)
           : undefined,
+    returnTo:
+      search.returnTo === 'cart' || search.returnTo === 'product'
+        ? search.returnTo
+        : undefined,
   }),
   beforeLoad: ({ context }) => {
     const { user } = context.auth.getState()

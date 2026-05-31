@@ -18,6 +18,7 @@ function ActivityRoute() {
     <ActivityPage
       onStatusChange={(nextStatus) => {
         void navigate({
+          resetScroll: false,
           search: {
             status: nextStatus,
           },

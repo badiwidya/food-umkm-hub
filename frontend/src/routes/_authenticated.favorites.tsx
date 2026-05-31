@@ -29,6 +29,7 @@ function FavoritesRoute() {
       activeTab={tab}
       onTabChange={(nextTab) => {
         void navigate({
+          resetScroll: false,
           search: {
             tab: nextTab,
           },

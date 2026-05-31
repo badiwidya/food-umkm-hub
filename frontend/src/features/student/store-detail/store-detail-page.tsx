@@ -1,6 +1,15 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
-import { ArrowLeft, Clock, MapPin, ShoppingCart, Star, Tag } from 'lucide-react'
+import {
+  ArrowLeft,
+  Clock,
+  Copy,
+  MapPin,
+  ShoppingCart,
+  Star,
+  Tag,
+} from 'lucide-react'
+import { useState } from 'react'
 
 import {
   getAllPromoStoresStoreIdPromosGetOptions,
@@ -80,6 +89,9 @@ export function StoreDetailPage({
               <Link
                 aria-label="Keranjang"
                 className="flex size-10 items-center justify-center rounded-full transition hover:bg-white/10"
+                search={{
+                  storeId,
+                }}
                 to="/cart"
               >
                 <ShoppingCart aria-hidden="true" className="size-6" />
@@ -158,27 +170,27 @@ export function StoreDetailPage({
               </div>
             </section>
 
-            <section className="border-b border-slate-200 bg-slate-50 px-4 py-5">
+            <section className="border-b border-slate-200 bg-white py-5">
               <div className="flex items-center justify-between gap-3">
-                <h3 className="text-lg font-medium leading-7 text-slate-800">
+                <h3 className="px-4 text-lg font-medium leading-7 text-slate-800">
                   Promo Tersedia
                 </h3>
                 {promoQuery.isPending ? (
-                  <span className="text-xs leading-4 text-slate-400">
+                  <span className="px-4 text-xs leading-4 text-slate-400">
                     Memuat...
                   </span>
                 ) : null}
               </div>
 
               {promoQuery.isPending ? (
-                <div className="mt-4 space-y-3">
-                  <div className="h-24 animate-pulse rounded-lg bg-white" />
-                  <div className="h-24 animate-pulse rounded-lg bg-white" />
+                <div className="mt-3 flex gap-3 overflow-hidden px-4 pb-2">
+                  <div className="h-[156px] w-64 shrink-0 animate-pulse rounded-lg bg-blue-100" />
+                  <div className="h-[156px] w-64 shrink-0 animate-pulse rounded-lg bg-blue-100" />
                 </div>
               ) : null}
 
               {promoQuery.isSuccess && promos.length > 0 ? (
-                <div className="mt-4 space-y-3">
+                <div className="mt-3 flex gap-3 overflow-x-auto px-4 pb-2">
                   {promos.map((promo) => (
                     <PromoCard key={promo.id} promo={promo} />
                   ))}
@@ -272,26 +284,49 @@ function StoreDetailSkeleton() {
 }
 
 function PromoCard({ promo }: { promo: PromoSummaryResponse }) {
+  const [isCopied, setIsCopied] = useState(false)
+
+  function handleCopyCode() {
+    void copyTextToClipboard(promo.code).then((didCopy) => {
+      if (!didCopy) {
+        return
+      }
+
+      setIsCopied(true)
+      window.setTimeout(() => setIsCopied(false), 1200)
+    })
+  }
+
   return (
-    <article className="rounded-lg border border-blue-100 bg-white p-4 shadow-sm">
+    <article className="h-[156px] w-64 shrink-0 rounded-lg bg-gradient-to-r from-[#1e40af] to-[#4164c6] p-4 text-white shadow-sm">
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="truncate text-sm font-medium leading-5 text-[#1e40af]">
-            {promo.code}
-          </p>
-          <p className="mt-1 text-sm leading-5 text-slate-700">
+        <div className="min-w-0 pr-2">
+          <h4 className="truncate text-sm font-medium leading-5">
             {formatPromoValue(promo)}
+          </h4>
+          <p className="mt-1 line-clamp-2 text-xs leading-4 text-white/90">
+            {formatPromoRequirements(promo)}
           </p>
         </div>
-        <span className="shrink-0 rounded-full bg-blue-50 px-2 py-0.5 text-xs leading-4 text-[#1e40af]">
-          {promo.type === 'percentage' ? 'Persentase' : 'Potongan tetap'}
+        <span className="shrink-0 rounded-full bg-white px-2 py-1 text-xs font-semibold leading-4 text-[#1e40af]">
+          {formatPromoBadge(promo)}
         </span>
       </div>
 
-      <div className="mt-3 space-y-1 text-xs leading-4 text-slate-500">
-        <p>{formatPromoDateRange(promo.startDate, promo.endDate)}</p>
-        <p>{formatPromoRequirements(promo)}</p>
-      </div>
+      <p className="mt-3 truncate text-xs leading-4 text-white/80">
+        {formatPromoDateRange(promo.startDate, promo.endDate)}
+      </p>
+
+      <button
+        className="mt-3 flex h-8 w-full items-center justify-center gap-1.5 rounded-lg bg-white px-3 text-xs font-medium leading-4 text-[#1e40af] transition hover:bg-blue-50"
+        onClick={handleCopyCode}
+        type="button"
+      >
+        <Copy aria-hidden="true" className="size-3.5" />
+        <span className="truncate">
+          {isCopied ? 'Kode disalin' : promo.code}
+        </span>
+      </button>
     </article>
   )
 }
@@ -302,6 +337,44 @@ function formatPromoValue(promo: PromoSummaryResponse) {
   }
 
   return `Potongan ${formatRupiah(promo.value)}`
+}
+
+function formatPromoBadge(promo: PromoSummaryResponse) {
+  if (promo.type === 'percentage') {
+    return `${promo.value}%`
+  }
+
+  return formatRupiah(promo.value)
+}
+
+async function copyTextToClipboard(text: string) {
+  if (navigator.clipboard) {
+    try {
+      await navigator.clipboard.writeText(text)
+      return true
+    } catch {
+      return copyTextWithTextarea(text)
+    }
+  }
+
+  return copyTextWithTextarea(text)
+}
+
+function copyTextWithTextarea(text: string) {
+  const textarea = document.createElement('textarea')
+
+  textarea.value = text
+  textarea.setAttribute('readonly', '')
+  textarea.style.position = 'fixed'
+  textarea.style.opacity = '0'
+  document.body.append(textarea)
+  textarea.select()
+
+  try {
+    return document.execCommand('copy')
+  } finally {
+    textarea.remove()
+  }
 }
 
 function formatPromoRequirements(promo: PromoSummaryResponse) {

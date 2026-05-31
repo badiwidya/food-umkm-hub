@@ -29,7 +29,7 @@ import { Route as AuthenticatedProductsProductIdRouteImport } from './routes/_au
 import { Route as AuthenticatedOrdersOrderIdRouteImport } from './routes/_authenticated.orders.$orderId'
 import { Route as AuthenticatedOrdersOrderIdPaymentRouteImport } from './routes/_authenticated.orders.$orderId_.payment'
 import { Route as AuthenticatedOrdersOrderIdSuccessRouteImport } from './routes/_authenticated.orders.$orderId.success'
-import { Route as AuthenticatedStoresStoreIdProductsProductIdRouteImport } from './routes/_authenticated.stores.$storeId.products.$productId'
+import { Route as AuthenticatedStoresStoreIdProductsProductIdRouteImport } from './routes/_authenticated.stores.$storeId_.products.$productId'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
@@ -138,9 +138,9 @@ const AuthenticatedOrdersOrderIdSuccessRoute =
   } as any)
 const AuthenticatedStoresStoreIdProductsProductIdRoute =
   AuthenticatedStoresStoreIdProductsProductIdRouteImport.update({
-    id: '/products/$productId',
-    path: '/products/$productId',
-    getParentRoute: () => AuthenticatedStoresStoreIdRoute,
+    id: '/$storeId_/products/$productId',
+    path: '/$storeId/products/$productId',
+    getParentRoute: () => AuthenticatedStoresRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -157,7 +157,7 @@ export interface FileRoutesByFullPath {
   '/verify-email/success': typeof VerifyEmailSuccessRoute
   '/orders/$orderId': typeof AuthenticatedOrdersOrderIdRouteWithChildren
   '/products/$productId': typeof AuthenticatedProductsProductIdRoute
-  '/stores/$storeId': typeof AuthenticatedStoresStoreIdRouteWithChildren
+  '/stores/$storeId': typeof AuthenticatedStoresStoreIdRoute
   '/register/$role/details': typeof RegisterRoleDetailsRoute
   '/stores/': typeof AuthenticatedStoresIndexRoute
   '/register/$role/': typeof RegisterRoleIndexRoute
@@ -177,7 +177,7 @@ export interface FileRoutesByTo {
   '/': typeof AuthenticatedIndexRoute
   '/orders/$orderId': typeof AuthenticatedOrdersOrderIdRouteWithChildren
   '/products/$productId': typeof AuthenticatedProductsProductIdRoute
-  '/stores/$storeId': typeof AuthenticatedStoresStoreIdRouteWithChildren
+  '/stores/$storeId': typeof AuthenticatedStoresStoreIdRoute
   '/register/$role/details': typeof RegisterRoleDetailsRoute
   '/stores': typeof AuthenticatedStoresIndexRoute
   '/register/$role': typeof RegisterRoleIndexRoute
@@ -201,13 +201,13 @@ export interface FileRoutesById {
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/orders/$orderId': typeof AuthenticatedOrdersOrderIdRouteWithChildren
   '/_authenticated/products/$productId': typeof AuthenticatedProductsProductIdRoute
-  '/_authenticated/stores/$storeId': typeof AuthenticatedStoresStoreIdRouteWithChildren
+  '/_authenticated/stores/$storeId': typeof AuthenticatedStoresStoreIdRoute
   '/register/$role/details': typeof RegisterRoleDetailsRoute
   '/_authenticated/stores/': typeof AuthenticatedStoresIndexRoute
   '/register/$role/': typeof RegisterRoleIndexRoute
   '/_authenticated/orders/$orderId/success': typeof AuthenticatedOrdersOrderIdSuccessRoute
   '/_authenticated/orders/$orderId_/payment': typeof AuthenticatedOrdersOrderIdPaymentRoute
-  '/_authenticated/stores/$storeId/products/$productId': typeof AuthenticatedStoresStoreIdProductsProductIdRoute
+  '/_authenticated/stores/$storeId_/products/$productId': typeof AuthenticatedStoresStoreIdProductsProductIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -274,7 +274,7 @@ export interface FileRouteTypes {
     | '/register/$role/'
     | '/_authenticated/orders/$orderId/success'
     | '/_authenticated/orders/$orderId_/payment'
-    | '/_authenticated/stores/$storeId/products/$productId'
+    | '/_authenticated/stores/$storeId_/products/$productId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -427,39 +427,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrdersOrderIdSuccessRouteImport
       parentRoute: typeof AuthenticatedOrdersOrderIdRoute
     }
-    '/_authenticated/stores/$storeId/products/$productId': {
-      id: '/_authenticated/stores/$storeId/products/$productId'
-      path: '/products/$productId'
+    '/_authenticated/stores/$storeId_/products/$productId': {
+      id: '/_authenticated/stores/$storeId_/products/$productId'
+      path: '/$storeId/products/$productId'
       fullPath: '/stores/$storeId/products/$productId'
       preLoaderRoute: typeof AuthenticatedStoresStoreIdProductsProductIdRouteImport
-      parentRoute: typeof AuthenticatedStoresStoreIdRoute
+      parentRoute: typeof AuthenticatedStoresRoute
     }
   }
 }
 
-interface AuthenticatedStoresStoreIdRouteChildren {
+interface AuthenticatedStoresRouteChildren {
+  AuthenticatedStoresStoreIdRoute: typeof AuthenticatedStoresStoreIdRoute
+  AuthenticatedStoresIndexRoute: typeof AuthenticatedStoresIndexRoute
   AuthenticatedStoresStoreIdProductsProductIdRoute: typeof AuthenticatedStoresStoreIdProductsProductIdRoute
 }
 
-const AuthenticatedStoresStoreIdRouteChildren: AuthenticatedStoresStoreIdRouteChildren =
-  {
-    AuthenticatedStoresStoreIdProductsProductIdRoute:
-      AuthenticatedStoresStoreIdProductsProductIdRoute,
-  }
-
-const AuthenticatedStoresStoreIdRouteWithChildren =
-  AuthenticatedStoresStoreIdRoute._addFileChildren(
-    AuthenticatedStoresStoreIdRouteChildren,
-  )
-
-interface AuthenticatedStoresRouteChildren {
-  AuthenticatedStoresStoreIdRoute: typeof AuthenticatedStoresStoreIdRouteWithChildren
-  AuthenticatedStoresIndexRoute: typeof AuthenticatedStoresIndexRoute
-}
-
 const AuthenticatedStoresRouteChildren: AuthenticatedStoresRouteChildren = {
-  AuthenticatedStoresStoreIdRoute: AuthenticatedStoresStoreIdRouteWithChildren,
+  AuthenticatedStoresStoreIdRoute: AuthenticatedStoresStoreIdRoute,
   AuthenticatedStoresIndexRoute: AuthenticatedStoresIndexRoute,
+  AuthenticatedStoresStoreIdProductsProductIdRoute:
+    AuthenticatedStoresStoreIdProductsProductIdRoute,
 }
 
 const AuthenticatedStoresRouteWithChildren =

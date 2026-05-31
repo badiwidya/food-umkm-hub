@@ -26,6 +26,7 @@ function StoresIndexRoute() {
     <StoreBrowsePage
       onSearchSubmit={(nextSearch) => {
         void navigate({
+          resetScroll: false,
           search: {
             search: nextSearch || undefined,
           },
