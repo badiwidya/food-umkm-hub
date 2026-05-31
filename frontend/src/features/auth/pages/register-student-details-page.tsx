@@ -1,4 +1,4 @@
-import { Building2, GraduationCap, IdCard } from 'lucide-react'
+import { ArrowLeft, Building2, GraduationCap, IdCard } from 'lucide-react'
 
 import { AuthButton } from '../components/auth-button'
 import { AuthTextField } from '../components/auth-field'
@@ -16,6 +16,13 @@ export function RegisterStudentDetailsPage() {
       title="Buat Akun Mahasiswa"
     >
       <div className="space-y-6">
+        <a
+          className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-[#1e40af] bg-white px-3 py-2 text-sm font-medium leading-5 text-[#1e40af] transition hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1e40af]"
+          href="/register/student"
+        >
+          <ArrowLeft aria-hidden="true" className="size-4" />
+          Kembali
+        </a>
         <form className="space-y-4" onSubmit={onSubmit}>
           {formError ? (
             <p className="rounded-lg bg-red-50 px-3 py-2 text-sm leading-5 text-red-700">

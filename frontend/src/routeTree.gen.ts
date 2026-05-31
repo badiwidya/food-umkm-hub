@@ -16,8 +16,13 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated.
 import { Route as VerifyEmailSuccessRouteImport } from './routes/verify-email.success'
 import { Route as RegisterCheckEmailRouteImport } from './routes/register.check-email'
 import { Route as RegisterRoleRouteImport } from './routes/register.$role'
+import { Route as AuthenticatedStoresRouteImport } from './routes/_authenticated.stores'
+import { Route as AuthenticatedFavoritesRouteImport } from './routes/_authenticated.favorites'
+import { Route as AuthenticatedActivityRouteImport } from './routes/_authenticated.activity'
 import { Route as RegisterRoleIndexRouteImport } from './routes/register.$role.index'
 import { Route as RegisterRoleDetailsRouteImport } from './routes/register.$role.details'
+import { Route as AuthenticatedStoresStoreIdRouteImport } from './routes/_authenticated.stores.$storeId'
+import { Route as AuthenticatedProductsProductIdRouteImport } from './routes/_authenticated.products.$productId'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
@@ -53,6 +58,21 @@ const RegisterRoleRoute = RegisterRoleRouteImport.update({
   path: '/register/$role',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedStoresRoute = AuthenticatedStoresRouteImport.update({
+  id: '/stores',
+  path: '/stores',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedFavoritesRoute = AuthenticatedFavoritesRouteImport.update({
+  id: '/favorites',
+  path: '/favorites',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedActivityRoute = AuthenticatedActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const RegisterRoleIndexRoute = RegisterRoleIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -63,23 +83,45 @@ const RegisterRoleDetailsRoute = RegisterRoleDetailsRouteImport.update({
   path: '/details',
   getParentRoute: () => RegisterRoleRoute,
 } as any)
+const AuthenticatedStoresStoreIdRoute =
+  AuthenticatedStoresStoreIdRouteImport.update({
+    id: '/$storeId',
+    path: '/$storeId',
+    getParentRoute: () => AuthenticatedStoresRoute,
+  } as any)
+const AuthenticatedProductsProductIdRoute =
+  AuthenticatedProductsProductIdRouteImport.update({
+    id: '/products/$productId',
+    path: '/products/$productId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/login': typeof LoginRoute
   '/verify-email': typeof VerifyEmailRouteWithChildren
+  '/activity': typeof AuthenticatedActivityRoute
+  '/favorites': typeof AuthenticatedFavoritesRoute
+  '/stores': typeof AuthenticatedStoresRouteWithChildren
   '/register/$role': typeof RegisterRoleRouteWithChildren
   '/register/check-email': typeof RegisterCheckEmailRoute
   '/verify-email/success': typeof VerifyEmailSuccessRoute
+  '/products/$productId': typeof AuthenticatedProductsProductIdRoute
+  '/stores/$storeId': typeof AuthenticatedStoresStoreIdRoute
   '/register/$role/details': typeof RegisterRoleDetailsRoute
   '/register/$role/': typeof RegisterRoleIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/verify-email': typeof VerifyEmailRouteWithChildren
+  '/activity': typeof AuthenticatedActivityRoute
+  '/favorites': typeof AuthenticatedFavoritesRoute
+  '/stores': typeof AuthenticatedStoresRouteWithChildren
   '/register/check-email': typeof RegisterCheckEmailRoute
   '/verify-email/success': typeof VerifyEmailSuccessRoute
   '/': typeof AuthenticatedIndexRoute
+  '/products/$productId': typeof AuthenticatedProductsProductIdRoute
+  '/stores/$storeId': typeof AuthenticatedStoresStoreIdRoute
   '/register/$role/details': typeof RegisterRoleDetailsRoute
   '/register/$role': typeof RegisterRoleIndexRoute
 }
@@ -88,10 +130,15 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/verify-email': typeof VerifyEmailRouteWithChildren
+  '/_authenticated/activity': typeof AuthenticatedActivityRoute
+  '/_authenticated/favorites': typeof AuthenticatedFavoritesRoute
+  '/_authenticated/stores': typeof AuthenticatedStoresRouteWithChildren
   '/register/$role': typeof RegisterRoleRouteWithChildren
   '/register/check-email': typeof RegisterCheckEmailRoute
   '/verify-email/success': typeof VerifyEmailSuccessRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/products/$productId': typeof AuthenticatedProductsProductIdRoute
+  '/_authenticated/stores/$storeId': typeof AuthenticatedStoresStoreIdRoute
   '/register/$role/details': typeof RegisterRoleDetailsRoute
   '/register/$role/': typeof RegisterRoleIndexRoute
 }
@@ -101,18 +148,28 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/verify-email'
+    | '/activity'
+    | '/favorites'
+    | '/stores'
     | '/register/$role'
     | '/register/check-email'
     | '/verify-email/success'
+    | '/products/$productId'
+    | '/stores/$storeId'
     | '/register/$role/details'
     | '/register/$role/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
     | '/verify-email'
+    | '/activity'
+    | '/favorites'
+    | '/stores'
     | '/register/check-email'
     | '/verify-email/success'
     | '/'
+    | '/products/$productId'
+    | '/stores/$storeId'
     | '/register/$role/details'
     | '/register/$role'
   id:
@@ -120,10 +177,15 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/login'
     | '/verify-email'
+    | '/_authenticated/activity'
+    | '/_authenticated/favorites'
+    | '/_authenticated/stores'
     | '/register/$role'
     | '/register/check-email'
     | '/verify-email/success'
     | '/_authenticated/'
+    | '/_authenticated/products/$productId'
+    | '/_authenticated/stores/$storeId'
     | '/register/$role/details'
     | '/register/$role/'
   fileRoutesById: FileRoutesById
@@ -187,6 +249,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterRoleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/stores': {
+      id: '/_authenticated/stores'
+      path: '/stores'
+      fullPath: '/stores'
+      preLoaderRoute: typeof AuthenticatedStoresRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/favorites': {
+      id: '/_authenticated/favorites'
+      path: '/favorites'
+      fullPath: '/favorites'
+      preLoaderRoute: typeof AuthenticatedFavoritesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/activity': {
+      id: '/_authenticated/activity'
+      path: '/activity'
+      fullPath: '/activity'
+      preLoaderRoute: typeof AuthenticatedActivityRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/register/$role/': {
       id: '/register/$role/'
       path: '/'
@@ -201,15 +284,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterRoleDetailsRouteImport
       parentRoute: typeof RegisterRoleRoute
     }
+    '/_authenticated/stores/$storeId': {
+      id: '/_authenticated/stores/$storeId'
+      path: '/$storeId'
+      fullPath: '/stores/$storeId'
+      preLoaderRoute: typeof AuthenticatedStoresStoreIdRouteImport
+      parentRoute: typeof AuthenticatedStoresRoute
+    }
+    '/_authenticated/products/$productId': {
+      id: '/_authenticated/products/$productId'
+      path: '/products/$productId'
+      fullPath: '/products/$productId'
+      preLoaderRoute: typeof AuthenticatedProductsProductIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
+interface AuthenticatedStoresRouteChildren {
+  AuthenticatedStoresStoreIdRoute: typeof AuthenticatedStoresStoreIdRoute
+}
+
+const AuthenticatedStoresRouteChildren: AuthenticatedStoresRouteChildren = {
+  AuthenticatedStoresStoreIdRoute: AuthenticatedStoresStoreIdRoute,
+}
+
+const AuthenticatedStoresRouteWithChildren =
+  AuthenticatedStoresRoute._addFileChildren(AuthenticatedStoresRouteChildren)
+
 interface AuthenticatedRouteChildren {
+  AuthenticatedActivityRoute: typeof AuthenticatedActivityRoute
+  AuthenticatedFavoritesRoute: typeof AuthenticatedFavoritesRoute
+  AuthenticatedStoresRoute: typeof AuthenticatedStoresRouteWithChildren
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedProductsProductIdRoute: typeof AuthenticatedProductsProductIdRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedActivityRoute: AuthenticatedActivityRoute,
+  AuthenticatedFavoritesRoute: AuthenticatedFavoritesRoute,
+  AuthenticatedStoresRoute: AuthenticatedStoresRouteWithChildren,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedProductsProductIdRoute: AuthenticatedProductsProductIdRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(

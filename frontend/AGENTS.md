@@ -24,6 +24,7 @@ src/
 │   └── common/    # shared business components
 ├── features/      # domain-based modules
 └── routes/        # TanStack Router routes
+dist/              # DO NOT READ THIS
 ```
 
 ### Rules

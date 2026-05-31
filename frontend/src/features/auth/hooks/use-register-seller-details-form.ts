@@ -6,6 +6,10 @@ import { z } from 'zod'
 
 import { registerUmkmAuthSellerRegisterPostMutation } from '../../../client/@tanstack/react-query.gen'
 import {
+  getBackendErrorInfo,
+  shouldReturnToRegisterAccountStep,
+} from '../lib/backend-error'
+import {
   clearRegistrationDraft,
   getRegistrationDraft,
 } from '../lib/registration-draft'
@@ -89,8 +93,26 @@ export function useRegisterSellerDetailsForm() {
         search: { email: draft.email },
         to: '/register/check-email',
       })
-    } catch {
-      setFormError('Pendaftaran penjual gagal. Periksa kembali data Anda.')
+    } catch (error) {
+      const backendError = getBackendErrorInfo(error)
+
+      if (shouldReturnToRegisterAccountStep(backendError?.type ?? null)) {
+        void navigate({
+          params: { role: 'seller' },
+          search: {
+            errorMessage:
+              backendError?.message ??
+              'Pendaftaran penjual gagal. Periksa kembali data akun Anda.',
+          },
+          to: '/register/$role',
+        })
+        return
+      }
+
+      setFormError(
+        backendError?.message ??
+          'Pendaftaran penjual gagal. Periksa kembali data Anda.',
+      )
     }
   })
 

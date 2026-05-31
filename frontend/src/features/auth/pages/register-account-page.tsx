@@ -7,10 +7,14 @@ import { useRegisterAccountForm } from '../hooks/use-register-account-form'
 import type { RegisterRole } from '../lib/register-role'
 
 type RegisterAccountPageProps = {
+  errorMessage?: string
   role: RegisterRole
 }
 
-export function RegisterAccountPage({ role }: RegisterAccountPageProps) {
+export function RegisterAccountPage({
+  errorMessage,
+  role,
+}: RegisterAccountPageProps) {
   const emailPlaceholder =
     role === 'student' ? 'mahasiswa@apps.ipb.ac.id' : 'penjual@email.com'
   const { form, onSubmit } = useRegisterAccountForm({ role })
@@ -20,6 +24,11 @@ export function RegisterAccountPage({ role }: RegisterAccountPageProps) {
     <AuthShell subtitle="Bergabung dengan IPB Food Hub" title="Buat Akun Baru">
       <div className="space-y-6">
         <form className="space-y-4" onSubmit={onSubmit}>
+          {errorMessage ? (
+            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm leading-5 text-red-700">
+              {errorMessage}
+            </p>
+          ) : null}
           <AuthTextField
             autoComplete="name"
             icon={<User aria-hidden="true" className="size-5" />}

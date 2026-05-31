@@ -6,6 +6,10 @@ import { z } from 'zod'
 
 import { registerStudentAuthStudentRegisterPostMutation } from '../../../client/@tanstack/react-query.gen'
 import {
+  getBackendErrorInfo,
+  shouldReturnToRegisterAccountStep,
+} from '../lib/backend-error'
+import {
   clearRegistrationDraft,
   getRegistrationDraft,
 } from '../lib/registration-draft'
@@ -83,8 +87,26 @@ export function useRegisterStudentDetailsForm() {
         search: { email: draft.email },
         to: '/register/check-email',
       })
-    } catch {
-      setFormError('Pendaftaran mahasiswa gagal. Periksa kembali data Anda.')
+    } catch (error) {
+      const backendError = getBackendErrorInfo(error)
+
+      if (shouldReturnToRegisterAccountStep(backendError?.type ?? null)) {
+        void navigate({
+          params: { role: 'student' },
+          search: {
+            errorMessage:
+              backendError?.message ??
+              'Pendaftaran mahasiswa gagal. Periksa kembali data akun Anda.',
+          },
+          to: '/register/$role',
+        })
+        return
+      }
+
+      setFormError(
+        backendError?.message ??
+          'Pendaftaran mahasiswa gagal. Periksa kembali data Anda.',
+      )
     }
   })
 

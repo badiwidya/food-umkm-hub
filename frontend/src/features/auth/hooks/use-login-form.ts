@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { getMeUsersMeGet } from '../../../client'
 import { loginAuthLoginPostMutation } from '../../../client/@tanstack/react-query.gen'
 import { useAuthStore } from '../../../stores/auth-store'
+import { getBackendErrorMessage } from '../lib/backend-error'
 import { getRoleLandingPath, getSafeRedirectPath } from '../lib/role-redirect'
 
 const loginFormSchema = z.object({
@@ -68,9 +69,14 @@ export function useLoginForm({ redirect }: UseLoginFormOptions) {
       window.location.assign(
         getSafeRedirectPath(redirect) ?? getRoleLandingPath(user.role),
       )
-    } catch {
+    } catch (error) {
       clearAuth()
-      setFormError('Login gagal. Periksa email dan password Anda.')
+      setFormError(
+        getBackendErrorMessage(
+          error,
+          'Login gagal. Periksa email dan password Anda.',
+        ),
+      )
     }
   })
 
