@@ -64,7 +64,9 @@ class UserService:
             user, VerificationTokenType.EMAIL_CHANGE_VERIFICATION
         )
 
-        verification_link = f"{settings.FRONTEND_URL}/click/change-email?token={raw_token}&id={token.id}"
+        verification_link = (
+            f"{settings.FRONTEND_URL}/change-email?token={raw_token}&tokenId={token.id}"
+        )
         send_verification_email_task.delay(
             to=user.pending_email, verification_link=verification_link
         )  # pyright: ignore[reportCallIssue]

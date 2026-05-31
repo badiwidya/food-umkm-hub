@@ -1,20 +1,60 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, status
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.admin_router import admin_router
 from app.auth.router import auth_router
 from app.celery_app import celery_app  # noqa: F401
+from app.config import settings
 from app.exception_handler import register_exception_handlers
 from app.favorites.router import favorite_router
 from app.orders.router import order_router, store_order_router
 from app.products.router import product_router, store_product_router
 from app.promos.router import promo_router, store_promo_router
 from app.reviews.router import review_router
+from app.schema import ErrorResponse, ValidationErrorResponse
 from app.storage.router import storage_router
 from app.stores.router import store_router
 from app.students.router import student_router
 from app.users.router import user_router
 
-app = FastAPI(title="IPB Food & UMKM Hub API", version="0.1.0")
+app = FastAPI(
+    title="IPB Food & UMKM Hub API",
+    version="0.1.0",
+    responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "model": ErrorResponse,
+            "description": "Bad Request",
+        },
+        status.HTTP_401_UNAUTHORIZED: {
+            "model": ErrorResponse,
+            "description": "Unauthorized",
+        },
+        status.HTTP_403_FORBIDDEN: {
+            "model": ErrorResponse,
+            "description": "Forbidden",
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "model": ErrorResponse,
+            "description": "Not Found",
+        },
+        status.HTTP_422_UNPROCESSABLE_CONTENT: {
+            "model": ValidationErrorResponse,
+            "description": "Validation Error",
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "model": ErrorResponse,
+            "description": "Internal Server Error",
+        },
+    },
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[str(settings.FRONTEND_URL)],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 register_exception_handlers(app)
 
