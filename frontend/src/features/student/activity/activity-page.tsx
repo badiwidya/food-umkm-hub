@@ -12,6 +12,7 @@ import type {
   ReviewItemRequest,
 } from '../../../client'
 import {
+  cancelOrderOrdersIdCancelPostMutation,
   createOrderReviewsOrdersIdReviewsPostMutation,
   getOrderDetailsOrdersIdGetOptions,
   getOrdersByStudentOrdersGetOptions,
@@ -54,7 +55,9 @@ type ActivityPageProps = {
 }
 
 export function ActivityPage({ onStatusChange, status }: ActivityPageProps) {
+  const queryClient = useQueryClient()
   const [reviewOrderId, setReviewOrderId] = useState<string | null>(null)
+  const [cancelError, setCancelError] = useState<string | null>(null)
   const ordersQuery = useQuery(
     getOrdersByStudentOrdersGetOptions({
       query: {
@@ -64,7 +67,33 @@ export function ActivityPage({ onStatusChange, status }: ActivityPageProps) {
       },
     }),
   )
+  const cancelOrderMutation = useMutation(
+    cancelOrderOrdersIdCancelPostMutation(),
+  )
   const orders = ordersQuery.data?.data ?? []
+
+  async function handleCancelOrder(orderId: string) {
+    const isConfirmed = window.confirm(
+      'Batalkan pesanan ini? Pesanan yang dibatalkan tidak dapat diproses.',
+    )
+
+    if (!isConfirmed) {
+      return
+    }
+
+    setCancelError(null)
+
+    try {
+      await cancelOrderMutation.mutateAsync({
+        path: {
+          id: orderId,
+        },
+      })
+      await invalidateOrderQueries(queryClient, orderId)
+    } catch (error) {
+      setCancelError(getErrorMessage(error))
+    }
+  }
 
   return (
     <StudentAppShell>
@@ -102,6 +131,12 @@ export function ActivityPage({ onStatusChange, status }: ActivityPageProps) {
           </div>
         ) : null}
 
+        {cancelError ? (
+          <div className="mb-3 rounded-lg border border-red-100 bg-red-50 px-4 py-3">
+            <p className="text-sm leading-5 text-red-700">{cancelError}</p>
+          </div>
+        ) : null}
+
         {ordersQuery.isSuccess && orders.length === 0 ? (
           <div className="rounded-lg border border-slate-200 bg-white px-4 py-8 text-center">
             <p className="text-sm leading-5 text-slate-500">
@@ -114,7 +149,14 @@ export function ActivityPage({ onStatusChange, status }: ActivityPageProps) {
           <div className="space-y-3">
             {orders.map((order) => (
               <OrderCard
+                isCancelPending={
+                  cancelOrderMutation.isPending &&
+                  cancelOrderMutation.variables?.path.id === order.id
+                }
                 key={order.id}
+                onCancelClick={() => {
+                  void handleCancelOrder(order.id)
+                }}
                 onReviewClick={() => setReviewOrderId(order.id)}
                 order={order}
               />
@@ -164,9 +206,13 @@ function ActivityStatusButton({
 }
 
 function OrderCard({
+  isCancelPending,
+  onCancelClick,
   onReviewClick,
   order,
 }: {
+  isCancelPending: boolean
+  onCancelClick: () => void
   onReviewClick: () => void
   order: OrderSummaryResponse
 }) {
@@ -175,6 +221,7 @@ function OrderCard({
     (total, item) => total + item.quantity,
     0,
   )
+  const canCancel = order.status === 'pending'
   const canReview = order.status === 'completed' && !order.isReviewed
 
   return (
@@ -225,6 +272,18 @@ function OrderCard({
           </div>
         </div>
       </Link>
+      {canCancel ? (
+        <div className="mt-3 border-t border-slate-200 pt-3">
+          <button
+            className="h-10 w-full rounded-lg bg-red-600 px-4 text-sm font-medium leading-5 text-white transition hover:bg-red-700 disabled:opacity-50"
+            disabled={isCancelPending}
+            onClick={onCancelClick}
+            type="button"
+          >
+            {isCancelPending ? 'Membatalkan...' : 'Batalkan'}
+          </button>
+        </div>
+      ) : null}
       {canReview ? (
         <div className="mt-3 border-t border-slate-200 pt-3">
           <button
@@ -633,6 +692,25 @@ async function invalidateReviewQueries(
         }).queryKey,
       }),
     ]),
+  ])
+}
+
+async function invalidateOrderQueries(
+  queryClient: QueryClient,
+  orderId: string,
+) {
+  await Promise.all([
+    queryClient.invalidateQueries({
+      predicate: (query) =>
+        getGeneratedQueryId(query.queryKey) === 'getOrdersByStudentOrdersGet',
+    }),
+    queryClient.invalidateQueries({
+      queryKey: getOrderDetailsOrdersIdGetOptions({
+        path: {
+          id: orderId,
+        },
+      }).queryKey,
+    }),
   ])
 }
 

@@ -1,9 +1,14 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { QueryClient } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { ArrowLeft, Check } from 'lucide-react'
+import { useState } from 'react'
 
 import type { OrderStatus, PaymentMethod } from '../../../client'
-import { getOrderDetailsOrdersIdGetOptions } from '../../../client/@tanstack/react-query.gen'
+import {
+  cancelOrderOrdersIdCancelPostMutation,
+  getOrderDetailsOrdersIdGetOptions,
+} from '../../../client/@tanstack/react-query.gen'
 import { formatRupiah } from '../browse/format'
 import { getOrderStatusLabel } from './order-status'
 
@@ -12,6 +17,8 @@ type OrderDetailPageProps = {
 }
 
 export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
+  const queryClient = useQueryClient()
+  const [cancelError, setCancelError] = useState<string | null>(null)
   const orderQuery = useQuery(
     getOrderDetailsOrdersIdGetOptions({
       path: {
@@ -19,7 +26,33 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
       },
     }),
   )
+  const cancelOrderMutation = useMutation(
+    cancelOrderOrdersIdCancelPostMutation(),
+  )
   const order = orderQuery.data
+
+  async function handleCancelOrder() {
+    const isConfirmed = window.confirm(
+      'Batalkan pesanan ini? Pesanan yang dibatalkan tidak dapat diproses.',
+    )
+
+    if (!isConfirmed) {
+      return
+    }
+
+    setCancelError(null)
+
+    try {
+      await cancelOrderMutation.mutateAsync({
+        path: {
+          id: orderId,
+        },
+      })
+      await invalidateOrderQueries(queryClient, orderId)
+    } catch (error) {
+      setCancelError(getErrorMessage(error))
+    }
+  }
 
   return (
     <main className="min-h-screen bg-slate-100 text-slate-900">
@@ -74,6 +107,25 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
                   >
                     Lakukan Pembayaran
                   </Link>
+                ) : null}
+                {canCancelOrder(order.status) ? (
+                  <button
+                    className="mt-3 h-10 w-full rounded-lg bg-red-600 px-4 text-sm font-medium leading-5 text-white transition hover:bg-red-700 disabled:opacity-50"
+                    disabled={cancelOrderMutation.isPending}
+                    onClick={() => {
+                      void handleCancelOrder()
+                    }}
+                    type="button"
+                  >
+                    {cancelOrderMutation.isPending
+                      ? 'Membatalkan...'
+                      : 'Batalkan Pesanan'}
+                  </button>
+                ) : null}
+                {cancelError ? (
+                  <p className="mt-3 rounded-lg bg-red-100 px-3 py-2 text-sm leading-5 text-red-700">
+                    {cancelError}
+                  </p>
                 ) : null}
               </section>
 
@@ -284,5 +336,64 @@ function canResumeQrisPayment(order: {
     order.paymentMethod === 'qris' &&
     order.status === 'pending' &&
     order.paymentProofUrl === null
+  )
+}
+
+function canCancelOrder(status: OrderStatus) {
+  return status === 'pending'
+}
+
+async function invalidateOrderQueries(
+  queryClient: QueryClient,
+  orderId: string,
+) {
+  await Promise.all([
+    queryClient.invalidateQueries({
+      predicate: (query) =>
+        getGeneratedQueryId(query.queryKey) === 'getOrdersByStudentOrdersGet',
+    }),
+    queryClient.invalidateQueries({
+      queryKey: getOrderDetailsOrdersIdGetOptions({
+        path: {
+          id: orderId,
+        },
+      }).queryKey,
+    }),
+  ])
+}
+
+function getGeneratedQueryId(queryKey: readonly unknown[]) {
+  const firstQueryKeyPart = queryKey[0]
+
+  if (!isGeneratedQueryKeyPart(firstQueryKeyPart)) {
+    return null
+  }
+
+  return firstQueryKeyPart._id
+}
+
+function isGeneratedQueryKeyPart(value: unknown): value is { _id: string } {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    '_id' in value &&
+    typeof value._id === 'string'
+  )
+}
+
+function getErrorMessage(error: unknown) {
+  if (hasStringMessage(error)) {
+    return error.message
+  }
+
+  return 'Pesanan gagal dibatalkan. Coba lagi.'
+}
+
+function hasStringMessage(error: unknown): error is { message: string } {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof error.message === 'string'
   )
 }
