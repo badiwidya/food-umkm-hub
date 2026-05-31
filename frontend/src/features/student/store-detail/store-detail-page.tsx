@@ -1,16 +1,19 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
-import { ArrowLeft, Clock, MapPin, ShoppingCart, Star } from 'lucide-react'
+import { ArrowLeft, Clock, MapPin, ShoppingCart, Star, Tag } from 'lucide-react'
 
 import {
+  getAllPromoStoresStoreIdPromosGetOptions,
   getDetailStoresIdGetOptions,
   getProductsByStoreStoresStoreIdProductsGetOptions,
 } from '../../../client/@tanstack/react-query.gen'
+import type { PromoSummaryResponse } from '../../../client'
 import { ProductCard } from '../browse/product-card'
 import { ProductCategoryTabs } from '../browse/product-category-tabs'
 import type { ProductCategoryFilter } from '../browse/product-category'
 import { ProductListSkeleton } from '../browse/product-list-skeleton'
 import { StoreFavoriteButton } from '../browse/store-favorite-button'
+import { formatRupiah } from '../browse/format'
 import { formatRating } from '../browse/format'
 
 type StoreDetailPageProps = {
@@ -44,8 +47,20 @@ export function StoreDetailPage({
       },
     }),
   )
+  const promoQuery = useQuery(
+    getAllPromoStoresStoreIdPromosGetOptions({
+      path: {
+        store_id: storeId,
+      },
+      query: {
+        page: 1,
+        pageSize: 3,
+      },
+    }),
+  )
   const store = storeQuery.data
   const products = productsQuery.data?.data ?? []
+  const promos = promoQuery.data?.data ?? []
 
   return (
     <main className="min-h-screen bg-slate-100 text-slate-900">
@@ -143,6 +158,59 @@ export function StoreDetailPage({
               </div>
             </section>
 
+            <section className="border-b border-slate-200 bg-slate-50 px-4 py-5">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-lg font-medium leading-7 text-slate-800">
+                  Promo Tersedia
+                </h3>
+                {promoQuery.isPending ? (
+                  <span className="text-xs leading-4 text-slate-400">
+                    Memuat...
+                  </span>
+                ) : null}
+              </div>
+
+              {promoQuery.isPending ? (
+                <div className="mt-4 space-y-3">
+                  <div className="h-24 animate-pulse rounded-lg bg-white" />
+                  <div className="h-24 animate-pulse rounded-lg bg-white" />
+                </div>
+              ) : null}
+
+              {promoQuery.isSuccess && promos.length > 0 ? (
+                <div className="mt-4 space-y-3">
+                  {promos.map((promo) => (
+                    <PromoCard key={promo.id} promo={promo} />
+                  ))}
+                </div>
+              ) : null}
+
+              {promoQuery.isSuccess && promos.length === 0 ? (
+                <div className="mt-4 rounded-lg border border-dashed border-slate-200 bg-white px-4 py-6 text-center">
+                  <div className="mx-auto flex size-10 items-center justify-center rounded-full bg-blue-50 text-[#1e40af]">
+                    <Tag aria-hidden="true" className="size-5" />
+                  </div>
+                  <p className="mt-3 text-sm leading-5 text-slate-700">
+                    Belum ada promo untuk UMKM ini.
+                  </p>
+                  <p className="mt-1 text-xs leading-4 text-slate-400">
+                    Promo aktif akan muncul di sini saat tersedia.
+                  </p>
+                </div>
+              ) : null}
+
+              {promoQuery.isError ? (
+                <div className="mt-4 rounded-lg border border-dashed border-slate-200 bg-white px-4 py-6 text-center">
+                  <div className="mx-auto flex size-10 items-center justify-center rounded-full bg-blue-50 text-[#1e40af]">
+                    <Tag aria-hidden="true" className="size-5" />
+                  </div>
+                  <p className="mt-3 text-sm leading-5 text-slate-700">
+                    Promo untuk UMKM ini belum tersedia.
+                  </p>
+                </div>
+              ) : null}
+            </section>
+
             <section className="px-4 py-5">
               <h3 className="text-lg font-medium leading-7 text-slate-800">
                 Menu Tersedia
@@ -201,4 +269,63 @@ function StoreDetailSkeleton() {
       </div>
     </div>
   )
+}
+
+function PromoCard({ promo }: { promo: PromoSummaryResponse }) {
+  return (
+    <article className="rounded-lg border border-blue-100 bg-white p-4 shadow-sm">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="truncate text-sm font-medium leading-5 text-[#1e40af]">
+            {promo.code}
+          </p>
+          <p className="mt-1 text-sm leading-5 text-slate-700">
+            {formatPromoValue(promo)}
+          </p>
+        </div>
+        <span className="shrink-0 rounded-full bg-blue-50 px-2 py-0.5 text-xs leading-4 text-[#1e40af]">
+          {promo.type === 'percentage' ? 'Persentase' : 'Potongan tetap'}
+        </span>
+      </div>
+
+      <div className="mt-3 space-y-1 text-xs leading-4 text-slate-500">
+        <p>{formatPromoDateRange(promo.startDate, promo.endDate)}</p>
+        <p>{formatPromoRequirements(promo)}</p>
+      </div>
+    </article>
+  )
+}
+
+function formatPromoValue(promo: PromoSummaryResponse) {
+  if (promo.type === 'percentage') {
+    return `Diskon ${promo.value}%`
+  }
+
+  return `Potongan ${formatRupiah(promo.value)}`
+}
+
+function formatPromoRequirements(promo: PromoSummaryResponse) {
+  const requirements: Array<string> = []
+
+  if (promo.minOrderAmount !== null) {
+    requirements.push(`Min. belanja ${formatRupiah(promo.minOrderAmount)}`)
+  }
+
+  if (promo.maxDiscountAmount !== null) {
+    requirements.push(`Maks. diskon ${formatRupiah(promo.maxDiscountAmount)}`)
+  }
+
+  return requirements.length > 0
+    ? requirements.join(' · ')
+    : 'Tidak ada syarat minimum.'
+}
+
+function formatPromoDateRange(startDate: string, endDate: string) {
+  const formatter = new Intl.DateTimeFormat('id-ID', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  })
+
+  return `Berlaku ${formatter.format(new Date(startDate))} - ${formatter.format(new Date(endDate))}`
 }

@@ -1,8 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
-import { ArrowLeft, Clock, MapPin } from 'lucide-react'
+import { ArrowLeft, Clock, MapPin, Upload } from 'lucide-react'
 
-import { getProductDetailsProductsIdGetOptions } from '../../../client/@tanstack/react-query.gen'
+import type { PaymentMethod } from '../../../client'
+import {
+  getDetailStoresIdGetOptions,
+  getProductDetailsProductsIdGetOptions,
+} from '../../../client/@tanstack/react-query.gen'
 import type { CartItem } from '../../../stores/cart-store'
 import { useCartStore } from '../../../stores/cart-store'
 import { getCartSubtotal } from '../cart/cart-selectors'
@@ -119,10 +123,21 @@ function CheckoutContent({
   storeName: string | null
 }) {
   const subtotal = getCartSubtotal(items)
+  const storeQuery = useQuery({
+    ...getDetailStoresIdGetOptions({
+      path: {
+        id: storeId ?? '',
+      },
+    }),
+    enabled: storeId !== null,
+  })
+  const qrisImageUrl = storeQuery.data?.qrisImageUrl ?? null
+  const checkoutStoreName = storeQuery.data?.name ?? storeName
   const checkout = useCheckoutForm({
     clearCartOnSuccess,
     defaultNotes,
     items,
+    qrisImageUrl,
     storeId,
   })
   const total =
@@ -174,7 +189,7 @@ function CheckoutContent({
                       Lokasi Pengambilan
                     </h2>
                     <p className="mt-1 text-xs leading-4 text-slate-500">
-                      {storeName ?? 'UMKM'}
+                      {checkoutStoreName ?? 'UMKM'}
                     </p>
                   </div>
                 </div>
@@ -246,22 +261,107 @@ function CheckoutContent({
                 <h2 className="text-sm font-medium leading-5 text-slate-800">
                   Metode Pembayaran
                 </h2>
-                <div className="mt-3 rounded-lg border border-[#1e40af] bg-blue-50 p-3">
-                  <div className="flex items-center gap-3">
-                    <span className="flex size-5 items-center justify-center rounded-full border border-[#1e40af]">
-                      <span className="size-3 rounded-full bg-[#1e40af]" />
-                    </span>
-                    <div>
-                      <p className="text-sm font-medium leading-5 text-slate-800">
-                        Bayar di Tempat
-                      </p>
-                      <p className="text-xs leading-4 text-slate-500">
-                        Bayar saat mengambil pesanan
-                      </p>
-                    </div>
-                  </div>
+                <div className="mt-3 space-y-2">
+                  <PaymentMethodOption
+                    description={
+                      qrisImageUrl
+                        ? 'Bayar dengan scan QR'
+                        : 'QRIS belum tersedia untuk UMKM ini'
+                    }
+                    disabled={!qrisImageUrl}
+                    isSelected={checkout.paymentMethod === 'qris'}
+                    label="QRIS"
+                    method="qris"
+                    onSelect={checkout.handlePaymentMethodChange}
+                  />
+                  <PaymentMethodOption
+                    description="Bayar saat mengambil pesanan"
+                    isSelected={checkout.paymentMethod === 'cash'}
+                    label="Bayar di Tempat"
+                    method="cash"
+                    onSelect={checkout.handlePaymentMethodChange}
+                  />
                 </div>
               </section>
+
+              {checkout.paymentMethod === 'qris' && qrisImageUrl ? (
+                <>
+                  <section className="rounded-lg border border-slate-200 bg-white p-4 text-center">
+                    <h2 className="text-sm font-medium leading-5 text-slate-800">
+                      Total Pembayaran
+                    </h2>
+                    <p className="mt-2 text-3xl leading-9 text-[#1e40af]">
+                      {formatRupiah(total)}
+                    </p>
+                    <div className="mt-4 rounded-lg border border-dashed border-slate-200 p-3">
+                      <div className="overflow-hidden rounded-lg bg-slate-100">
+                        <img
+                          alt={`QRIS ${checkoutStoreName ?? 'UMKM'}`}
+                          className="aspect-square w-full object-contain"
+                          src={qrisImageUrl}
+                        />
+                      </div>
+                    </div>
+                    <p className="mt-3 text-xs leading-4 text-slate-500">
+                      Scan kode QR menggunakan aplikasi mobile banking atau
+                      e-wallet
+                    </p>
+                  </section>
+
+                  <section className="rounded-lg border border-slate-200 bg-white p-4">
+                    <h2 className="text-sm font-medium leading-5 text-slate-800">
+                      Upload Bukti Pembayaran
+                    </h2>
+                    <p className="mt-2 text-xs leading-4 text-slate-500">
+                      Upload screenshot bukti transfer untuk mempercepat
+                      verifikasi
+                    </p>
+                    <label className="mt-4 flex min-h-40 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-200 px-4 py-6 text-center transition hover:border-blue-200 hover:bg-blue-50/40">
+                      <Upload
+                        aria-hidden="true"
+                        className="size-12 text-slate-400"
+                      />
+                      <span className="mt-3 text-sm font-medium leading-5 text-slate-500">
+                        {checkout.paymentProofFile
+                          ? checkout.paymentProofFile.name
+                          : 'Klik untuk upload bukti'}
+                      </span>
+                      <span className="mt-1 text-xs leading-4 text-slate-500">
+                        JPG, PNG max 5MB
+                      </span>
+                      <input
+                        accept="image/jpeg,image/png"
+                        className="sr-only"
+                        onChange={(event) => {
+                          checkout.handlePaymentProofChange(
+                            event.target.files?.[0] ?? null,
+                          )
+                          event.currentTarget.value = ''
+                        }}
+                        type="file"
+                      />
+                    </label>
+                    {checkout.paymentProofError ? (
+                      <p className="mt-2 text-xs leading-4 text-red-600">
+                        {checkout.paymentProofError}
+                      </p>
+                    ) : null}
+                  </section>
+
+                  <section className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+                    <h2 className="text-sm font-medium leading-5 text-slate-800">
+                      Petunjuk Pembayaran:
+                    </h2>
+                    <ol className="mt-2 list-decimal space-y-1 pl-4 text-xs leading-4 text-slate-500">
+                      <li>Buka aplikasi mobile banking atau e-wallet</li>
+                      <li>Pilih menu Scan QR / QRIS</li>
+                      <li>Scan kode QR di atas</li>
+                      <li>Periksa nominal dan konfirmasi pembayaran</li>
+                      <li>Upload bukti pembayaran</li>
+                    </ol>
+                  </section>
+                </>
+              ) : null}
 
               <CheckoutSummary
                 appliedPromo={checkout.appliedPromo}
@@ -286,16 +386,86 @@ function CheckoutContent({
               </div>
               <button
                 className="flex h-12 w-full items-center justify-center rounded-lg bg-[#1e40af] px-4 text-base font-medium leading-6 text-white transition hover:bg-[#1d3a9c] disabled:opacity-60"
-                disabled={checkout.isPending}
+                disabled={
+                  checkout.isPending ||
+                  (checkout.paymentMethod === 'qris' &&
+                    !checkout.paymentProofFile)
+                }
                 type="submit"
               >
-                {checkout.isPending ? 'Membuat Pesanan...' : 'Buat Pesanan'}
+                {checkout.isPending
+                  ? 'Membuat Pesanan...'
+                  : checkout.paymentMethod === 'qris'
+                    ? 'Konfirmasi Pembayaran'
+                    : 'Buat Pesanan'}
               </button>
+              {checkout.paymentMethod === 'qris' &&
+              !checkout.paymentProofFile ? (
+                <p className="mt-2 text-center text-xs leading-4 text-slate-500">
+                  Upload bukti pembayaran untuk melanjutkan
+                </p>
+              ) : null}
             </footer>
           </form>
         )}
       </div>
     </main>
+  )
+}
+
+function PaymentMethodOption({
+  description,
+  disabled = false,
+  isSelected,
+  label,
+  method,
+  onSelect,
+}: {
+  description: string
+  disabled?: boolean
+  isSelected: boolean
+  label: string
+  method: PaymentMethod
+  onSelect: (method: PaymentMethod) => void
+}) {
+  return (
+    <button
+      className={[
+        'w-full rounded-lg border p-3 text-left transition disabled:cursor-not-allowed',
+        isSelected
+          ? 'border-[#1e40af] bg-blue-50'
+          : 'border-slate-200 bg-white hover:border-blue-200',
+        disabled ? 'bg-slate-50 opacity-55 hover:border-slate-200' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      disabled={disabled}
+      onClick={() => onSelect(method)}
+      type="button"
+    >
+      <span className="flex items-center gap-3">
+        <span
+          className={[
+            'flex size-5 shrink-0 items-center justify-center rounded-full border',
+            isSelected ? 'border-[#1e40af]' : 'border-slate-200',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+        >
+          {isSelected ? (
+            <span className="size-3 rounded-full bg-[#1e40af]" />
+          ) : null}
+        </span>
+        <span>
+          <span className="block text-sm font-medium leading-5 text-slate-800">
+            {label}
+          </span>
+          <span className="block text-xs leading-4 text-slate-500">
+            {description}
+          </span>
+        </span>
+      </span>
+    </button>
   )
 }
 

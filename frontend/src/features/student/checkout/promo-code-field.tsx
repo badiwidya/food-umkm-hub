@@ -6,6 +6,7 @@ import type { AppliedPromo } from './use-checkout-form'
 
 type CheckoutFormValues = {
   notes: string
+  paymentMethod: 'cash' | 'qris'
   promoCode: string
 }
 

@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { ArrowLeft, Check } from 'lucide-react'
 
-import type { OrderStatus } from '../../../client'
+import type { OrderStatus, PaymentMethod } from '../../../client'
 import { getOrderDetailsOrdersIdGetOptions } from '../../../client/@tanstack/react-query.gen'
 import { formatRupiah } from '../browse/format'
 import { getOrderStatusLabel } from './order-status'
@@ -171,8 +171,23 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
                   </div>
                   <div className="flex items-center justify-between gap-4">
                     <span className="text-slate-500">Metode Pembayaran</span>
-                    <span className="text-slate-800">Bayar di Tempat</span>
+                    <span className="text-slate-800">
+                      {getPaymentMethodLabel(order.paymentMethod)}
+                    </span>
                   </div>
+                  {order.paymentProofUrl ? (
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-slate-500">Bukti Pembayaran</span>
+                      <a
+                        className="text-[#1e40af] underline underline-offset-2"
+                        href={order.paymentProofUrl}
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        Lihat bukti
+                      </a>
+                    </div>
+                  ) : null}
                   {order.discountAmount > 0 ? (
                     <div className="flex items-center justify-between gap-4">
                       <span className="text-red-600">Diskon</span>
@@ -231,4 +246,13 @@ function getOrderStatusStepIndex(status: OrderStatus) {
   }
 
   return ORDER_STATUS_STEPS.findIndex((step) => step.status === status)
+}
+
+function getPaymentMethodLabel(paymentMethod: PaymentMethod) {
+  switch (paymentMethod) {
+    case 'cash':
+      return 'Bayar di Tempat'
+    case 'qris':
+      return 'QRIS'
+  }
 }
