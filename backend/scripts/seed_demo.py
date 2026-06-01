@@ -112,7 +112,7 @@ def qris_url(seed: str) -> str:
 ADMIN = DemoUser(
     key="admin",
     full_name="Admin Demo FoodHub",
-    email="demo.admin@gmail.com",
+    email="demo.admin@mixinitlab.tech",
     phone_number="081100000001",
     role=UserRole.ADMIN,
     avatar_seed="admin",
@@ -122,7 +122,7 @@ STUDENT = DemoStudent(
     user=DemoUser(
         key="student",
         full_name="Sinta Mahasiswa Demo",
-        email="demo.student@gmail.com",
+        email="demo.student@mixinitlab.tech",
         phone_number="081100000002",
         role=UserRole.STUDENT,
         avatar_seed="student",
@@ -136,7 +136,7 @@ SELLERS = [
     DemoUser(
         key="seller-rasa",
         full_name="Raka Pemilik Rasa Kampus",
-        email="demo.seller.rasa@gmail.com",
+        email="demo.seller.rasa@mixinitlab.tech",
         phone_number="081100000011",
         role=UserRole.SELLER,
         avatar_seed="seller-rasa",
@@ -144,7 +144,7 @@ SELLERS = [
     DemoUser(
         key="seller-kopi",
         full_name="Maya Pemilik Kopi Teras",
-        email="demo.seller.kopi@gmail.com",
+        email="demo.seller.kopi@mixinitlab.tech",
         phone_number="081100000012",
         role=UserRole.SELLER,
         avatar_seed="seller-kopi",
