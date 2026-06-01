@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
-import { useNavigate } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import {
   ChevronRight,
   Clock3,
   ImageIcon,
+  LinkIcon,
   LogOut,
   Mail,
   MapPin,
@@ -21,7 +22,13 @@ import {
 } from '../../../client/@tanstack/react-query.gen'
 import { useAuthStore } from '../../../stores/auth-store'
 
-export function SellerProfilePage() {
+type SellerProfilePageProps = {
+  showEmailChangeNotice?: boolean
+}
+
+export function SellerProfilePage({
+  showEmailChangeNotice = false,
+}: SellerProfilePageProps) {
   const navigate = useNavigate()
   const clearAuth = useAuthStore((state) => state.clearAuth)
   const storeQuery = useQuery(getMeStoresMeGetOptions())
@@ -78,6 +85,13 @@ export function SellerProfilePage() {
       </section>
 
       <div className="space-y-4 px-4 py-4">
+        {showEmailChangeNotice ? (
+          <p className="rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm leading-5 text-[#1e40af]">
+            Silakan periksa inbox email baru Anda untuk menyelesaikan perubahan
+            email
+          </p>
+        ) : null}
+
         <section className="overflow-hidden rounded-lg border border-slate-200 bg-white">
           <h2 className="px-4 py-4 text-sm font-medium leading-5 text-slate-500">
             Profil Toko
@@ -103,6 +117,11 @@ export function SellerProfilePage() {
             value={store.address}
           />
           <ProfileInfoRow
+            icon={<LinkIcon aria-hidden="true" className="size-5" />}
+            label="Link Maps"
+            value={store.mapsLink ?? ''}
+          />
+          <ProfileInfoRow
             icon={<QrCode aria-hidden="true" className="size-5" />}
             label="QRIS"
             media={
@@ -122,9 +141,9 @@ export function SellerProfilePage() {
             value={store.isOpen ? 'Buka' : 'Tutup'}
           />
           <ProfileActionRow
-            disabled
             icon={<Store aria-hidden="true" className="size-5" />}
             label="Edit Profil Toko"
+            to="/seller/profile/edit-store"
           />
         </section>
 
@@ -148,34 +167,25 @@ export function SellerProfilePage() {
             value={account.phoneNumber}
           />
           <ProfileActionRow
-            disabled
             icon={<UserRound aria-hidden="true" className="size-5" />}
             label="Edit Akun"
+            to="/seller/profile/edit-account"
           />
           <ProfileActionRow
-            disabled
             icon={<Shield aria-hidden="true" className="size-5" />}
             label="Ganti Password"
+            to="/seller/profile/change-password"
           />
         </section>
 
         <section className="overflow-hidden rounded-lg border border-slate-200 bg-white">
-          <h2 className="px-4 py-4 text-sm font-medium leading-5 text-slate-500">
-            Pengaturan
-          </h2>
           <button
-            className="flex min-h-16 w-full items-center justify-between gap-3 px-4 py-3 text-left transition hover:bg-slate-50"
+            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-3 text-base font-medium leading-6 text-white transition hover:bg-red-700"
             onClick={handleLogout}
             type="button"
           >
-            <span className="flex min-w-0 items-center gap-3">
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-600">
-                <LogOut aria-hidden="true" className="size-5" />
-              </span>
-              <span className="truncate text-sm font-medium leading-5 text-red-600">
-                Keluar
-              </span>
-            </span>
+            <LogOut aria-hidden="true" className="size-5" />
+            Keluar
           </button>
         </section>
 
@@ -216,20 +226,20 @@ type ProfileActionRowProps = {
   disabled?: boolean
   icon: ReactNode
   label: string
+  to?:
+    | '/seller/profile/edit-store'
+    | '/seller/profile/edit-account'
+    | '/seller/profile/change-password'
 }
 
 function ProfileActionRow({
   disabled = false,
   icon,
   label,
+  to,
 }: ProfileActionRowProps) {
-  return (
-    <button
-      aria-disabled={disabled}
-      className="flex min-h-16 w-full items-center justify-between gap-3 border-b border-slate-200 px-4 py-3 text-left transition last:border-b-0 enabled:hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
-      disabled={disabled}
-      type="button"
-    >
+  const content = (
+    <>
       <span className="flex min-w-0 items-center gap-3">
         <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-[#1e40af]">
           {icon}
@@ -249,6 +259,28 @@ function ProfileActionRow({
         aria-hidden="true"
         className="size-5 shrink-0 text-slate-500"
       />
+    </>
+  )
+
+  const className =
+    'flex min-h-16 w-full items-center justify-between gap-3 border-b border-slate-200 px-4 py-3 text-left transition last:border-b-0 hover:bg-slate-50'
+
+  if (to && !disabled) {
+    return (
+      <Link className={className} to={to}>
+        {content}
+      </Link>
+    )
+  }
+
+  return (
+    <button
+      aria-disabled={disabled}
+      className={`${className} disabled:cursor-not-allowed disabled:opacity-60`}
+      disabled={disabled}
+      type="button"
+    >
+      {content}
     </button>
   )
 }

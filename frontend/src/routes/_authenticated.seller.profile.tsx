@@ -1,13 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router'
-
-import { SellerProfilePage } from '../features/seller'
-import { titleHead } from '../lib/page-title'
+import { Outlet, createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_authenticated/seller/profile')({
-  head: () => titleHead('Profil Penjual'),
   component: SellerProfileRoute,
 })
 
 function SellerProfileRoute() {
-  return <SellerProfilePage />
+  return <Outlet />
 }
