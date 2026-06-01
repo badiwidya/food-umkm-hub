@@ -1,4 +1,5 @@
-from typing import Annotated, cast
+from dataclasses import asdict
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import Depends
@@ -59,11 +60,11 @@ EnsureAdminDep = Depends(ensure_admin)
 
 async def get_current_admin(
     admin_id: Annotated[UUID, Depends(ensure_admin)], user_service: UserServiceDep
-):
+) -> Admin:
     admin = await user_service.get_details(admin_id)
     if admin is None:
         raise AuthenticationException("Autentikasi gagal")
-    return cast(Admin, admin)
+    return Admin(**asdict(admin))
 
 
 CurrentAdminDep = Annotated[Admin, Depends(get_current_admin)]
