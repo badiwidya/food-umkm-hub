@@ -1,6 +1,7 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 
 import { LoginPage, getRoleLandingPath } from '../features/auth'
+import { titleHead } from '../lib/page-title'
 
 type LoginSearch = {
   redirect?: string
@@ -27,6 +28,7 @@ export const Route = createFileRoute('/login')({
       })
     }
   },
+  head: () => titleHead('Login'),
   component: LoginRoute,
 })
 

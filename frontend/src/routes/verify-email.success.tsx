@@ -1,6 +1,7 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 
 import { VerifyEmailSuccessPage, getRoleLandingPath } from '../features/auth'
+import { titleHead } from '../lib/page-title'
 
 export const Route = createFileRoute('/verify-email/success')({
   beforeLoad: ({ context }) => {
@@ -20,6 +21,7 @@ export const Route = createFileRoute('/verify-email/success')({
       })
     }
   },
+  head: () => titleHead('Email Terverifikasi'),
   component: VerifyEmailSuccessRoute,
 })
 

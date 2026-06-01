@@ -1,4 +1,13 @@
-import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
+import {
+  Outlet,
+  createFileRoute,
+  redirect,
+  useRouterState,
+} from '@tanstack/react-router'
+
+import { StudentAppShell } from '../features/student/layout'
+
+const STUDENT_TAB_PATHS = new Set(['/', '/stores', '/favorites', '/activity'])
 
 export const Route = createFileRoute('/_authenticated')({
   beforeLoad: ({ context, location }) => {
@@ -17,5 +26,17 @@ export const Route = createFileRoute('/_authenticated')({
 })
 
 function AuthenticatedRoute() {
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  })
+
+  if (STUDENT_TAB_PATHS.has(pathname)) {
+    return (
+      <StudentAppShell>
+        <Outlet />
+      </StudentAppShell>
+    )
+  }
+
   return <Outlet />
 }

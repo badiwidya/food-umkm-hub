@@ -1,6 +1,7 @@
 import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
 
 import { getRoleLandingPath, isRegisterRole } from '../features/auth'
+import { titleHead } from '../lib/page-title'
 
 export const Route = createFileRoute('/register/$role')({
   beforeLoad: ({ context, params }) => {
@@ -26,6 +27,7 @@ export const Route = createFileRoute('/register/$role')({
       })
     }
   },
+  head: () => titleHead('Daftar'),
   component: RegisterRoute,
 })
 

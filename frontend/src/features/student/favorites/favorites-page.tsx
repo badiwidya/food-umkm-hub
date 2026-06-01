@@ -8,7 +8,7 @@ import { ProductCard } from '../browse/product-card'
 import { ProductListSkeleton } from '../browse/product-list-skeleton'
 import { StoreCard } from '../browse/store-card'
 import { StoreListSkeleton } from '../browse/store-list-skeleton'
-import { StudentAppShell, StudentTopHeader } from '../layout'
+import { StudentTopHeader } from '../layout'
 
 export type FavoritesTab = 'products' | 'stores'
 
@@ -38,7 +38,7 @@ export function FavoritesPage({ activeTab, onTabChange }: FavoritesPageProps) {
   const favoriteStores = favoriteStoresQuery.data?.data ?? []
 
   return (
-    <StudentAppShell>
+    <>
       <StudentTopHeader subtitle="Menu dan UMKM favorit Anda" title="Favorit" />
       <div className="border-b border-slate-200 px-4 py-2">
         <div className="grid grid-cols-2 gap-1 rounded-lg bg-slate-50 p-1">
@@ -110,7 +110,7 @@ export function FavoritesPage({ activeTab, onTabChange }: FavoritesPageProps) {
           </>
         )}
       </section>
-    </StudentAppShell>
+    </>
   )
 }
 

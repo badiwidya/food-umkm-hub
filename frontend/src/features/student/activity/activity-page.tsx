@@ -21,7 +21,7 @@ import {
 } from '../../../client/@tanstack/react-query.gen'
 import { ConfirmationDialog } from '../../../components/common/confirmation-dialog'
 import { formatRupiah } from '../browse/format'
-import { StudentAppShell, StudentTopHeader } from '../layout'
+import { StudentTopHeader } from '../layout'
 import type { ActivityStatusFilter } from './activity-status'
 
 const ACTIVITY_STATUS_OPTIONS = [
@@ -92,7 +92,7 @@ export function ActivityPage({ onStatusChange, status }: ActivityPageProps) {
   }
 
   return (
-    <StudentAppShell>
+    <>
       <StudentTopHeader subtitle="Riwayat transaksi Anda" title="Aktivitas" />
       <div className="border-b border-slate-200 px-4 py-2">
         <div className="grid grid-cols-3 gap-2">
@@ -181,7 +181,7 @@ export function ActivityPage({ onStatusChange, status }: ActivityPageProps) {
           variant="destructive"
         />
       ) : null}
-    </StudentAppShell>
+    </>
   )
 }
 

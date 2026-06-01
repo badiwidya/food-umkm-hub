@@ -6,6 +6,7 @@ import {
   parseProductCategory,
   type ProductCategoryFilter,
 } from '../features/student/browse/product-category'
+import { titleHead } from '../lib/page-title'
 
 type StudentHomeSearch = {
   category?: ProductCategoryFilter
@@ -32,6 +33,7 @@ export const Route = createFileRoute('/_authenticated/')({
       })
     }
   },
+  head: () => titleHead('Beranda'),
   component: StudentHomeRoute,
 })
 

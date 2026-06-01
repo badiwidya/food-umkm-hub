@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 import { RegisterAccountPage, isRegisterRole } from '../features/auth'
+import { titleHead } from '../lib/page-title'
 
 type RegisterIndexSearch = {
   errorMessage?: string
@@ -11,6 +12,7 @@ export const Route = createFileRoute('/register/$role/')({
     errorMessage:
       typeof search.errorMessage === 'string' ? search.errorMessage : undefined,
   }),
+  head: () => titleHead('Daftar'),
   component: RegisterIndexRoute,
 })
 

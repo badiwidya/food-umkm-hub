@@ -4,6 +4,7 @@ import {
   FavoritesPage,
   type FavoritesTab,
 } from '../features/student/favorites/favorites-page'
+import { titleHead } from '../lib/page-title'
 
 type FavoritesSearch = {
   tab?: FavoritesTab
@@ -17,6 +18,7 @@ export const Route = createFileRoute('/_authenticated/favorites')({
   validateSearch: (search): FavoritesSearch => ({
     tab: parseFavoritesTab(search.tab),
   }),
+  head: () => titleHead('Favorit'),
   component: FavoritesRoute,
 })
 

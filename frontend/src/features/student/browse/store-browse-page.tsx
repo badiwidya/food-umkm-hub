@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 
 import { listStoresGetOptions } from '../../../client/@tanstack/react-query.gen'
-import { StudentAppShell, StudentTopHeader } from '../layout'
+import { StudentTopHeader } from '../layout'
 import { StoreCard } from './store-card'
 import { StoreListSkeleton } from './store-list-skeleton'
 import { StoreSearchForm } from './store-search-form'
@@ -28,7 +28,7 @@ export function StoreBrowsePage({
   const totalStores = storesQuery.data?.total ?? 0
 
   return (
-    <StudentAppShell>
+    <>
       <StudentTopHeader subtitle="Daftar UMKM di Kampus IPB" title="UMKM IPB">
         <StoreSearchForm defaultSearch={search} onSubmit={onSearchSubmit} />
       </StudentTopHeader>
@@ -68,6 +68,6 @@ export function StoreBrowsePage({
           </div>
         ) : null}
       </section>
-    </StudentAppShell>
+    </>
   )
 }

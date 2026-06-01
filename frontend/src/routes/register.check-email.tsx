@@ -1,6 +1,7 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 
 import { CheckEmailPage, getRoleLandingPath } from '../features/auth'
+import { titleHead } from '../lib/page-title'
 
 type CheckEmailSearch = {
   email?: string
@@ -27,6 +28,7 @@ export const Route = createFileRoute('/register/check-email')({
       })
     }
   },
+  head: () => titleHead('Cek Email'),
   component: CheckEmailRoute,
 })
 

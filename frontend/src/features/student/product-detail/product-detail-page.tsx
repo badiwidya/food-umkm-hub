@@ -18,6 +18,7 @@ import {
   getProductDetailsProductsIdGetOptions,
   getProductReviewsProductsIdReviewsGetOptions,
 } from '../../../client/@tanstack/react-query.gen'
+import { usePageTitle } from '../../../lib/page-title'
 import { useCartStore } from '../../../stores/cart-store'
 import { formatRating, formatRupiah } from '../browse/format'
 import { ProductFavoriteButton } from '../browse/product-favorite-button'
@@ -55,6 +56,8 @@ export function ProductDetailPage({
   const product = productQuery.data
   const totalPrice = (product?.price ?? 0) * quantity
   const isStoreScoped = source === 'store'
+
+  usePageTitle(product?.name, 'Detail Produk')
 
   function handleAddToCart() {
     if (!product) {

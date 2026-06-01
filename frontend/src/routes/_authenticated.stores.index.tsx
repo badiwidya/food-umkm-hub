@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 import { StoreBrowsePage } from '../features/student/browse/store-browse-page'
+import { titleHead } from '../lib/page-title'
 
 type StoreBrowseSearch = {
   search?: string
@@ -15,6 +16,7 @@ export const Route = createFileRoute('/_authenticated/stores/')({
       search: parsedSearch || undefined,
     }
   },
+  head: () => titleHead('UMKM'),
   component: StoresIndexRoute,
 })
 

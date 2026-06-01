@@ -5,6 +5,7 @@ import {
   RegisterStudentDetailsPage,
   isRegisterRole,
 } from '../features/auth'
+import { titleHead } from '../lib/page-title'
 
 export const Route = createFileRoute('/register/$role/details')({
   beforeLoad: ({ params }) => {
@@ -14,6 +15,7 @@ export const Route = createFileRoute('/register/$role/details')({
       })
     }
   },
+  head: () => titleHead('Lengkapi Profil'),
   component: RegisterDetailsRoute,
 })
 

@@ -2,6 +2,7 @@ import { createFileRoute, redirect } from '@tanstack/react-router'
 
 import { getRoleLandingPath } from '../features/auth/lib/role-redirect'
 import { EditProfilePage } from '../features/student/profile'
+import { titleHead } from '../lib/page-title'
 
 export const Route = createFileRoute('/_authenticated/profile/edit')({
   beforeLoad: ({ context }) => {
@@ -13,6 +14,7 @@ export const Route = createFileRoute('/_authenticated/profile/edit')({
       })
     }
   },
+  head: () => titleHead('Edit Profil'),
   component: EditProfileRoute,
 })
 

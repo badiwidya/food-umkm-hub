@@ -1,6 +1,7 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 
 import { VerifyEmailPage, getRoleLandingPath } from '../features/auth'
+import { titleHead } from '../lib/page-title'
 
 type VerifyEmailSearch = {
   token?: string
@@ -29,6 +30,7 @@ export const Route = createFileRoute('/verify-email')({
       })
     }
   },
+  head: () => titleHead('Verifikasi Email'),
   component: VerifyEmailRoute,
 })
 

@@ -5,6 +5,7 @@ import {
   CheckoutPage,
   type CheckoutSearch,
 } from '../features/student/checkout/checkout-page'
+import { titleHead } from '../lib/page-title'
 
 export const Route = createFileRoute('/_authenticated/checkout')({
   validateSearch: (search): CheckoutSearch => ({
@@ -31,6 +32,7 @@ export const Route = createFileRoute('/_authenticated/checkout')({
       })
     }
   },
+  head: () => titleHead('Checkout'),
   component: CheckoutRoute,
 })
 

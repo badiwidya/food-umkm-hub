@@ -2,6 +2,7 @@ import { createFileRoute, redirect } from '@tanstack/react-router'
 
 import { getRoleLandingPath } from '../features/auth'
 import { CartPage } from '../features/student/cart/cart-page'
+import { titleHead } from '../lib/page-title'
 
 type CartSearch = {
   storeId?: string
@@ -20,6 +21,7 @@ export const Route = createFileRoute('/_authenticated/cart')({
       })
     }
   },
+  head: () => titleHead('Keranjang'),
   component: CartRoute,
 })
 

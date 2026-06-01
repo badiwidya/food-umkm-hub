@@ -2,6 +2,7 @@ import { createFileRoute, redirect } from '@tanstack/react-router'
 
 import { getRoleLandingPath } from '../features/auth'
 import { QrisPaymentPage } from '../features/student/orders/qris-payment-page'
+import { titleHead } from '../lib/page-title'
 
 export const Route = createFileRoute(
   '/_authenticated/orders/$orderId_/payment',
@@ -15,6 +16,7 @@ export const Route = createFileRoute(
       })
     }
   },
+  head: () => titleHead('Pembayaran QRIS'),
   component: QrisPaymentRoute,
 })
 

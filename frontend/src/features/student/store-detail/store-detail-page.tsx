@@ -17,6 +17,7 @@ import {
   getProductsByStoreStoresStoreIdProductsGetOptions,
 } from '../../../client/@tanstack/react-query.gen'
 import type { PromoSummaryResponse } from '../../../client'
+import { usePageTitle } from '../../../lib/page-title'
 import { ProductCard } from '../browse/product-card'
 import { ProductCategoryTabs } from '../browse/product-category-tabs'
 import type { ProductCategoryFilter } from '../browse/product-category'
@@ -71,18 +72,20 @@ export function StoreDetailPage({
   const products = productsQuery.data?.data ?? []
   const promos = promoQuery.data?.data ?? []
 
+  usePageTitle(store?.name, 'Detail UMKM')
+
   return (
     <main className="min-h-screen bg-slate-100 text-slate-900">
       <div className="mx-auto min-h-screen w-full max-w-sm bg-white">
         <header className="sticky top-0 z-10 bg-[#1e40af] px-3 py-2 text-white">
           <div className="flex h-10 items-center justify-between gap-3">
-            <a
+            <Link
               aria-label="Kembali"
               className="flex size-10 items-center justify-center rounded-full transition hover:bg-white/10"
-              href="/stores"
+              to="/stores"
             >
               <ArrowLeft aria-hidden="true" className="size-6" />
-            </a>
+            </Link>
             <h1 className="text-lg font-medium leading-7">Detail UMKM</h1>
             <div className="flex items-center gap-1">
               <StoreFavoriteButton storeId={storeId} />

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 
 import { getAllProductsProductsGetOptions } from '../../../client/@tanstack/react-query.gen'
-import { StudentAppShell, StudentTopHeader } from '../layout'
+import { StudentTopHeader } from '../layout'
 import { ProductCard } from './product-card'
 import { ProductCategoryTabs } from './product-category-tabs'
 import type { ProductCategoryFilter } from './product-category'
@@ -37,7 +37,7 @@ export function ProductBrowsePage({
   const totalProducts = productsQuery.data?.total ?? 0
 
   return (
-    <StudentAppShell>
+    <>
       <StudentTopHeader subtitle="Kampus IPB Dramaga" title="IPB Food Hub">
         <ProductSearchForm defaultSearch={search} onSubmit={onSearchSubmit} />
       </StudentTopHeader>
@@ -81,6 +81,6 @@ export function ProductBrowsePage({
           </div>
         ) : null}
       </section>
-    </StudentAppShell>
+    </>
   )
 }

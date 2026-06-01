@@ -5,6 +5,7 @@ import {
   type ProductCategoryFilter,
 } from '../features/student/browse/product-category'
 import { StoreDetailPage } from '../features/student/store-detail/store-detail-page'
+import { titleHead } from '../lib/page-title'
 
 type StoreDetailSearch = {
   category?: ProductCategoryFilter
@@ -14,6 +15,7 @@ export const Route = createFileRoute('/_authenticated/stores/$storeId')({
   validateSearch: (search): StoreDetailSearch => ({
     category: parseProductCategory(search.category),
   }),
+  head: () => titleHead('Detail UMKM'),
   component: StoreDetailRoute,
 })
 

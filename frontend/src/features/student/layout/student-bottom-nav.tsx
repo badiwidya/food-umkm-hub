@@ -1,36 +1,39 @@
+import { Link, useRouterState } from '@tanstack/react-router'
 import { Activity, Heart, Home, Store } from 'lucide-react'
 
 type NavItem = {
-  href: string
   icon: typeof Home
   label: string
+  to: '/' | '/stores' | '/favorites' | '/activity'
 }
 
 const NAV_ITEMS = [
   {
-    href: '/',
     icon: Home,
     label: 'Beranda',
+    to: '/',
   },
   {
-    href: '/stores',
     icon: Store,
     label: 'UMKM',
+    to: '/stores',
   },
   {
-    href: '/favorites',
     icon: Heart,
     label: 'Favorit',
+    to: '/favorites',
   },
   {
-    href: '/activity',
     icon: Activity,
     label: 'Aktivitas',
+    to: '/activity',
   },
 ] satisfies Array<NavItem>
 
 export function StudentBottomNav() {
-  const currentPath = window.location.pathname
+  const currentPath = useRouterState({
+    select: (state) => state.location.pathname,
+  })
 
   return (
     <nav
@@ -41,13 +44,13 @@ export function StudentBottomNav() {
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon
           const isActive =
-            item.href === '/'
+            item.to === '/'
               ? currentPath === '/'
-              : currentPath.startsWith(item.href)
+              : currentPath.startsWith(item.to)
 
           return (
-            <li key={item.href}>
-              <a
+            <li key={item.to}>
+              <Link
                 aria-current={isActive ? 'page' : undefined}
                 className={[
                   'flex h-full flex-col items-center justify-center gap-1 text-xs leading-4 transition',
@@ -57,11 +60,11 @@ export function StudentBottomNav() {
                 ]
                   .filter(Boolean)
                   .join(' ')}
-                href={item.href}
+                to={item.to}
               >
                 <Icon aria-hidden="true" className="size-6" strokeWidth={2.2} />
                 <span>{item.label}</span>
-              </a>
+              </Link>
             </li>
           )
         })}

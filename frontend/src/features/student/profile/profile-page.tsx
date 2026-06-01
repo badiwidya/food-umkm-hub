@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { useNavigate } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import {
   Building2,
   ChevronRight,
@@ -127,9 +127,9 @@ export function ProfilePage({
               <h2 className="px-4 py-4 text-sm font-medium leading-5 text-slate-500">
                 Pengaturan
               </h2>
-              <a
+              <Link
                 className="flex min-h-16 items-center justify-between gap-3 border-b border-slate-200 px-4 py-3 transition hover:bg-slate-50"
-                href="/profile/edit"
+                to="/profile/edit"
               >
                 <span className="flex min-w-0 items-center gap-3">
                   <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-[#1e40af]">
@@ -143,10 +143,10 @@ export function ProfilePage({
                   aria-hidden="true"
                   className="size-5 shrink-0 text-slate-500"
                 />
-              </a>
-              <a
+              </Link>
+              <Link
                 className="flex min-h-16 items-center justify-between gap-3 px-4 py-3 transition hover:bg-slate-50"
-                href="/profile/change-password"
+                to="/profile/change-password"
               >
                 <span className="flex min-w-0 items-center gap-3">
                   <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-[#1e40af]">
@@ -160,7 +160,7 @@ export function ProfilePage({
                   aria-hidden="true"
                   className="size-5 shrink-0 text-slate-500"
                 />
-              </a>
+              </Link>
             </section>
 
             <button

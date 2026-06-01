@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import { MapPin, Star } from 'lucide-react'
 
 import type { AppStoresSchemaStoreSummaryResponse } from '../../../client'
@@ -10,9 +11,12 @@ type StoreCardProps = {
 
 export function StoreCard({ store }: StoreCardProps) {
   return (
-    <a
+    <Link
       className="block rounded-lg border border-slate-200 bg-white p-3 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md"
-      href={`/stores/${store.id}`}
+      params={{
+        storeId: store.id,
+      }}
+      to="/stores/$storeId"
     >
       <div className="flex gap-3">
         <div className="size-24 shrink-0 overflow-hidden rounded-lg bg-slate-100">
@@ -70,6 +74,6 @@ export function StoreCard({ store }: StoreCardProps) {
           </div>
         </div>
       </div>
-    </a>
+    </Link>
   )
 }
