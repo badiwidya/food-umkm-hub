@@ -968,6 +968,7 @@ export type StoreDetailResponse = {
      * Mapslink
      */
     mapsLink: string | null;
+    approvalStatus: StoreApprovalStatus;
     /**
      * Updatedat
      */

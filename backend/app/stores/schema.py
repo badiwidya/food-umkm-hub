@@ -22,6 +22,7 @@ class StoreDetailResponse(StoreSummaryResponse):
     address: str
     qris_image_url: str | None
     maps_link: str | None
+    approval_status: StoreApprovalStatus
     updated_at: datetime
     created_at: datetime
 
