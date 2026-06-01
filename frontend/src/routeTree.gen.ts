@@ -24,11 +24,13 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedFavoritesRouteImport } from './routes/_authenticated.favorites'
 import { Route as AuthenticatedCheckoutRouteImport } from './routes/_authenticated.checkout'
 import { Route as AuthenticatedCartRouteImport } from './routes/_authenticated.cart'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as AuthenticatedActivityRouteImport } from './routes/_authenticated.activity'
 import { Route as RegisterRoleIndexRouteImport } from './routes/register.$role.index'
 import { Route as AuthenticatedStoresIndexRouteImport } from './routes/_authenticated.stores.index'
 import { Route as AuthenticatedSellerIndexRouteImport } from './routes/_authenticated.seller.index'
 import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated.profile.index'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated.admin.index'
 import { Route as RegisterRoleDetailsRouteImport } from './routes/register.$role.details'
 import { Route as AuthenticatedStoresStoreIdRouteImport } from './routes/_authenticated.stores.$storeId'
 import { Route as AuthenticatedSellerPromosRouteImport } from './routes/_authenticated.seller.promos'
@@ -49,6 +51,7 @@ import { Route as AuthenticatedSellerProfileChangePasswordRouteImport } from './
 import { Route as AuthenticatedSellerProductsNewRouteImport } from './routes/_authenticated.seller.products.new'
 import { Route as AuthenticatedOrdersOrderIdPaymentRouteImport } from './routes/_authenticated.orders.$orderId_.payment'
 import { Route as AuthenticatedOrdersOrderIdSuccessRouteImport } from './routes/_authenticated.orders.$orderId.success'
+import { Route as AuthenticatedAdminStoresStoreIdRouteImport } from './routes/_authenticated.admin.stores.$storeId'
 import { Route as AuthenticatedStoresStoreIdProductsProductIdRouteImport } from './routes/_authenticated.stores.$storeId_.products.$productId'
 import { Route as AuthenticatedSellerPromosPromoIdEditRouteImport } from './routes/_authenticated.seller.promos.$promoId.edit'
 import { Route as AuthenticatedSellerProductsProductIdEditRouteImport } from './routes/_authenticated.seller.products.$productId.edit'
@@ -127,6 +130,11 @@ const AuthenticatedCartRoute = AuthenticatedCartRouteImport.update({
   path: '/cart',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedActivityRoute = AuthenticatedActivityRouteImport.update({
   id: '/activity',
   path: '/activity',
@@ -155,6 +163,11 @@ const AuthenticatedProfileIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedProfileRoute,
   } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const RegisterRoleDetailsRoute = RegisterRoleDetailsRouteImport.update({
   id: '/details',
   path: '/details',
@@ -274,6 +287,12 @@ const AuthenticatedOrdersOrderIdSuccessRoute =
     path: '/success',
     getParentRoute: () => AuthenticatedOrdersOrderIdRoute,
   } as any)
+const AuthenticatedAdminStoresStoreIdRoute =
+  AuthenticatedAdminStoresStoreIdRouteImport.update({
+    id: '/stores/$storeId',
+    path: '/stores/$storeId',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedStoresStoreIdProductsProductIdRoute =
   AuthenticatedStoresStoreIdProductsProductIdRouteImport.update({
     id: '/$storeId_/products/$productId',
@@ -299,6 +318,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/verify-email': typeof VerifyEmailRouteWithChildren
   '/activity': typeof AuthenticatedActivityRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/cart': typeof AuthenticatedCartRoute
   '/checkout': typeof AuthenticatedCheckoutRoute
   '/favorites': typeof AuthenticatedFavoritesRoute
@@ -319,10 +339,12 @@ export interface FileRoutesByFullPath {
   '/seller/promos': typeof AuthenticatedSellerPromosRouteWithChildren
   '/stores/$storeId': typeof AuthenticatedStoresStoreIdRoute
   '/register/$role/details': typeof RegisterRoleDetailsRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
   '/profile/': typeof AuthenticatedProfileIndexRoute
   '/seller/': typeof AuthenticatedSellerIndexRoute
   '/stores/': typeof AuthenticatedStoresIndexRoute
   '/register/$role/': typeof RegisterRoleIndexRoute
+  '/admin/stores/$storeId': typeof AuthenticatedAdminStoresStoreIdRoute
   '/orders/$orderId/success': typeof AuthenticatedOrdersOrderIdSuccessRoute
   '/orders/$orderId/payment': typeof AuthenticatedOrdersOrderIdPaymentRoute
   '/seller/products/new': typeof AuthenticatedSellerProductsNewRoute
@@ -356,10 +378,12 @@ export interface FileRoutesByTo {
   '/seller/orders': typeof AuthenticatedSellerOrdersRoute
   '/stores/$storeId': typeof AuthenticatedStoresStoreIdRoute
   '/register/$role/details': typeof RegisterRoleDetailsRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
   '/seller': typeof AuthenticatedSellerIndexRoute
   '/stores': typeof AuthenticatedStoresIndexRoute
   '/register/$role': typeof RegisterRoleIndexRoute
+  '/admin/stores/$storeId': typeof AuthenticatedAdminStoresStoreIdRoute
   '/orders/$orderId/success': typeof AuthenticatedOrdersOrderIdSuccessRoute
   '/orders/$orderId/payment': typeof AuthenticatedOrdersOrderIdPaymentRoute
   '/seller/products/new': typeof AuthenticatedSellerProductsNewRoute
@@ -381,6 +405,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/verify-email': typeof VerifyEmailRouteWithChildren
   '/_authenticated/activity': typeof AuthenticatedActivityRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/cart': typeof AuthenticatedCartRoute
   '/_authenticated/checkout': typeof AuthenticatedCheckoutRoute
   '/_authenticated/favorites': typeof AuthenticatedFavoritesRoute
@@ -402,10 +427,12 @@ export interface FileRoutesById {
   '/_authenticated/seller/promos': typeof AuthenticatedSellerPromosRouteWithChildren
   '/_authenticated/stores/$storeId': typeof AuthenticatedStoresStoreIdRoute
   '/register/$role/details': typeof RegisterRoleDetailsRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
   '/_authenticated/seller/': typeof AuthenticatedSellerIndexRoute
   '/_authenticated/stores/': typeof AuthenticatedStoresIndexRoute
   '/register/$role/': typeof RegisterRoleIndexRoute
+  '/_authenticated/admin/stores/$storeId': typeof AuthenticatedAdminStoresStoreIdRoute
   '/_authenticated/orders/$orderId/success': typeof AuthenticatedOrdersOrderIdSuccessRoute
   '/_authenticated/orders/$orderId_/payment': typeof AuthenticatedOrdersOrderIdPaymentRoute
   '/_authenticated/seller/products/new': typeof AuthenticatedSellerProductsNewRoute
@@ -428,6 +455,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/verify-email'
     | '/activity'
+    | '/admin'
     | '/cart'
     | '/checkout'
     | '/favorites'
@@ -448,10 +476,12 @@ export interface FileRouteTypes {
     | '/seller/promos'
     | '/stores/$storeId'
     | '/register/$role/details'
+    | '/admin/'
     | '/profile/'
     | '/seller/'
     | '/stores/'
     | '/register/$role/'
+    | '/admin/stores/$storeId'
     | '/orders/$orderId/success'
     | '/orders/$orderId/payment'
     | '/seller/products/new'
@@ -485,10 +515,12 @@ export interface FileRouteTypes {
     | '/seller/orders'
     | '/stores/$storeId'
     | '/register/$role/details'
+    | '/admin'
     | '/profile'
     | '/seller'
     | '/stores'
     | '/register/$role'
+    | '/admin/stores/$storeId'
     | '/orders/$orderId/success'
     | '/orders/$orderId/payment'
     | '/seller/products/new'
@@ -509,6 +541,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/verify-email'
     | '/_authenticated/activity'
+    | '/_authenticated/admin'
     | '/_authenticated/cart'
     | '/_authenticated/checkout'
     | '/_authenticated/favorites'
@@ -530,10 +563,12 @@ export interface FileRouteTypes {
     | '/_authenticated/seller/promos'
     | '/_authenticated/stores/$storeId'
     | '/register/$role/details'
+    | '/_authenticated/admin/'
     | '/_authenticated/profile/'
     | '/_authenticated/seller/'
     | '/_authenticated/stores/'
     | '/register/$role/'
+    | '/_authenticated/admin/stores/$storeId'
     | '/_authenticated/orders/$orderId/success'
     | '/_authenticated/orders/$orderId_/payment'
     | '/_authenticated/seller/products/new'
@@ -665,6 +700,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCartRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/activity': {
       id: '/_authenticated/activity'
       path: '/activity'
@@ -699,6 +741,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/profile/'
       preLoaderRoute: typeof AuthenticatedProfileIndexRouteImport
       parentRoute: typeof AuthenticatedProfileRoute
+    }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
     }
     '/register/$role/details': {
       id: '/register/$role/details'
@@ -840,6 +889,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrdersOrderIdSuccessRouteImport
       parentRoute: typeof AuthenticatedOrdersOrderIdRoute
     }
+    '/_authenticated/admin/stores/$storeId': {
+      id: '/_authenticated/admin/stores/$storeId'
+      path: '/stores/$storeId'
+      fullPath: '/admin/stores/$storeId'
+      preLoaderRoute: typeof AuthenticatedAdminStoresStoreIdRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/stores/$storeId_/products/$productId': {
       id: '/_authenticated/stores/$storeId_/products/$productId'
       path: '/$storeId/products/$productId'
@@ -863,6 +919,19 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminStoresStoreIdRoute: typeof AuthenticatedAdminStoresStoreIdRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminStoresStoreIdRoute: AuthenticatedAdminStoresStoreIdRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
 
 interface AuthenticatedProfileRouteChildren {
   AuthenticatedProfileChangePasswordRoute: typeof AuthenticatedProfileChangePasswordRoute
@@ -995,6 +1064,7 @@ const AuthenticatedOrdersOrderIdRouteWithChildren =
 
 interface AuthenticatedRouteChildren {
   AuthenticatedActivityRoute: typeof AuthenticatedActivityRoute
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedCartRoute: typeof AuthenticatedCartRoute
   AuthenticatedCheckoutRoute: typeof AuthenticatedCheckoutRoute
   AuthenticatedFavoritesRoute: typeof AuthenticatedFavoritesRoute
@@ -1009,6 +1079,7 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedActivityRoute: AuthenticatedActivityRoute,
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedCartRoute: AuthenticatedCartRoute,
   AuthenticatedCheckoutRoute: AuthenticatedCheckoutRoute,
   AuthenticatedFavoritesRoute: AuthenticatedFavoritesRoute,
