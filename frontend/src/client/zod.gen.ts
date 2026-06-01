@@ -388,6 +388,29 @@ export const zStoreDetailResponse = z.object({
 });
 
 /**
+ * TopSellingProductResponse
+ */
+export const zTopSellingProductResponse = z.object({
+    productId: z.uuid(),
+    productName: z.string(),
+    productImage: z.string().nullable(),
+    quantitySold: z.int(),
+    revenue: z.int()
+});
+
+/**
+ * StoreDashboardResponse
+ */
+export const zStoreDashboardResponse = z.object({
+    todayRevenue: z.int(),
+    totalOrders: z.int(),
+    totalProductsSold: z.int(),
+    storeRating: z.number().nullable(),
+    reviewCount: z.int(),
+    topSellingProducts: z.array(zTopSellingProductResponse)
+});
+
+/**
  * UpdateAvailabilityRequest
  */
 export const zUpdateAvailabilityRequest = z.object({
@@ -851,6 +874,11 @@ export const zPatchMeStoresMePatchBody = zUpdateStoreRequest;
  * Successful Response
  */
 export const zPatchMeStoresMePatchResponse = zStoreDetailResponse;
+
+/**
+ * Successful Response
+ */
+export const zGetMyDashboardStoresMeDashboardGetResponse = zStoreDashboardResponse;
 
 /**
  * Successful Response

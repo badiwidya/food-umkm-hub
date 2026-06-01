@@ -895,6 +895,36 @@ export type SignUploadResponse = {
 export type StoreApprovalStatus = 'pending' | 'approved' | 'rejected';
 
 /**
+ * StoreDashboardResponse
+ */
+export type StoreDashboardResponse = {
+    /**
+     * Todayrevenue
+     */
+    todayRevenue: number;
+    /**
+     * Totalorders
+     */
+    totalOrders: number;
+    /**
+     * Totalproductssold
+     */
+    totalProductsSold: number;
+    /**
+     * Storerating
+     */
+    storeRating: number | null;
+    /**
+     * Reviewcount
+     */
+    reviewCount: number;
+    /**
+     * Topsellingproducts
+     */
+    topSellingProducts: Array<TopSellingProductResponse>;
+};
+
+/**
  * StoreDetailResponse
  */
 export type StoreDetailResponse = {
@@ -1078,6 +1108,32 @@ export type StudentResponse = {
      * Department
      */
     department: string;
+};
+
+/**
+ * TopSellingProductResponse
+ */
+export type TopSellingProductResponse = {
+    /**
+     * Productid
+     */
+    productId: string;
+    /**
+     * Productname
+     */
+    productName: string;
+    /**
+     * Productimage
+     */
+    productImage: string | null;
+    /**
+     * Quantitysold
+     */
+    quantitySold: number;
+    /**
+     * Revenue
+     */
+    revenue: number;
 };
 
 /**
@@ -2453,6 +2509,51 @@ export type PatchMeStoresMePatchResponses = {
 };
 
 export type PatchMeStoresMePatchResponse = PatchMeStoresMePatchResponses[keyof PatchMeStoresMePatchResponses];
+
+export type GetMyDashboardStoresMeDashboardGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/stores/me/dashboard';
+};
+
+export type GetMyDashboardStoresMeDashboardGetErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: ValidationErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
+};
+
+export type GetMyDashboardStoresMeDashboardGetError = GetMyDashboardStoresMeDashboardGetErrors[keyof GetMyDashboardStoresMeDashboardGetErrors];
+
+export type GetMyDashboardStoresMeDashboardGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: StoreDashboardResponse;
+};
+
+export type GetMyDashboardStoresMeDashboardGetResponse = GetMyDashboardStoresMeDashboardGetResponses[keyof GetMyDashboardStoresMeDashboardGetResponses];
 
 export type OpenMeStoresMeOpenPostData = {
     body?: never;
