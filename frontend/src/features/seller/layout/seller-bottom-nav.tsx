@@ -5,7 +5,12 @@ type ActiveNavItem = {
   disabled?: false
   icon: typeof Home
   label: string
-  to: '/seller' | '/seller/orders' | '/seller/products' | '/seller/promos'
+  to:
+    | '/seller'
+    | '/seller/orders'
+    | '/seller/products'
+    | '/seller/profile'
+    | '/seller/promos'
 }
 
 type DisabledNavItem = {
@@ -38,9 +43,9 @@ const NAV_ITEMS = [
     to: '/seller/promos',
   },
   {
-    disabled: true,
     icon: UserRound,
     label: 'Profil',
+    to: '/seller/profile',
   },
 ] satisfies Array<NavItem>
 
@@ -58,7 +63,7 @@ export function SellerBottomNav() {
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon
 
-          if (item.disabled) {
+          if ('disabled' in item && item.disabled) {
             return (
               <li key={item.label}>
                 <button

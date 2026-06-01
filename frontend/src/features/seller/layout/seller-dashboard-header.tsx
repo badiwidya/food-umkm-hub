@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import { Store, UserRound } from 'lucide-react'
 
 import type { StoreDetailResponse } from '../../../client'
@@ -28,7 +29,10 @@ export function SellerDashboardHeader({
 
   return (
     <header className="bg-[#1e40af] px-4 pb-4 pt-6 text-white">
-      <div className="flex items-start gap-3">
+      <Link
+        className="flex items-start gap-3 rounded-lg transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/60"
+        to="/seller/profile"
+      >
         <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white/10">
           {store?.photoUrl ? (
             <img
@@ -58,7 +62,7 @@ export function SellerDashboardHeader({
             </>
           )}
         </div>
-      </div>
+      </Link>
 
       <div className="mt-4 flex items-center justify-between gap-3 rounded-lg bg-white/10 px-3 py-3">
         <div className="flex min-w-0 items-center gap-2">
