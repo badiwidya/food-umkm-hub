@@ -13,7 +13,7 @@ services:
     env_file:
       - ${COMPOSE_ENV_FILE:-.env}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
     networks:
       - app_network
     healthcheck:
@@ -46,7 +46,7 @@ services:
       redis:
         condition: service_healthy
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     networks:
       - app_network
     healthcheck:
@@ -104,7 +104,7 @@ services:
       backend:
         condition: service_healthy
     ports:
-      - "80:80"
+      - "127.0.0.1:3000:80"
     networks:
       - app_network
     healthcheck:
