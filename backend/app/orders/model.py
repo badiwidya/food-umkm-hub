@@ -24,6 +24,7 @@ class OrderModel(Base):
     payment_proof_url: Mapped[str | None]
     rejection_reason: Mapped[str | None]
     rejected_at: Mapped[datetime | None]
+    completed_at: Mapped[datetime | None]
     expires_at: Mapped[datetime]
     created_at: Mapped[datetime]
     updated_at: Mapped[datetime]
@@ -36,11 +37,18 @@ class OrderModel(Base):
             "expires_at",
             postgresql_where=text("status = 'PENDING'"),
         ),
+        Index(
+            "ix_orders_store_completed_at",
+            "store_id",
+            "completed_at",
+            postgresql_where=text("status = 'COMPLETED'"),
+        ),
     )
 
 
 class OrderItemModel(Base):
     __tablename__ = "order_items"
+    __table_args__ = (Index("ix_order_items_order_id", "order_id"),)
 
     id: Mapped[UUID] = mapped_column(primary_key=True)
     order_id: Mapped[UUID] = mapped_column(ForeignKey("orders.id"))

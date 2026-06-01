@@ -26,6 +26,23 @@ class StoreDetailResponse(StoreSummaryResponse):
     created_at: datetime
 
 
+class TopSellingProductResponse(BaseSchema):
+    product_id: UUID
+    product_name: str
+    product_image: str | None
+    quantity_sold: int
+    revenue: int
+
+
+class StoreDashboardResponse(BaseSchema):
+    today_revenue: int
+    total_orders: int
+    total_products_sold: int
+    store_rating: float | None
+    review_count: int
+    top_selling_products: list[TopSellingProductResponse]
+
+
 class UpdateStoreRequest(BaseSchema):
     name: str | None = None
     description: str | None = None

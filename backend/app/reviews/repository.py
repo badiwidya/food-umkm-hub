@@ -50,6 +50,11 @@ class ReviewRepository:
         ).all()
         return set(product_ids)
 
+    async def get_rating_stats_by_store(
+        self, store_id: UUID
+    ) -> tuple[float | None, int]:
+        return await self._get_rating_stats(ReviewModel.store_id == store_id)
+
     async def recalculate_product_rating(self, product_id: UUID) -> None:
         rating, total_reviews = await self._get_rating_stats(
             ReviewModel.product_id == product_id

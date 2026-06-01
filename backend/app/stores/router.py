@@ -8,6 +8,7 @@ from app.dependency import PaginationQueryDep
 from app.exception import NotFoundException
 from app.stores.dependency import StoreServiceDep
 from app.stores.schema import (
+    StoreDashboardResponse,
     StoreDetailResponse,
     StoreListResponse,
     StoreSummaryResponse,
@@ -49,6 +50,19 @@ async def list(
 )
 async def get_me(store: CurrentStoreDep) -> StoreDetailResponse:
     return StoreDetailResponse.model_validate(store)
+
+
+@store_router.get(
+    "/me/dashboard",
+    summary="Mendapatkan ringkasan dashboard toko milik penjual yang sedang login.",
+    status_code=status.HTTP_200_OK,
+)
+async def get_my_dashboard(
+    store_service: StoreServiceDep,
+    store: CurrentStoreDep,
+) -> StoreDashboardResponse:
+    dashboard = await store_service.get_dashboard(store)
+    return StoreDashboardResponse.model_validate(dashboard)
 
 
 @store_router.patch(

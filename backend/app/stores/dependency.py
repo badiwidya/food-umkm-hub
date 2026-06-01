@@ -5,6 +5,8 @@ from fastapi import Depends
 
 from app.dependency import SessionDep
 from app.exception import NotFoundException
+from app.orders.repository import OrderRepository
+from app.reviews.repository import ReviewRepository
 from app.stores.repository import StoreRepository
 from app.stores.service import StoreService
 from app.stores.store import Store
@@ -19,8 +21,13 @@ StoreRepoDep = Annotated[StoreRepository, Depends(get_store_repo)]
 
 def get_store_service(
     store_repo: StoreRepoDep,
+    session: SessionDep,
 ) -> StoreService:
-    return StoreService(store_repo=store_repo)
+    return StoreService(
+        store_repo=store_repo,
+        order_repo=OrderRepository(session=session),
+        review_repo=ReviewRepository(session=session),
+    )
 
 
 StoreServiceDep = Annotated[StoreService, Depends(get_store_service)]

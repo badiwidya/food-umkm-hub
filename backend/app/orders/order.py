@@ -71,6 +71,7 @@ class Order:
     payment_proof_url: str | None = None
     rejection_reason: str | None = None
     rejected_at: datetime | None = None
+    completed_at: datetime | None = None
     expires_at: datetime
     is_reviewed: bool = False
     created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
@@ -145,6 +146,7 @@ class Order:
         if self.status != OrderStatus.READY_TO_PICKUP:
             raise DomainException("Pesanan belum siap untuk diambil")
         self.status = OrderStatus.COMPLETED
+        self.completed_at = datetime.now(UTC)
         self._touch()
 
     def cancel(self) -> None:
