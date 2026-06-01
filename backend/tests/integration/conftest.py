@@ -16,7 +16,7 @@ os.environ.setdefault("ENV_FILE", ".env.test")
 os.environ.setdefault("ORDER_EXPIRY_MINUTES", "30")
 os.environ.setdefault("REJECTION_GRACE_PERIOD_MINUTES", "10")
 
-from app.database import Base, factory  # noqa: E402
+from app.database import Base, engine, factory  # noqa: E402
 from app.main import app  # noqa: E402
 from app.orders.order import Order, PaymentMethod  # noqa: E402
 from app.orders.repository import OrderRepository  # noqa: E402
@@ -60,6 +60,7 @@ def migrated_db() -> Generator[None]:
 @pytest.fixture(autouse=True)
 async def clean_db(migrated_db: None) -> AsyncGenerator[None]:
     _import_models()
+    await engine.dispose()
     table_names = ", ".join(
         f'"{table.name}"' for table in reversed(Base.metadata.sorted_tables)
     )
@@ -70,6 +71,7 @@ async def clean_db(migrated_db: None) -> AsyncGenerator[None]:
                     text(f"TRUNCATE TABLE {table_names} RESTART IDENTITY CASCADE")
                 )
     yield
+    await engine.dispose()
 
 
 @pytest.fixture
