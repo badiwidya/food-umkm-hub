@@ -9,13 +9,12 @@ import {
   Wallet,
 } from 'lucide-react'
 import { useId } from 'react'
-import type {
-  InputHTMLAttributes,
-  ReactNode,
-  SelectHTMLAttributes,
-  TextareaHTMLAttributes,
-} from 'react'
 
+import {
+  ManagementFormField,
+  ManagementSelectField,
+  ManagementTextareaField,
+} from '../../../components/common/management-form-field'
 import type { ProductDetailResponse } from '../../../client'
 import { useProductForm } from './use-product-form'
 
@@ -145,7 +144,7 @@ export function ProductFormPage(props: ProductFormPageProps) {
           ) : null}
 
           <div className="space-y-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-            <ProductFormField
+            <ManagementFormField
               error={errors.name?.message}
               icon={<Utensils aria-hidden="true" className="size-5" />}
               label="Nama Produk"
@@ -153,7 +152,7 @@ export function ProductFormPage(props: ProductFormPageProps) {
               type="text"
               {...form.register('name')}
             />
-            <ProductFormField
+            <ManagementFormField
               error={errors.price?.message}
               icon={<Wallet aria-hidden="true" className="size-5" />}
               inputMode="numeric"
@@ -162,7 +161,7 @@ export function ProductFormPage(props: ProductFormPageProps) {
               type="number"
               {...form.register('price')}
             />
-            <ProductSelectField
+            <ManagementSelectField
               error={errors.category?.message}
               icon={<Tag aria-hidden="true" className="size-5" />}
               label="Kategori"
@@ -172,8 +171,8 @@ export function ProductFormPage(props: ProductFormPageProps) {
               <option value="drink">Minuman</option>
               <option value="snack">Camilan</option>
               <option value="other">Lainnya</option>
-            </ProductSelectField>
-            <ProductTextareaField
+            </ManagementSelectField>
+            <ManagementTextareaField
               error={errors.description?.message}
               icon={<FileText aria-hidden="true" className="size-5" />}
               label="Deskripsi"
@@ -203,98 +202,5 @@ export function ProductFormPage(props: ProductFormPageProps) {
         </footer>
       </form>
     </>
-  )
-}
-
-type ProductFieldBaseProps = {
-  error?: string
-  icon: ReactNode
-  label: string
-}
-
-type ProductFormFieldProps = InputHTMLAttributes<HTMLInputElement> &
-  ProductFieldBaseProps
-
-function ProductFormField({
-  error,
-  icon,
-  label,
-  ...inputProps
-}: ProductFormFieldProps) {
-  return (
-    <label className="block space-y-2">
-      <span className="block text-sm font-medium leading-5 text-slate-800">
-        {label}
-      </span>
-      <span className="relative block">
-        <span className="pointer-events-none absolute left-3 top-1/2 flex size-5 -translate-y-1/2 items-center justify-center text-slate-500">
-          {icon}
-        </span>
-        <input
-          className="min-h-[50px] w-full rounded-lg border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-base leading-6 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1e40af] focus:bg-white focus:ring-2 focus:ring-[#1e40af]/15"
-          {...inputProps}
-        />
-      </span>
-      {error ? <p className="text-sm leading-5 text-red-600">{error}</p> : null}
-    </label>
-  )
-}
-
-type ProductSelectFieldProps = SelectHTMLAttributes<HTMLSelectElement> &
-  ProductFieldBaseProps
-
-function ProductSelectField({
-  children,
-  error,
-  icon,
-  label,
-  ...selectProps
-}: ProductSelectFieldProps) {
-  return (
-    <label className="block space-y-2">
-      <span className="block text-sm font-medium leading-5 text-slate-800">
-        {label}
-      </span>
-      <span className="relative block">
-        <span className="pointer-events-none absolute left-3 top-1/2 flex size-5 -translate-y-1/2 items-center justify-center text-slate-500">
-          {icon}
-        </span>
-        <select
-          className="min-h-[50px] w-full appearance-none rounded-lg border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-base leading-6 text-slate-900 outline-none transition focus:border-[#1e40af] focus:bg-white focus:ring-2 focus:ring-[#1e40af]/15"
-          {...selectProps}
-        >
-          {children}
-        </select>
-      </span>
-      {error ? <p className="text-sm leading-5 text-red-600">{error}</p> : null}
-    </label>
-  )
-}
-
-type ProductTextareaFieldProps = TextareaHTMLAttributes<HTMLTextAreaElement> &
-  ProductFieldBaseProps
-
-function ProductTextareaField({
-  error,
-  icon,
-  label,
-  ...textareaProps
-}: ProductTextareaFieldProps) {
-  return (
-    <label className="block space-y-2">
-      <span className="block text-sm font-medium leading-5 text-slate-800">
-        {label}
-      </span>
-      <span className="relative block">
-        <span className="pointer-events-none absolute left-3 top-4 flex size-5 items-center justify-center text-slate-500">
-          {icon}
-        </span>
-        <textarea
-          className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-base leading-6 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1e40af] focus:bg-white focus:ring-2 focus:ring-[#1e40af]/15"
-          {...textareaProps}
-        />
-      </span>
-      {error ? <p className="text-sm leading-5 text-red-600">{error}</p> : null}
-    </label>
   )
 }

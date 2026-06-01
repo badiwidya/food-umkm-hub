@@ -31,16 +31,21 @@ import { Route as AuthenticatedSellerIndexRouteImport } from './routes/_authenti
 import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated.profile.index'
 import { Route as RegisterRoleDetailsRouteImport } from './routes/register.$role.details'
 import { Route as AuthenticatedStoresStoreIdRouteImport } from './routes/_authenticated.stores.$storeId'
+import { Route as AuthenticatedSellerPromosRouteImport } from './routes/_authenticated.seller.promos'
 import { Route as AuthenticatedSellerProductsRouteImport } from './routes/_authenticated.seller.products'
+import { Route as AuthenticatedSellerOrdersRouteImport } from './routes/_authenticated.seller.orders'
 import { Route as AuthenticatedProfileEditRouteImport } from './routes/_authenticated.profile.edit'
 import { Route as AuthenticatedProfileChangePasswordRouteImport } from './routes/_authenticated.profile.change-password'
 import { Route as AuthenticatedProductsProductIdRouteImport } from './routes/_authenticated.products.$productId'
 import { Route as AuthenticatedOrdersOrderIdRouteImport } from './routes/_authenticated.orders.$orderId'
+import { Route as AuthenticatedSellerPromosIndexRouteImport } from './routes/_authenticated.seller.promos.index'
 import { Route as AuthenticatedSellerProductsIndexRouteImport } from './routes/_authenticated.seller.products.index'
+import { Route as AuthenticatedSellerPromosNewRouteImport } from './routes/_authenticated.seller.promos.new'
 import { Route as AuthenticatedSellerProductsNewRouteImport } from './routes/_authenticated.seller.products.new'
 import { Route as AuthenticatedOrdersOrderIdPaymentRouteImport } from './routes/_authenticated.orders.$orderId_.payment'
 import { Route as AuthenticatedOrdersOrderIdSuccessRouteImport } from './routes/_authenticated.orders.$orderId.success'
 import { Route as AuthenticatedStoresStoreIdProductsProductIdRouteImport } from './routes/_authenticated.stores.$storeId_.products.$productId'
+import { Route as AuthenticatedSellerPromosPromoIdEditRouteImport } from './routes/_authenticated.seller.promos.$promoId.edit'
 import { Route as AuthenticatedSellerProductsProductIdEditRouteImport } from './routes/_authenticated.seller.products.$productId.edit'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
@@ -156,10 +161,22 @@ const AuthenticatedStoresStoreIdRoute =
     path: '/$storeId',
     getParentRoute: () => AuthenticatedStoresRoute,
   } as any)
+const AuthenticatedSellerPromosRoute =
+  AuthenticatedSellerPromosRouteImport.update({
+    id: '/promos',
+    path: '/promos',
+    getParentRoute: () => AuthenticatedSellerRoute,
+  } as any)
 const AuthenticatedSellerProductsRoute =
   AuthenticatedSellerProductsRouteImport.update({
     id: '/products',
     path: '/products',
+    getParentRoute: () => AuthenticatedSellerRoute,
+  } as any)
+const AuthenticatedSellerOrdersRoute =
+  AuthenticatedSellerOrdersRouteImport.update({
+    id: '/orders',
+    path: '/orders',
     getParentRoute: () => AuthenticatedSellerRoute,
   } as any)
 const AuthenticatedProfileEditRoute =
@@ -186,11 +203,23 @@ const AuthenticatedOrdersOrderIdRoute =
     path: '/orders/$orderId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedSellerPromosIndexRoute =
+  AuthenticatedSellerPromosIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedSellerPromosRoute,
+  } as any)
 const AuthenticatedSellerProductsIndexRoute =
   AuthenticatedSellerProductsIndexRouteImport.update({
     id: '/',
     path: '/',
     getParentRoute: () => AuthenticatedSellerProductsRoute,
+  } as any)
+const AuthenticatedSellerPromosNewRoute =
+  AuthenticatedSellerPromosNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => AuthenticatedSellerPromosRoute,
   } as any)
 const AuthenticatedSellerProductsNewRoute =
   AuthenticatedSellerProductsNewRouteImport.update({
@@ -215,6 +244,12 @@ const AuthenticatedStoresStoreIdProductsProductIdRoute =
     id: '/$storeId_/products/$productId',
     path: '/$storeId/products/$productId',
     getParentRoute: () => AuthenticatedStoresRoute,
+  } as any)
+const AuthenticatedSellerPromosPromoIdEditRoute =
+  AuthenticatedSellerPromosPromoIdEditRouteImport.update({
+    id: '/$promoId/edit',
+    path: '/$promoId/edit',
+    getParentRoute: () => AuthenticatedSellerPromosRoute,
   } as any)
 const AuthenticatedSellerProductsProductIdEditRoute =
   AuthenticatedSellerProductsProductIdEditRouteImport.update({
@@ -243,7 +278,9 @@ export interface FileRoutesByFullPath {
   '/products/$productId': typeof AuthenticatedProductsProductIdRoute
   '/profile/change-password': typeof AuthenticatedProfileChangePasswordRoute
   '/profile/edit': typeof AuthenticatedProfileEditRoute
+  '/seller/orders': typeof AuthenticatedSellerOrdersRoute
   '/seller/products': typeof AuthenticatedSellerProductsRouteWithChildren
+  '/seller/promos': typeof AuthenticatedSellerPromosRouteWithChildren
   '/stores/$storeId': typeof AuthenticatedStoresStoreIdRoute
   '/register/$role/details': typeof RegisterRoleDetailsRoute
   '/profile/': typeof AuthenticatedProfileIndexRoute
@@ -253,8 +290,11 @@ export interface FileRoutesByFullPath {
   '/orders/$orderId/success': typeof AuthenticatedOrdersOrderIdSuccessRoute
   '/orders/$orderId/payment': typeof AuthenticatedOrdersOrderIdPaymentRoute
   '/seller/products/new': typeof AuthenticatedSellerProductsNewRoute
+  '/seller/promos/new': typeof AuthenticatedSellerPromosNewRoute
   '/seller/products/': typeof AuthenticatedSellerProductsIndexRoute
+  '/seller/promos/': typeof AuthenticatedSellerPromosIndexRoute
   '/seller/products/$productId/edit': typeof AuthenticatedSellerProductsProductIdEditRoute
+  '/seller/promos/$promoId/edit': typeof AuthenticatedSellerPromosPromoIdEditRoute
   '/stores/$storeId/products/$productId': typeof AuthenticatedStoresStoreIdProductsProductIdRoute
 }
 export interface FileRoutesByTo {
@@ -273,6 +313,7 @@ export interface FileRoutesByTo {
   '/products/$productId': typeof AuthenticatedProductsProductIdRoute
   '/profile/change-password': typeof AuthenticatedProfileChangePasswordRoute
   '/profile/edit': typeof AuthenticatedProfileEditRoute
+  '/seller/orders': typeof AuthenticatedSellerOrdersRoute
   '/stores/$storeId': typeof AuthenticatedStoresStoreIdRoute
   '/register/$role/details': typeof RegisterRoleDetailsRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
@@ -282,8 +323,11 @@ export interface FileRoutesByTo {
   '/orders/$orderId/success': typeof AuthenticatedOrdersOrderIdSuccessRoute
   '/orders/$orderId/payment': typeof AuthenticatedOrdersOrderIdPaymentRoute
   '/seller/products/new': typeof AuthenticatedSellerProductsNewRoute
+  '/seller/promos/new': typeof AuthenticatedSellerPromosNewRoute
   '/seller/products': typeof AuthenticatedSellerProductsIndexRoute
+  '/seller/promos': typeof AuthenticatedSellerPromosIndexRoute
   '/seller/products/$productId/edit': typeof AuthenticatedSellerProductsProductIdEditRoute
+  '/seller/promos/$promoId/edit': typeof AuthenticatedSellerPromosPromoIdEditRoute
   '/stores/$storeId/products/$productId': typeof AuthenticatedStoresStoreIdProductsProductIdRoute
 }
 export interface FileRoutesById {
@@ -308,7 +352,9 @@ export interface FileRoutesById {
   '/_authenticated/products/$productId': typeof AuthenticatedProductsProductIdRoute
   '/_authenticated/profile/change-password': typeof AuthenticatedProfileChangePasswordRoute
   '/_authenticated/profile/edit': typeof AuthenticatedProfileEditRoute
+  '/_authenticated/seller/orders': typeof AuthenticatedSellerOrdersRoute
   '/_authenticated/seller/products': typeof AuthenticatedSellerProductsRouteWithChildren
+  '/_authenticated/seller/promos': typeof AuthenticatedSellerPromosRouteWithChildren
   '/_authenticated/stores/$storeId': typeof AuthenticatedStoresStoreIdRoute
   '/register/$role/details': typeof RegisterRoleDetailsRoute
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
@@ -318,8 +364,11 @@ export interface FileRoutesById {
   '/_authenticated/orders/$orderId/success': typeof AuthenticatedOrdersOrderIdSuccessRoute
   '/_authenticated/orders/$orderId_/payment': typeof AuthenticatedOrdersOrderIdPaymentRoute
   '/_authenticated/seller/products/new': typeof AuthenticatedSellerProductsNewRoute
+  '/_authenticated/seller/promos/new': typeof AuthenticatedSellerPromosNewRoute
   '/_authenticated/seller/products/': typeof AuthenticatedSellerProductsIndexRoute
+  '/_authenticated/seller/promos/': typeof AuthenticatedSellerPromosIndexRoute
   '/_authenticated/seller/products/$productId/edit': typeof AuthenticatedSellerProductsProductIdEditRoute
+  '/_authenticated/seller/promos/$promoId/edit': typeof AuthenticatedSellerPromosPromoIdEditRoute
   '/_authenticated/stores/$storeId_/products/$productId': typeof AuthenticatedStoresStoreIdProductsProductIdRoute
 }
 export interface FileRouteTypes {
@@ -344,7 +393,9 @@ export interface FileRouteTypes {
     | '/products/$productId'
     | '/profile/change-password'
     | '/profile/edit'
+    | '/seller/orders'
     | '/seller/products'
+    | '/seller/promos'
     | '/stores/$storeId'
     | '/register/$role/details'
     | '/profile/'
@@ -354,8 +405,11 @@ export interface FileRouteTypes {
     | '/orders/$orderId/success'
     | '/orders/$orderId/payment'
     | '/seller/products/new'
+    | '/seller/promos/new'
     | '/seller/products/'
+    | '/seller/promos/'
     | '/seller/products/$productId/edit'
+    | '/seller/promos/$promoId/edit'
     | '/stores/$storeId/products/$productId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -374,6 +428,7 @@ export interface FileRouteTypes {
     | '/products/$productId'
     | '/profile/change-password'
     | '/profile/edit'
+    | '/seller/orders'
     | '/stores/$storeId'
     | '/register/$role/details'
     | '/profile'
@@ -383,8 +438,11 @@ export interface FileRouteTypes {
     | '/orders/$orderId/success'
     | '/orders/$orderId/payment'
     | '/seller/products/new'
+    | '/seller/promos/new'
     | '/seller/products'
+    | '/seller/promos'
     | '/seller/products/$productId/edit'
+    | '/seller/promos/$promoId/edit'
     | '/stores/$storeId/products/$productId'
   id:
     | '__root__'
@@ -408,7 +466,9 @@ export interface FileRouteTypes {
     | '/_authenticated/products/$productId'
     | '/_authenticated/profile/change-password'
     | '/_authenticated/profile/edit'
+    | '/_authenticated/seller/orders'
     | '/_authenticated/seller/products'
+    | '/_authenticated/seller/promos'
     | '/_authenticated/stores/$storeId'
     | '/register/$role/details'
     | '/_authenticated/profile/'
@@ -418,8 +478,11 @@ export interface FileRouteTypes {
     | '/_authenticated/orders/$orderId/success'
     | '/_authenticated/orders/$orderId_/payment'
     | '/_authenticated/seller/products/new'
+    | '/_authenticated/seller/promos/new'
     | '/_authenticated/seller/products/'
+    | '/_authenticated/seller/promos/'
     | '/_authenticated/seller/products/$productId/edit'
+    | '/_authenticated/seller/promos/$promoId/edit'
     | '/_authenticated/stores/$storeId_/products/$productId'
   fileRoutesById: FileRoutesById
 }
@@ -588,11 +651,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStoresStoreIdRouteImport
       parentRoute: typeof AuthenticatedStoresRoute
     }
+    '/_authenticated/seller/promos': {
+      id: '/_authenticated/seller/promos'
+      path: '/promos'
+      fullPath: '/seller/promos'
+      preLoaderRoute: typeof AuthenticatedSellerPromosRouteImport
+      parentRoute: typeof AuthenticatedSellerRoute
+    }
     '/_authenticated/seller/products': {
       id: '/_authenticated/seller/products'
       path: '/products'
       fullPath: '/seller/products'
       preLoaderRoute: typeof AuthenticatedSellerProductsRouteImport
+      parentRoute: typeof AuthenticatedSellerRoute
+    }
+    '/_authenticated/seller/orders': {
+      id: '/_authenticated/seller/orders'
+      path: '/orders'
+      fullPath: '/seller/orders'
+      preLoaderRoute: typeof AuthenticatedSellerOrdersRouteImport
       parentRoute: typeof AuthenticatedSellerRoute
     }
     '/_authenticated/profile/edit': {
@@ -623,12 +700,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrdersOrderIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/seller/promos/': {
+      id: '/_authenticated/seller/promos/'
+      path: '/'
+      fullPath: '/seller/promos/'
+      preLoaderRoute: typeof AuthenticatedSellerPromosIndexRouteImport
+      parentRoute: typeof AuthenticatedSellerPromosRoute
+    }
     '/_authenticated/seller/products/': {
       id: '/_authenticated/seller/products/'
       path: '/'
       fullPath: '/seller/products/'
       preLoaderRoute: typeof AuthenticatedSellerProductsIndexRouteImport
       parentRoute: typeof AuthenticatedSellerProductsRoute
+    }
+    '/_authenticated/seller/promos/new': {
+      id: '/_authenticated/seller/promos/new'
+      path: '/new'
+      fullPath: '/seller/promos/new'
+      preLoaderRoute: typeof AuthenticatedSellerPromosNewRouteImport
+      parentRoute: typeof AuthenticatedSellerPromosRoute
     }
     '/_authenticated/seller/products/new': {
       id: '/_authenticated/seller/products/new'
@@ -657,6 +748,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/stores/$storeId/products/$productId'
       preLoaderRoute: typeof AuthenticatedStoresStoreIdProductsProductIdRouteImport
       parentRoute: typeof AuthenticatedStoresRoute
+    }
+    '/_authenticated/seller/promos/$promoId/edit': {
+      id: '/_authenticated/seller/promos/$promoId/edit'
+      path: '/$promoId/edit'
+      fullPath: '/seller/promos/$promoId/edit'
+      preLoaderRoute: typeof AuthenticatedSellerPromosPromoIdEditRouteImport
+      parentRoute: typeof AuthenticatedSellerPromosRoute
     }
     '/_authenticated/seller/products/$productId/edit': {
       id: '/_authenticated/seller/products/$productId/edit'
@@ -704,14 +802,37 @@ const AuthenticatedSellerProductsRouteWithChildren =
     AuthenticatedSellerProductsRouteChildren,
   )
 
+interface AuthenticatedSellerPromosRouteChildren {
+  AuthenticatedSellerPromosNewRoute: typeof AuthenticatedSellerPromosNewRoute
+  AuthenticatedSellerPromosIndexRoute: typeof AuthenticatedSellerPromosIndexRoute
+  AuthenticatedSellerPromosPromoIdEditRoute: typeof AuthenticatedSellerPromosPromoIdEditRoute
+}
+
+const AuthenticatedSellerPromosRouteChildren: AuthenticatedSellerPromosRouteChildren =
+  {
+    AuthenticatedSellerPromosNewRoute: AuthenticatedSellerPromosNewRoute,
+    AuthenticatedSellerPromosIndexRoute: AuthenticatedSellerPromosIndexRoute,
+    AuthenticatedSellerPromosPromoIdEditRoute:
+      AuthenticatedSellerPromosPromoIdEditRoute,
+  }
+
+const AuthenticatedSellerPromosRouteWithChildren =
+  AuthenticatedSellerPromosRoute._addFileChildren(
+    AuthenticatedSellerPromosRouteChildren,
+  )
+
 interface AuthenticatedSellerRouteChildren {
+  AuthenticatedSellerOrdersRoute: typeof AuthenticatedSellerOrdersRoute
   AuthenticatedSellerProductsRoute: typeof AuthenticatedSellerProductsRouteWithChildren
+  AuthenticatedSellerPromosRoute: typeof AuthenticatedSellerPromosRouteWithChildren
   AuthenticatedSellerIndexRoute: typeof AuthenticatedSellerIndexRoute
 }
 
 const AuthenticatedSellerRouteChildren: AuthenticatedSellerRouteChildren = {
+  AuthenticatedSellerOrdersRoute: AuthenticatedSellerOrdersRoute,
   AuthenticatedSellerProductsRoute:
     AuthenticatedSellerProductsRouteWithChildren,
+  AuthenticatedSellerPromosRoute: AuthenticatedSellerPromosRouteWithChildren,
   AuthenticatedSellerIndexRoute: AuthenticatedSellerIndexRoute,
 }
 

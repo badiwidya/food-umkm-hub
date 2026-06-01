@@ -5,7 +5,7 @@ type ActiveNavItem = {
   disabled?: false
   icon: typeof Home
   label: string
-  to: '/seller' | '/seller/products'
+  to: '/seller' | '/seller/orders' | '/seller/products' | '/seller/promos'
 }
 
 type DisabledNavItem = {
@@ -28,14 +28,14 @@ const NAV_ITEMS = [
     to: '/seller/products',
   },
   {
-    disabled: true,
     icon: ReceiptText,
     label: 'Pesanan',
+    to: '/seller/orders',
   },
   {
-    disabled: true,
     icon: Percent,
     label: 'Promo',
+    to: '/seller/promos',
   },
   {
     disabled: true,
