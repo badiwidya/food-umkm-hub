@@ -19,7 +19,22 @@ export type CheckoutSearch = {
   note?: string
   productId?: string
   quantity?: number
+  returnTo?: 'cart' | 'product'
 }
+
+type CheckoutBackTarget =
+  | {
+      params: {
+        productId: string
+      }
+      to: '/products/$productId'
+    }
+  | {
+      to: '/cart'
+    }
+  | {
+      to: '/'
+    }
 
 type CheckoutPageProps = {
   search: CheckoutSearch
@@ -40,7 +55,7 @@ function CartCheckoutPage() {
 
   return (
     <CheckoutContent
-      backTo="/cart"
+      backTarget={{ to: '/cart' }}
       clearCartOnSuccess
       emptyDescription="Tambahkan produk sebelum membuat pesanan."
       emptyTitle="Keranjang kosong"
@@ -75,14 +90,16 @@ function DirectCheckoutPage({ search }: { search: CheckoutSearch }) {
           } satisfies CartItem,
         ]
 
+  const backTarget = getDirectCheckoutBackTarget(search)
+
   if (productQuery.isPending) {
-    return <CheckoutLoadingPage backTo="/" />
+    return <CheckoutLoadingPage backTarget={backTarget} />
   }
 
   if (productQuery.isError || !product) {
     return (
       <CheckoutEmptyPage
-        backTo="/"
+        backTarget={backTarget}
         description="Produk gagal dimuat. Coba kembali ke katalog."
         title="Checkout tidak tersedia"
       />
@@ -91,7 +108,7 @@ function DirectCheckoutPage({ search }: { search: CheckoutSearch }) {
 
   return (
     <CheckoutContent
-      backTo="/"
+      backTarget={backTarget}
       clearCartOnSuccess={false}
       defaultNotes={search.note}
       emptyDescription="Produk tidak ditemukan untuk checkout langsung."
@@ -104,7 +121,7 @@ function DirectCheckoutPage({ search }: { search: CheckoutSearch }) {
 }
 
 function CheckoutContent({
-  backTo,
+  backTarget,
   clearCartOnSuccess,
   defaultNotes,
   emptyDescription,
@@ -113,7 +130,7 @@ function CheckoutContent({
   storeId,
   storeName,
 }: {
-  backTo: '/' | '/cart'
+  backTarget: CheckoutBackTarget
   clearCartOnSuccess: boolean
   defaultNotes?: string
   emptyDescription: string
@@ -150,13 +167,7 @@ function CheckoutContent({
       <div className="mx-auto flex min-h-screen w-full max-w-sm flex-col bg-white">
         <header className="sticky top-0 z-10 bg-[#1e40af] px-3 py-2 text-white">
           <div className="flex h-10 items-center gap-3">
-            <Link
-              aria-label="Kembali"
-              className="flex size-10 items-center justify-center rounded-full transition hover:bg-white/10"
-              to={backTo}
-            >
-              <ArrowLeft aria-hidden="true" className="size-6" />
-            </Link>
+            <CheckoutBackIconLink target={backTarget} />
             <h1 className="text-xl font-medium leading-7">Checkout</h1>
           </div>
         </header>
@@ -380,19 +391,17 @@ function PaymentMethodOption({
   )
 }
 
-function CheckoutLoadingPage({ backTo }: { backTo: '/' | '/cart' }) {
+function CheckoutLoadingPage({
+  backTarget,
+}: {
+  backTarget: CheckoutBackTarget
+}) {
   return (
     <main className="min-h-screen bg-slate-100 text-slate-900">
       <div className="mx-auto min-h-screen w-full max-w-sm bg-white">
         <header className="sticky top-0 z-10 bg-[#1e40af] px-3 py-2 text-white">
           <div className="flex h-10 items-center gap-3">
-            <Link
-              aria-label="Kembali"
-              className="flex size-10 items-center justify-center rounded-full transition hover:bg-white/10"
-              to={backTo}
-            >
-              <ArrowLeft aria-hidden="true" className="size-6" />
-            </Link>
+            <CheckoutBackIconLink target={backTarget} />
             <h1 className="text-xl font-medium leading-7">Checkout</h1>
           </div>
         </header>
@@ -407,11 +416,11 @@ function CheckoutLoadingPage({ backTo }: { backTo: '/' | '/cart' }) {
 }
 
 function CheckoutEmptyPage({
-  backTo,
+  backTarget,
   description,
   title,
 }: {
-  backTo: '/' | '/cart'
+  backTarget: CheckoutBackTarget
   description: string
   title: string
 }) {
@@ -420,13 +429,7 @@ function CheckoutEmptyPage({
       <div className="mx-auto min-h-screen w-full max-w-sm bg-white">
         <header className="sticky top-0 z-10 bg-[#1e40af] px-3 py-2 text-white">
           <div className="flex h-10 items-center gap-3">
-            <Link
-              aria-label="Kembali"
-              className="flex size-10 items-center justify-center rounded-full transition hover:bg-white/10"
-              to={backTo}
-            >
-              <ArrowLeft aria-hidden="true" className="size-6" />
-            </Link>
+            <CheckoutBackIconLink target={backTarget} />
             <h1 className="text-xl font-medium leading-7">Checkout</h1>
           </div>
         </header>
@@ -435,14 +438,78 @@ function CheckoutEmptyPage({
             {title}
           </h2>
           <p className="mt-2 text-sm leading-6 text-slate-500">{description}</p>
-          <Link
-            className="mt-5 inline-flex h-11 items-center justify-center rounded-lg bg-[#1e40af] px-4 text-sm font-medium leading-5 text-white transition hover:bg-[#1d3a9c]"
-            to={backTo}
-          >
-            Kembali
-          </Link>
+          <CheckoutBackTextLink target={backTarget} />
         </section>
       </div>
     </main>
+  )
+}
+
+function getDirectCheckoutBackTarget(
+  search: CheckoutSearch,
+): CheckoutBackTarget {
+  if (search.returnTo === 'product' && search.productId) {
+    return {
+      params: {
+        productId: search.productId,
+      },
+      to: '/products/$productId',
+    }
+  }
+
+  if (search.productId) {
+    return {
+      params: {
+        productId: search.productId,
+      },
+      to: '/products/$productId',
+    }
+  }
+
+  return {
+    to: '/',
+  }
+}
+
+function CheckoutBackIconLink({ target }: { target: CheckoutBackTarget }) {
+  const className =
+    'flex size-10 items-center justify-center rounded-full transition hover:bg-white/10'
+
+  if (target.to === '/products/$productId') {
+    return (
+      <Link
+        aria-label="Kembali"
+        className={className}
+        params={target.params}
+        to={target.to}
+      >
+        <ArrowLeft aria-hidden="true" className="size-6" />
+      </Link>
+    )
+  }
+
+  return (
+    <Link aria-label="Kembali" className={className} to={target.to}>
+      <ArrowLeft aria-hidden="true" className="size-6" />
+    </Link>
+  )
+}
+
+function CheckoutBackTextLink({ target }: { target: CheckoutBackTarget }) {
+  const className =
+    'mt-5 inline-flex h-11 items-center justify-center rounded-lg bg-[#1e40af] px-4 text-sm font-medium leading-5 text-white transition hover:bg-[#1d3a9c]'
+
+  if (target.to === '/products/$productId') {
+    return (
+      <Link className={className} params={target.params} to={target.to}>
+        Kembali
+      </Link>
+    )
+  }
+
+  return (
+    <Link className={className} to={target.to}>
+      Kembali
+    </Link>
   )
 }

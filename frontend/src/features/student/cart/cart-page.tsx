@@ -7,26 +7,26 @@ import { CartItemCard } from './cart-item-card'
 import { getCartItemCount, getCartSubtotal } from './cart-selectors'
 import { CartSummary } from './cart-summary'
 
-export function CartPage() {
+type CartPageProps = {
+  searchStoreId?: string
+}
+
+export function CartPage({ searchStoreId }: CartPageProps) {
   const items = useCartStore((state) => state.items)
+  const cartStoreId = useCartStore((state) => state.storeId)
   const storeName = useCartStore((state) => state.storeName)
   const removeItem = useCartStore((state) => state.removeItem)
   const updateQuantity = useCartStore((state) => state.updateQuantity)
   const itemCount = getCartItemCount(items)
   const subtotal = getCartSubtotal(items)
+  const backStoreId = cartStoreId ?? searchStoreId
 
   return (
     <main className="min-h-screen bg-slate-100 text-slate-900">
       <div className="mx-auto flex min-h-screen w-full max-w-sm flex-col bg-white">
         <header className="sticky top-0 z-10 bg-[#1e40af] px-3 py-2 text-white">
           <div className="flex h-10 items-center gap-3">
-            <Link
-              aria-label="Kembali"
-              className="flex size-10 items-center justify-center rounded-full transition hover:bg-white/10"
-              to="/"
-            >
-              <ArrowLeft aria-hidden="true" className="size-6" />
-            </Link>
+            <CartBackLink storeId={backStoreId} />
             <h1 className="text-xl font-medium leading-7">Keranjang</h1>
           </div>
         </header>
@@ -87,6 +87,9 @@ export function CartPage() {
               </div>
               <Link
                 className="mt-3 flex h-12 w-full items-center justify-center rounded-lg bg-[#1e40af] px-4 text-base font-medium leading-6 text-white transition hover:bg-[#1d3a9c]"
+                search={{
+                  returnTo: 'cart',
+                }}
                 to="/checkout"
               >
                 Lanjut ke Checkout ({itemCount} item)
@@ -96,5 +99,29 @@ export function CartPage() {
         )}
       </div>
     </main>
+  )
+}
+
+function CartBackLink({ storeId }: { storeId?: string }) {
+  const className =
+    'flex size-10 items-center justify-center rounded-full transition hover:bg-white/10'
+
+  if (storeId) {
+    return (
+      <Link
+        aria-label="Kembali"
+        className={className}
+        params={{ storeId }}
+        to="/stores/$storeId"
+      >
+        <ArrowLeft aria-hidden="true" className="size-6" />
+      </Link>
+    )
+  }
+
+  return (
+    <Link aria-label="Kembali" className={className} to="/stores">
+      <ArrowLeft aria-hidden="true" className="size-6" />
+    </Link>
   )
 }

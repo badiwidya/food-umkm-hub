@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { ProductDetailPage } from '../features/student/product-detail/product-detail-page'
 
 export const Route = createFileRoute(
-  '/_authenticated/stores/$storeId/products/$productId',
+  '/_authenticated/stores/$storeId_/products/$productId',
 )({
   component: StoreProductDetailRoute,
 })

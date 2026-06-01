@@ -9,6 +9,7 @@ import {
   cancelOrderOrdersIdCancelPostMutation,
   getOrderDetailsOrdersIdGetOptions,
 } from '../../../client/@tanstack/react-query.gen'
+import { ConfirmationDialog } from '../../../components/common/confirmation-dialog'
 import { formatRupiah } from '../browse/format'
 import { getOrderStatusLabel } from './order-status'
 
@@ -18,6 +19,7 @@ type OrderDetailPageProps = {
 
 export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
   const queryClient = useQueryClient()
+  const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false)
   const [cancelError, setCancelError] = useState<string | null>(null)
   const orderQuery = useQuery(
     getOrderDetailsOrdersIdGetOptions({
@@ -32,14 +34,6 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
   const order = orderQuery.data
 
   async function handleCancelOrder() {
-    const isConfirmed = window.confirm(
-      'Batalkan pesanan ini? Pesanan yang dibatalkan tidak dapat diproses.',
-    )
-
-    if (!isConfirmed) {
-      return
-    }
-
     setCancelError(null)
 
     try {
@@ -49,8 +43,10 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
         },
       })
       await invalidateOrderQueries(queryClient, orderId)
+      setIsCancelDialogOpen(false)
     } catch (error) {
       setCancelError(getErrorMessage(error))
+      setIsCancelDialogOpen(false)
     }
   }
 
@@ -112,9 +108,7 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
                   <button
                     className="mt-3 h-10 w-full rounded-lg bg-red-600 px-4 text-sm font-medium leading-5 text-white transition hover:bg-red-700 disabled:opacity-50"
                     disabled={cancelOrderMutation.isPending}
-                    onClick={() => {
-                      void handleCancelOrder()
-                    }}
+                    onClick={() => setIsCancelDialogOpen(true)}
                     type="button"
                   >
                     {cancelOrderMutation.isPending
@@ -279,6 +273,19 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
             </>
           ) : null}
         </section>
+        {isCancelDialogOpen ? (
+          <ConfirmationDialog
+            confirmLabel="Batalkan"
+            description="Pesanan yang dibatalkan tidak dapat diproses."
+            isPending={cancelOrderMutation.isPending}
+            onClose={() => setIsCancelDialogOpen(false)}
+            onConfirm={() => {
+              void handleCancelOrder()
+            }}
+            title="Batalkan pesanan ini?"
+            variant="destructive"
+          />
+        ) : null}
       </div>
     </main>
   )

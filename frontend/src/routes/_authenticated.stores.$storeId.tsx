@@ -27,6 +27,7 @@ function StoreDetailRoute() {
       category={category}
       onCategoryChange={(nextCategory) => {
         void navigate({
+          resetScroll: false,
           search: {
             category: nextCategory,
           },

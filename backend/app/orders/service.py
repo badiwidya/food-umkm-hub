@@ -120,6 +120,10 @@ class OrderService:
         return orders, count
 
     async def create(self, student: Student, dto: CreateOrderDTO) -> Order:
+        store = await self._store_repo.get_by_id(dto.store_id)
+        if not store or not store.is_open:
+            raise DomainException("Toko ini tutup")
+
         now = datetime.now(UTC)
         order = Order.create(
             student_id=student.id,

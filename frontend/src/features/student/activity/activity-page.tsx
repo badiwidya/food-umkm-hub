@@ -19,6 +19,7 @@ import {
   getProductDetailsProductsIdGetOptions,
   getProductReviewsProductsIdReviewsGetOptions,
 } from '../../../client/@tanstack/react-query.gen'
+import { ConfirmationDialog } from '../../../components/common/confirmation-dialog'
 import { formatRupiah } from '../browse/format'
 import { StudentAppShell, StudentTopHeader } from '../layout'
 import type { ActivityStatusFilter } from './activity-status'
@@ -57,6 +58,7 @@ type ActivityPageProps = {
 export function ActivityPage({ onStatusChange, status }: ActivityPageProps) {
   const queryClient = useQueryClient()
   const [reviewOrderId, setReviewOrderId] = useState<string | null>(null)
+  const [cancelOrderId, setCancelOrderId] = useState<string | null>(null)
   const [cancelError, setCancelError] = useState<string | null>(null)
   const ordersQuery = useQuery(
     getOrdersByStudentOrdersGetOptions({
@@ -73,14 +75,6 @@ export function ActivityPage({ onStatusChange, status }: ActivityPageProps) {
   const orders = ordersQuery.data?.data ?? []
 
   async function handleCancelOrder(orderId: string) {
-    const isConfirmed = window.confirm(
-      'Batalkan pesanan ini? Pesanan yang dibatalkan tidak dapat diproses.',
-    )
-
-    if (!isConfirmed) {
-      return
-    }
-
     setCancelError(null)
 
     try {
@@ -90,8 +84,10 @@ export function ActivityPage({ onStatusChange, status }: ActivityPageProps) {
         },
       })
       await invalidateOrderQueries(queryClient, orderId)
+      setCancelOrderId(null)
     } catch (error) {
       setCancelError(getErrorMessage(error))
+      setCancelOrderId(null)
     }
   }
 
@@ -154,9 +150,7 @@ export function ActivityPage({ onStatusChange, status }: ActivityPageProps) {
                   cancelOrderMutation.variables?.path.id === order.id
                 }
                 key={order.id}
-                onCancelClick={() => {
-                  void handleCancelOrder(order.id)
-                }}
+                onCancelClick={() => setCancelOrderId(order.id)}
                 onReviewClick={() => setReviewOrderId(order.id)}
                 order={order}
               />
@@ -172,6 +166,19 @@ export function ActivityPage({ onStatusChange, status }: ActivityPageProps) {
             setReviewOrderId(null)
           }}
           orderId={reviewOrderId}
+        />
+      ) : null}
+      {cancelOrderId ? (
+        <ConfirmationDialog
+          confirmLabel="Batalkan"
+          description="Pesanan yang dibatalkan tidak dapat diproses."
+          isPending={cancelOrderMutation.isPending}
+          onClose={() => setCancelOrderId(null)}
+          onConfirm={() => {
+            void handleCancelOrder(cancelOrderId)
+          }}
+          title="Batalkan pesanan ini?"
+          variant="destructive"
         />
       ) : null}
     </StudentAppShell>
@@ -401,10 +408,10 @@ function ReviewOrderModal({
   return (
     <div
       aria-modal="true"
-      className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/50 px-4 py-6"
+      className="fixed inset-0 z-40 flex items-end justify-center bg-slate-950/50"
       role="dialog"
     >
-      <div className="max-h-full w-full max-w-sm overflow-hidden rounded-2xl bg-white shadow-xl">
+      <div className="max-h-[85vh] w-full max-w-sm overflow-hidden rounded-t-2xl bg-white shadow-xl">
         <div className="flex items-center justify-between gap-4 border-b border-slate-200 px-4 py-4">
           <h2 className="text-lg font-medium leading-7 text-slate-800">
             Beri Ulasan
@@ -420,126 +427,128 @@ function ReviewOrderModal({
           </button>
         </div>
 
-        {orderQuery.isPending ? (
-          <ReviewModalSkeleton />
-        ) : orderQuery.isError ? (
-          <ReviewModalMessage message="Detail pesanan gagal dimuat. Coba muat ulang halaman." />
-        ) : order && order.status !== 'completed' ? (
-          <ReviewModalMessage message="Ulasan hanya dapat diberikan untuk pesanan selesai." />
-        ) : order?.isReviewed ? (
-          <ReviewModalMessage message="Pesanan ini sudah diberi ulasan." />
-        ) : reviewableItems.length === 0 ? (
-          <ReviewModalMessage message="Tidak ada produk yang dapat diulas." />
-        ) : activeItem ? (
-          <div className="px-4 py-4">
-            <div className="space-y-1">
-              <p className="text-sm leading-5 text-slate-500">
-                Pesanan #{orderId.slice(0, 8).toUpperCase()}
-              </p>
-              <p className="text-sm font-medium leading-5 text-slate-800">
-                {activeItem.productName}
-              </p>
-              <p className="text-xs leading-4 text-slate-500">
-                {activeIndex + 1} / {reviewableItems.length}
-              </p>
-            </div>
+        <div className="max-h-[calc(85vh-65px)] overflow-y-auto">
+          {orderQuery.isPending ? (
+            <ReviewModalSkeleton />
+          ) : orderQuery.isError ? (
+            <ReviewModalMessage message="Detail pesanan gagal dimuat. Coba muat ulang halaman." />
+          ) : order && order.status !== 'completed' ? (
+            <ReviewModalMessage message="Ulasan hanya dapat diberikan untuk pesanan selesai." />
+          ) : order?.isReviewed ? (
+            <ReviewModalMessage message="Pesanan ini sudah diberi ulasan." />
+          ) : reviewableItems.length === 0 ? (
+            <ReviewModalMessage message="Tidak ada produk yang dapat diulas." />
+          ) : activeItem ? (
+            <div className="px-4 py-4">
+              <div className="space-y-1">
+                <p className="text-sm leading-5 text-slate-500">
+                  Pesanan #{orderId.slice(0, 8).toUpperCase()}
+                </p>
+                <p className="text-sm font-medium leading-5 text-slate-800">
+                  {activeItem.productName}
+                </p>
+                <p className="text-xs leading-4 text-slate-500">
+                  {activeIndex + 1} / {reviewableItems.length}
+                </p>
+              </div>
 
-            <div className="mt-5">
-              <p className="text-sm font-medium leading-5 text-slate-800">
-                Berikan Rating
-              </p>
-              <StarRatingInput
-                onChange={(rating) => updateActiveDraft({ rating })}
-                value={activeDraft.rating}
-              />
-            </div>
+              <div className="mt-5">
+                <p className="text-sm font-medium leading-5 text-slate-800">
+                  Berikan Rating
+                </p>
+                <StarRatingInput
+                  onChange={(rating) => updateActiveDraft({ rating })}
+                  value={activeDraft.rating}
+                />
+              </div>
 
-            <label className="mt-5 block">
-              <span className="text-sm font-medium leading-5 text-slate-800">
-                Ulasan (Opsional)
-              </span>
-              <textarea
-                className="mt-3 min-h-28 w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm leading-5 text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-200 focus:bg-white"
-                maxLength={500}
-                onChange={(event) =>
-                  updateActiveDraft({ comment: event.target.value })
-                }
-                placeholder="Ceritakan pengalaman Anda dengan pesanan ini..."
-                value={activeDraft.comment}
-              />
-            </label>
-            <p className="mt-2 text-xs leading-4 text-slate-500">
-              {activeDraft.comment.length}/500 karakter
-            </p>
-
-            {validationMessage ? (
-              <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm leading-5 text-red-700">
-                {validationMessage}
-              </p>
-            ) : null}
-
-            {submitError ? (
-              <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm leading-5 text-red-700">
-                {submitError}
-              </p>
-            ) : null}
-
-            <div className="mt-6 grid grid-cols-2 gap-3">
-              {canMovePrevious ? (
-                <button
-                  className="flex h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 px-4 text-sm font-medium leading-5 text-slate-700 transition hover:bg-slate-50 disabled:opacity-40"
-                  disabled={createReviewsMutation.isPending}
-                  onClick={() =>
-                    setActiveIndex((currentIndex) =>
-                      Math.max(0, currentIndex - 1),
-                    )
+              <label className="mt-5 block">
+                <span className="text-sm font-medium leading-5 text-slate-800">
+                  Ulasan (Opsional)
+                </span>
+                <textarea
+                  className="mt-3 min-h-28 w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm leading-5 text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-200 focus:bg-white"
+                  maxLength={500}
+                  onChange={(event) =>
+                    updateActiveDraft({ comment: event.target.value })
                   }
-                  type="button"
-                >
-                  <ChevronLeft aria-hidden="true" className="size-4" />
-                  Sebelumnya
-                </button>
-              ) : (
-                <button
-                  className="h-11 rounded-lg border border-slate-200 px-4 text-sm font-medium leading-5 text-slate-700 transition hover:bg-slate-50 disabled:opacity-40"
-                  disabled={createReviewsMutation.isPending}
-                  onClick={onClose}
-                  type="button"
-                >
-                  Batal
-                </button>
-              )}
-              {canMoveNext ? (
-                <button
-                  className="flex h-11 items-center justify-center gap-2 rounded-lg bg-[#1e40af] px-4 text-sm font-medium leading-5 text-white transition hover:bg-[#1d3a9c] disabled:opacity-50"
-                  disabled={createReviewsMutation.isPending}
-                  onClick={() =>
-                    setActiveIndex((currentIndex) =>
-                      Math.min(reviewableItems.length - 1, currentIndex + 1),
-                    )
-                  }
-                  type="button"
-                >
-                  Lanjut
-                  <ChevronRight aria-hidden="true" className="size-4" />
-                </button>
-              ) : (
-                <button
-                  className="h-11 rounded-lg bg-[#1e40af] px-4 text-sm font-medium leading-5 text-white transition hover:bg-[#1d3a9c] disabled:opacity-50"
-                  disabled={createReviewsMutation.isPending}
-                  onClick={() => {
-                    void handleSubmit()
-                  }}
-                  type="button"
-                >
-                  {createReviewsMutation.isPending
-                    ? 'Mengirim...'
-                    : 'Kirim Ulasan'}
-                </button>
-              )}
+                  placeholder="Ceritakan pengalaman Anda dengan pesanan ini..."
+                  value={activeDraft.comment}
+                />
+              </label>
+              <p className="mt-2 text-xs leading-4 text-slate-500">
+                {activeDraft.comment.length}/500 karakter
+              </p>
+
+              {validationMessage ? (
+                <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm leading-5 text-red-700">
+                  {validationMessage}
+                </p>
+              ) : null}
+
+              {submitError ? (
+                <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm leading-5 text-red-700">
+                  {submitError}
+                </p>
+              ) : null}
+
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                {canMovePrevious ? (
+                  <button
+                    className="flex h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 px-4 text-sm font-medium leading-5 text-slate-700 transition hover:bg-slate-50 disabled:opacity-40"
+                    disabled={createReviewsMutation.isPending}
+                    onClick={() =>
+                      setActiveIndex((currentIndex) =>
+                        Math.max(0, currentIndex - 1),
+                      )
+                    }
+                    type="button"
+                  >
+                    <ChevronLeft aria-hidden="true" className="size-4" />
+                    Sebelumnya
+                  </button>
+                ) : (
+                  <button
+                    className="h-11 rounded-lg border border-slate-200 px-4 text-sm font-medium leading-5 text-slate-700 transition hover:bg-slate-50 disabled:opacity-40"
+                    disabled={createReviewsMutation.isPending}
+                    onClick={onClose}
+                    type="button"
+                  >
+                    Batal
+                  </button>
+                )}
+                {canMoveNext ? (
+                  <button
+                    className="flex h-11 items-center justify-center gap-2 rounded-lg bg-[#1e40af] px-4 text-sm font-medium leading-5 text-white transition hover:bg-[#1d3a9c] disabled:opacity-50"
+                    disabled={createReviewsMutation.isPending}
+                    onClick={() =>
+                      setActiveIndex((currentIndex) =>
+                        Math.min(reviewableItems.length - 1, currentIndex + 1),
+                      )
+                    }
+                    type="button"
+                  >
+                    Lanjut
+                    <ChevronRight aria-hidden="true" className="size-4" />
+                  </button>
+                ) : (
+                  <button
+                    className="h-11 rounded-lg bg-[#1e40af] px-4 text-sm font-medium leading-5 text-white transition hover:bg-[#1d3a9c] disabled:opacity-50"
+                    disabled={createReviewsMutation.isPending}
+                    onClick={() => {
+                      void handleSubmit()
+                    }}
+                    type="button"
+                  >
+                    {createReviewsMutation.isPending
+                      ? 'Mengirim...'
+                      : 'Kirim Ulasan'}
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
       </div>
     </div>
   )

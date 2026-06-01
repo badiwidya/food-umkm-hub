@@ -44,6 +44,7 @@ function StudentHomeRoute() {
       category={category}
       onCategoryChange={(nextCategory) => {
         void navigate({
+          resetScroll: false,
           search: {
             category: nextCategory,
             search: search || undefined,
@@ -52,6 +53,7 @@ function StudentHomeRoute() {
       }}
       onSearchSubmit={(nextSearch) => {
         void navigate({
+          resetScroll: false,
           search: {
             category,
             search: nextSearch || undefined,

@@ -1,4 +1,6 @@
 export { CheckEmailPage } from './pages/check-email-page'
+export { ChangeEmailPage } from './pages/change-email-page'
+export { ChangeEmailSuccessPage } from './pages/change-email-success-page'
 export { LoginPage } from './pages/login-page'
 export { RegisterAccountPage } from './pages/register-account-page'
 export { RegisterSellerDetailsPage } from './pages/register-seller-details-page'

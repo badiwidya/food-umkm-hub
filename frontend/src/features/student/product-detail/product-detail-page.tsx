@@ -103,6 +103,7 @@ export function ProductDetailPage({
         note: note.trim() || undefined,
         productId: product.id,
         quantity,
+        returnTo: 'product',
       },
       to: '/checkout',
     })
@@ -269,7 +270,12 @@ export function ProductDetailPage({
                   <button
                     className="mt-1 font-medium text-green-800 underline underline-offset-2"
                     onClick={() => {
-                      void navigate({ to: '/cart' })
+                      void navigate({
+                        search: {
+                          storeId: product.store.id,
+                        },
+                        to: '/cart',
+                      })
                     }}
                     type="button"
                   >

@@ -182,18 +182,17 @@ navigate({
 navigate('/student/stores/' + storeId)
 ```
 
-When a route has both a list page and a dynamic detail page, model them as nested routes.
+When a route has child routes, model them as nested routes.
 
-Example:
+Use a parent route for shared layout/navigation and separate child routes for individual pages.
 
-```
-/stores
-/stores/$storeId
-```
+Do not combine parent-page and child-route responsibilities in the same route component.
 
-Use a parent route for shared layout/navigation and separate child routes for list and detail pages.
+For route groups with child routes, prefer:
 
-Do not combine list-page and detail-page responsibilities in the same route component.
+- parent route = shared layout
+- index child = parent page
+- child routes = nested pages
 
 ## Forms
 
