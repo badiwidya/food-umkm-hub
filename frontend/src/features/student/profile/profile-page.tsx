@@ -67,7 +67,7 @@ export function ProfilePage({
                   {student.fullName}
                 </h2>
                 <p className="mt-1 truncate text-sm leading-5 text-white/80">
-                  Mahasiswa IPB Food Hub
+                  Mahasiswa Food & UMKM Hub
                 </p>
               </div>
             </div>
@@ -173,7 +173,7 @@ export function ProfilePage({
             </button>
 
             <footer className="space-y-1 py-2 text-center text-xs leading-4 text-slate-500">
-              <p>IPB Food Hub v1.0.0</p>
+              <p>Food & UMKM Hub v1.0.0</p>
               <p>© 2026 IPB University</p>
             </footer>
           </div>

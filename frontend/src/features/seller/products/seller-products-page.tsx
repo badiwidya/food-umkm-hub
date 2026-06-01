@@ -12,6 +12,7 @@ import { ProductCategoryTabs } from '../../../components/common/product-category
 import { ProductSearchForm } from '../../../components/common/product-search-form'
 import type { ProductSummaryResponse } from '../../../client'
 import { getMyProductsStoresMeProductsGetOptions } from '../../../client/@tanstack/react-query.gen'
+import { useClickOutside } from '../../../lib/use-click-outside'
 import { formatRupiah } from '../dashboard/format'
 import { useSellerProductActions } from './use-seller-product-actions'
 
@@ -179,6 +180,10 @@ function SellerProductCard({
   product,
 }: SellerProductCardProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const menuRef = useClickOutside<HTMLDivElement>(
+    () => setIsMenuOpen(false),
+    isMenuOpen,
+  )
 
   return (
     <article className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
@@ -204,7 +209,7 @@ function SellerProductCard({
                 {formatRupiah(product.price)}
               </p>
             </div>
-            <div className="relative shrink-0">
+            <div className="relative shrink-0" ref={menuRef}>
               <button
                 aria-expanded={isMenuOpen}
                 aria-label={`Aksi ${product.name}`}

@@ -38,7 +38,7 @@ export function ProductBrowsePage({
 
   return (
     <>
-      <StudentTopHeader subtitle="Kampus IPB Dramaga" title="IPB Food Hub">
+      <StudentTopHeader subtitle="Kampus IPB Dramaga" title="Food & UMKM Hub">
         <ProductSearchForm defaultSearch={search} onSubmit={onSearchSubmit} />
       </StudentTopHeader>
       <ProductCategoryTabs

@@ -719,9 +719,13 @@ function OrderDetailSheet({
     <div
       aria-modal="true"
       className="fixed inset-0 z-40 flex items-end justify-center bg-slate-950/50"
+      onClick={isActionPending ? undefined : onClose}
       role="dialog"
     >
-      <div className="max-h-[85vh] w-full max-w-sm overflow-hidden rounded-t-2xl bg-white shadow-xl">
+      <div
+        className="max-h-[85vh] w-full max-w-sm overflow-hidden rounded-t-2xl bg-white shadow-xl"
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className="flex items-center justify-between gap-4 border-b border-slate-200 px-4 py-4">
           <div className="min-w-0">
             <h2 className="truncate text-lg font-medium leading-7 text-slate-800">
@@ -975,9 +979,13 @@ function RejectOrderDialog({
     <div
       aria-modal="true"
       className="fixed inset-0 z-40 flex items-end justify-center bg-slate-900/40 px-4 pb-4"
+      onClick={isPending ? undefined : onClose}
       role="dialog"
     >
-      <div className="w-full max-w-sm rounded-lg bg-white p-4 shadow-lg">
+      <div
+        className="w-full max-w-sm rounded-lg bg-white p-4 shadow-lg"
+        onClick={(event) => event.stopPropagation()}
+      >
         <h3 className="text-base font-medium leading-6 text-slate-900">
           Tolak pesanan #{order.id.slice(0, 8).toUpperCase()}?
         </h3>

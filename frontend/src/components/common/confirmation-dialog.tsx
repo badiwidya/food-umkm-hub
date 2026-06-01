@@ -25,9 +25,13 @@ export function ConfirmationDialog({
     <div
       aria-modal="true"
       className="fixed inset-0 z-40 flex items-end justify-center bg-slate-900/40 px-4 pb-4"
+      onClick={isPending ? undefined : onClose}
       role="dialog"
     >
-      <div className="w-full max-w-sm rounded-lg bg-white p-4 shadow-lg">
+      <div
+        className="w-full max-w-sm rounded-lg bg-white p-4 shadow-lg"
+        onClick={(event) => event.stopPropagation()}
+      >
         <h3 className="text-base font-medium leading-6 text-slate-900">
           {title}
         </h3>

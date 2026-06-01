@@ -15,6 +15,7 @@ import { useState } from 'react'
 import { ConfirmationDialog } from '../../../components/common/confirmation-dialog'
 import type { PromoSummaryResponse } from '../../../client'
 import { getAllMeStoresMePromosGetOptions } from '../../../client/@tanstack/react-query.gen'
+import { useClickOutside } from '../../../lib/use-click-outside'
 import { formatRupiah } from '../dashboard/format'
 import { useSellerPromoActions } from './use-seller-promo-actions'
 
@@ -161,6 +162,10 @@ function SellerPromoCard({
   promo,
 }: SellerPromoCardProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const menuRef = useClickOutside<HTMLDivElement>(
+    () => setIsMenuOpen(false),
+    isMenuOpen,
+  )
   const status = getPromoStatus(promo)
 
   return (
@@ -179,7 +184,7 @@ function SellerPromoCard({
                 {formatPromoDiscount(promo)}
               </p>
             </div>
-            <div className="relative shrink-0">
+            <div className="relative shrink-0" ref={menuRef}>
               <button
                 aria-expanded={isMenuOpen}
                 aria-label={`Aksi ${promo.code}`}

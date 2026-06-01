@@ -409,9 +409,13 @@ function ReviewOrderModal({
     <div
       aria-modal="true"
       className="fixed inset-0 z-40 flex items-end justify-center bg-slate-950/50"
+      onClick={createReviewsMutation.isPending ? undefined : onClose}
       role="dialog"
     >
-      <div className="max-h-[85vh] w-full max-w-sm overflow-hidden rounded-t-2xl bg-white shadow-xl">
+      <div
+        className="max-h-[85vh] w-full max-w-sm overflow-hidden rounded-t-2xl bg-white shadow-xl"
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className="flex items-center justify-between gap-4 border-b border-slate-200 px-4 py-4">
           <h2 className="text-lg font-medium leading-7 text-slate-800">
             Beri Ulasan

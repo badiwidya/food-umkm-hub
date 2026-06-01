@@ -11,7 +11,7 @@ export function RegisterSellerDetailsPage() {
   const errors = form.formState.errors
 
   return (
-    <AuthShell subtitle="Bergabung dengan IPB Food Hub" title="Buat Toko">
+    <AuthShell subtitle="Bergabung dengan Food & UMKM Hub" title="Buat Toko">
       <div className="space-y-6">
         <a
           className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-[#1e40af] bg-white px-3 py-2 text-sm font-medium leading-5 text-[#1e40af] transition hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1e40af]"

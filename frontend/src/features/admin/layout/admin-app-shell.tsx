@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { ChevronDown, LogOut, UserRound } from 'lucide-react'
 
+import { useClickOutside } from '../../../lib/use-click-outside'
 import { useAuthStore } from '../../../stores/auth-store'
 
 type AdminAppShellProps = {
@@ -14,6 +15,10 @@ export function AdminAppShell({ children }: AdminAppShellProps) {
   const user = useAuthStore((state) => state.user)
   const clearAuth = useAuthStore((state) => state.clearAuth)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const menuRef = useClickOutside<HTMLDivElement>(
+    () => setIsMenuOpen(false),
+    isMenuOpen,
+  )
 
   function handleLogout() {
     clearAuth()
@@ -33,7 +38,7 @@ export function AdminAppShell({ children }: AdminAppShellProps) {
               Admin
             </h1>
           </div>
-          <div className="relative">
+          <div className="relative" ref={menuRef}>
             <button
               aria-expanded={isMenuOpen}
               aria-haspopup="menu"

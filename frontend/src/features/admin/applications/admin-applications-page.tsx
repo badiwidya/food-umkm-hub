@@ -590,9 +590,13 @@ function AdminConfirmationDialog({
     <div
       aria-modal="true"
       className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/40 px-4 py-6"
+      onClick={isPending ? undefined : onClose}
       role="dialog"
     >
-      <div className="w-full max-w-md rounded-lg bg-white p-5 shadow-lg">
+      <div
+        className="w-full max-w-md rounded-lg bg-white p-5 shadow-lg"
+        onClick={(event) => event.stopPropagation()}
+      >
         <h3 className="text-base font-semibold leading-6 text-slate-900">
           {title}
         </h3>
@@ -797,10 +801,12 @@ function RejectApplicationDialog({
     <div
       aria-modal="true"
       className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/40 px-4 py-6"
+      onClick={isPending ? undefined : onClose}
       role="dialog"
     >
       <form
         className="w-full max-w-lg rounded-lg bg-white p-5 shadow-lg"
+        onClick={(event) => event.stopPropagation()}
         onSubmit={(event) => {
           void onSubmit(event)
         }}

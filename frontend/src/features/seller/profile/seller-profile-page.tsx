@@ -38,7 +38,7 @@ export function SellerProfilePage({
   const isPending = storeQuery.isPending || accountQuery.isPending
   const isError = storeQuery.isError || accountQuery.isError
   const title = store?.name ?? 'Profil Penjual'
-  const subtitle = account?.fullName ?? 'Penjual IPB Food Hub'
+  const subtitle = account?.fullName ?? 'Penjual Food & UMKM Hub'
 
   function handleLogout() {
     clearAuth()
@@ -190,7 +190,7 @@ export function SellerProfilePage({
         </section>
 
         <footer className="space-y-1 py-2 text-center text-xs leading-4 text-slate-500">
-          <p>IPB Food Hub v1.0.0</p>
+          <p>Food & UMKM Hub v1.0.0</p>
           <p>© 2026 IPB University</p>
         </footer>
       </div>

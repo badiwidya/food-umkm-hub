@@ -17,7 +17,7 @@ export function LoginPage({ redirect }: LoginPageProps) {
   return (
     <AuthShell
       subtitle="Platform Makanan & UMKM Mahasiswa"
-      title="IPB Food Hub"
+      title="Food & UMKM Hub"
     >
       <div className="space-y-6">
         <h2 className="text-center text-xl font-medium leading-7 text-slate-800">

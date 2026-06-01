@@ -12,7 +12,7 @@ export function RegisterStudentDetailsPage() {
 
   return (
     <AuthShell
-      subtitle="Bergabung dengan IPB Food Hub"
+      subtitle="Bergabung dengan Food & UMKM Hub"
       title="Buat Akun Mahasiswa"
     >
       <div className="space-y-6">

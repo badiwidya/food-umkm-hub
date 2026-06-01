@@ -21,7 +21,10 @@ export function RegisterAccountPage({
   const errors = form.formState.errors
 
   return (
-    <AuthShell subtitle="Bergabung dengan IPB Food Hub" title="Buat Akun Baru">
+    <AuthShell
+      subtitle="Bergabung dengan Food & UMKM Hub"
+      title="Buat Akun Baru"
+    >
       <div className="space-y-6">
         <form className="space-y-4" onSubmit={onSubmit}>
           {errorMessage ? (
