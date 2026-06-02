@@ -383,6 +383,7 @@ export const zStoreDetailResponse = z.object({
     address: z.string(),
     qrisImageUrl: z.string().nullable(),
     mapsLink: z.string().nullable(),
+    approvalNotes: z.string().nullable(),
     approvalStatus: zStoreApprovalStatus,
     updatedAt: z.iso.datetime(),
     createdAt: z.iso.datetime()

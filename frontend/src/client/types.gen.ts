@@ -968,6 +968,10 @@ export type StoreDetailResponse = {
      * Mapslink
      */
     mapsLink: string | null;
+    /**
+     * Approvalnotes
+     */
+    approvalNotes: string | null;
     approvalStatus: StoreApprovalStatus;
     /**
      * Updatedat
